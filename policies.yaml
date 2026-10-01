@@ -1,0 +1,56 @@
+# Guardrail rules: edit this file to match your company's limits. No code changes needed.
+#
+# Each rule matches an action (or "*" for any) and a list of conditions.
+# Conditions: field + op + value.  ops: gt, gte, lt, lte, eq, ne, in, not_in, exists, email_outside
+# decision:   allow | flag | require_approval | block      (the strictest matching rule wins)
+# severity:   low | medium | high                           (feeds the reliability score and alerts)
+
+company_domain: acme.com          # emails outside this domain count as external
+run_cost_limit_usd: 0.20          # a single run costing more than this is flagged
+
+rules:
+  - id: high-value-payment
+    name: High-value payment
+    description: Payments above $10,000 wait for a human to approve
+    actions: [create_payment, send_payment, wire_transfer, refund]
+    when:
+      - {field: amount, op: gt, value: 10000}
+    decision: require_approval
+    severity: high
+
+  - id: payment-review
+    name: Payment review
+    description: Payments between $5,000 and $10,000 are flagged for review
+    actions: [create_payment, send_payment, wire_transfer, refund]
+    when:
+      - {field: amount, op: gt, value: 5000}
+      - {field: amount, op: lte, value: 10000}
+    decision: flag
+    severity: medium
+
+  - id: new-payee
+    name: New payee
+    description: First payment to a vendor not on the approved list waits for approval
+    actions: [create_payment, send_payment, wire_transfer]
+    when:
+      - {field: new_payee, op: eq, value: true}
+    decision: require_approval
+    severity: high
+
+  - id: external-email
+    name: External email
+    description: Emails sent outside the company domain are logged
+    actions: ["*"]
+    when:
+      - {field: to, op: email_outside}
+    decision: flag
+    severity: low
+
+  - id: pii-access
+    name: Customer PII access
+    description: Reading customer personal data is logged
+    actions: ["*"]
+    when:
+      - {field: pii, op: eq, value: true}
+    decision: flag
+    severity: low

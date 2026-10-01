@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cosignal: human approval for AI agents that move money</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3f3f1;--panel:#ffffff;--panel2:#f7f7f5;--line:#e3e2de;--fg:#17181a;--muted:#6d6b66;--faint:#a3a19b;
+  --orange:#f25c05;--ok:#1f9d63;--warn:#c98a0b;--bad:#d9382e;--a1:#f25c05;--a2:#2f6fdb;--a3:#7a4fd6;--a4:#1f9d63;
+  --llm:#7a4fd6;--tool:#2f6fdb;--retrieval:#1f9d63;--action:#f25c05;--shadow:0 1px 2px rgba(0,0,0,.05);
+  --sans:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;--mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111214;--panel:#191b1e;--panel2:#1f2125;--line:#2b2e33;--fg:#ece9e3;--muted:#9a968e;--faint:#5f5c57;
+  --orange:#ff6a13;--ok:#43c486;--warn:#f0b43c;--bad:#ff5a4f;--a1:#ff6a13;--a2:#6ea3ff;--a3:#b18cff;--a4:#43c486;
+  --llm:#b18cff;--tool:#6ea3ff;--retrieval:#43c486;--action:#ff6a13;--shadow:none;}}
+:root[data-theme="dark"]{
+  --bg:#111214;--panel:#191b1e;--panel2:#1f2125;--line:#2b2e33;--fg:#ece9e3;--muted:#9a968e;--faint:#5f5c57;
+  --orange:#ff6a13;--ok:#43c486;--warn:#f0b43c;--bad:#ff5a4f;--a1:#ff6a13;--a2:#6ea3ff;--a3:#b18cff;--a4:#43c486;
+  --llm:#b18cff;--tool:#6ea3ff;--retrieval:#43c486;--action:#ff6a13;--shadow:none;}
+*,*::before,*::after{box-sizing:inherit}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font:14px/1.45 var(--sans);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+.wrap{max-width:1360px;margin:0 auto;padding:0 20px 48px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.bar{max-width:1360px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;letter-spacing:-.01em}
+.box{width:26px;height:22px;border-radius:5px;background:var(--orange);position:relative;box-shadow:inset 0 -4px 0 rgba(0,0,0,.18)}
+.box::after{content:"";position:absolute;left:5px;right:5px;top:7px;height:3px;border-radius:2px;background:rgba(0,0,0,.35)}
+.ws{font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+.src{font-size:12px;border-radius:999px;padding:3px 10px;background:color-mix(in srgb,var(--orange) 14%,transparent);color:var(--orange);font-weight:600}
+.src.live{background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok)}
+nav{display:flex;gap:2px;margin-left:auto}
+nav button{border:0;background:none;padding:7px 12px;border-radius:8px;color:var(--muted);font-weight:500}
+nav button[aria-selected="true"]{background:var(--panel);color:var(--fg);box-shadow:var(--shadow);border:1px solid var(--line)}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:none;padding:6px 10px;color:var(--muted);font-size:13px}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+h2{font-size:13px;font-weight:600;margin:0;color:var(--muted);letter-spacing:.01em}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+.ph{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 0;gap:10px}
+.pb{padding:12px 16px 16px}
+.kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:18px 0}
+.kpi{background:var(--panel);padding:14px 16px}
+.kpi .v{font-size:24px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.kpi .l{font-size:12px;color:var(--muted)}
+.kpi .d{font-size:12px;font-variant-numeric:tabular-nums}
+.up-bad{color:var(--bad)}.up-good{color:var(--ok)}
+.grid2{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:18px}
+.grid2b{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:18px;margin-top:18px}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+svg text{fill:var(--muted);font:11px var(--sans)}
+.alert{display:grid;grid-template-columns:4px 1fr;gap:12px;padding:12px 0;border-top:1px solid var(--line);cursor:pointer}
+.alert:first-child{border-top:0;padding-top:4px}
+.alert .sev{border-radius:2px}
+.alert b{font-weight:600}
+.alert p{margin:2px 0 0;color:var(--muted);font-size:13px}
+.alert:hover b{text-decoration:underline}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th{font-size:12px;font-weight:500;color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:10px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tbody tr.click{cursor:pointer}tbody tr.click:hover{background:var(--panel2)}
+.tscroll{overflow-x:auto}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px;vertical-align:0}
+.score{display:flex;align-items:center;gap:8px;min-width:130px}
+.score .track{flex:1;height:6px;border-radius:3px;background:var(--panel2);overflow:hidden;border:1px solid var(--line)}
+.score .fill{height:100%}
+.score b{width:28px;text-align:right;font-weight:600}
+.cause{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:7px 0;font-size:13px}
+.cause .t{grid-column:1/-1;height:6px;border-radius:3px;background:var(--panel2);overflow:hidden}
+.cause .t div{height:100%;background:var(--bad)}
+.runs{display:grid;grid-template-columns:minmax(280px,380px) minmax(0,1fr);gap:18px;margin-top:18px;align-items:start}
+.filters{display:flex;gap:8px;flex-wrap:wrap;padding:12px}
+.filters select,.filters input{background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--fg);padding:6px 8px;font:inherit;font-size:13px}
+.filters input{flex:1;min-width:120px}
+.rlist{max-height:calc(100vh - 230px);overflow-y:auto;border-top:1px solid var(--line)}
+.ritem{display:grid;grid-template-columns:auto 1fr auto;gap:2px 10px;padding:10px 12px;border-bottom:1px solid var(--line);cursor:pointer;align-items:center}
+.ritem:hover{background:var(--panel2)}
+.ritem[aria-selected="true"]{background:color-mix(in srgb,var(--orange) 9%,var(--panel));box-shadow:inset 3px 0 0 var(--orange)}
+.ritem .n{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ritem .m{grid-column:2/4;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.b-success{background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok)}
+.b-failed{background:color-mix(in srgb,var(--bad) 15%,transparent);color:var(--bad)}
+.b-blocked{background:color-mix(in srgb,var(--warn) 18%,transparent);color:var(--warn)}
+.b-flag{background:color-mix(in srgb,var(--orange) 15%,transparent);color:var(--orange)}
+.thead{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;padding:16px}
+.thead .title{font-size:17px;font-weight:600}
+.meta{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.meta b{color:var(--fg);font-weight:600}
+.replay{margin-left:auto;display:flex;gap:8px}
+.btn{border:1px solid var(--line);background:var(--panel2);border-radius:8px;padding:7px 12px;font-size:13px;font-weight:500}
+.btn.primary{background:var(--orange);border-color:var(--orange);color:#fff}
+.io{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px 12px}
+.io div{font-size:13px}.io span{display:block;font-size:12px;color:var(--muted);margin-bottom:2px}
+.wf{position:relative;padding:4px 16px 12px}
+.wrow{display:grid;grid-template-columns:minmax(150px,230px) 1fr;gap:12px;align-items:center;height:34px;border-radius:6px;cursor:pointer;padding:0 6px}
+.wrow:hover{background:var(--panel2)}
+.wrow[aria-selected="true"]{background:color-mix(in srgb,var(--orange) 10%,var(--panel))}
+.wrow.dim{opacity:.35}
+.wname{display:flex;align-items:center;gap:8px;font-size:13px;overflow:hidden;white-space:nowrap}
+.wname .k{font-size:10px;font-weight:600;text-transform:none;border-radius:4px;padding:1px 6px;color:#fff;flex:none}
+.wname .nm{overflow:hidden;text-overflow:ellipsis}
+.track2{position:relative;height:16px}
+.seg2{position:absolute;top:0;height:16px;border-radius:4px;min-width:3px}
+.seg2.err{background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.35) 0 4px,transparent 4px 8px)}
+.fl{position:absolute;top:-2px;width:10px;height:10px;transform:rotate(45deg);background:var(--orange);border:2px solid var(--panel)}
+.head{position:absolute;top:0;bottom:0;width:2px;background:var(--fg);pointer-events:none;transition:none}
+.axis{display:grid;grid-template-columns:minmax(150px,230px) 1fr;gap:12px;padding:0 22px;font-size:11px;color:var(--faint);font-variant-numeric:tabular-nums}
+.axis div:last-child{display:flex;justify-content:space-between}
+.detail{border-top:1px solid var(--line);padding:16px;display:grid;gap:12px}
+.detail .row{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.detail .row b{color:var(--fg);font-weight:600}
+pre{margin:0;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font:12.5px/1.5 var(--mono);white-space:pre-wrap;word-break:break-word;max-height:180px;overflow:auto}
+.flagbox{border:1px solid color-mix(in srgb,var(--orange) 45%,var(--line));background:color-mix(in srgb,var(--orange) 7%,var(--panel));border-radius:8px;padding:10px 12px;font-size:13px}
+.flagbox b{color:var(--orange)}
+.lab{font-size:12px;color:var(--muted);margin-bottom:4px}
+.switch{width:34px;height:20px;border-radius:999px;background:var(--line);border:0;position:relative;padding:0}
+.switch[aria-checked="true"]{background:var(--orange)}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:left .15s}
+.switch[aria-checked="true"]::after{left:17px}
+.act{font-size:12px;font-weight:600}
+.empty{padding:28px;color:var(--muted);text-align:center}
+.hint{font-size:12px;color:var(--muted);margin:14px 0 0}
+[hidden]{display:none!important}
+.tabcount{display:inline-block;min-width:18px;padding:0 6px;margin-left:6px;border-radius:999px;background:var(--orange);color:#fff;font-size:11px;font-weight:700;line-height:18px;text-align:center}
+.inbox{display:grid;gap:12px}
+.apr{display:grid;grid-template-columns:1fr auto;gap:10px 16px;align-items:center;padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--panel2)}
+.apr .amt{font-size:24px;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.apr .why{font-size:13px;color:var(--muted)}
+.apr .acts{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.apr input{background:var(--panel);border:1px solid var(--line);border-radius:8px;color:var(--fg);padding:7px 10px;font:inherit;font-size:13px;min-width:180px}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}.btn.no{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 50%,var(--line))}
+.b-approved{background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok)}.b-rejected{background:color-mix(in srgb,var(--bad) 15%,transparent);color:var(--bad)}.b-pending{background:color-mix(in srgb,var(--warn) 18%,transparent);color:var(--warn)}
+#decisions td{white-space:nowrap}#decisions td:last-child{max-width:180px;overflow:hidden;text-overflow:ellipsis}
+.link{background:none;border:0;padding:0;color:var(--orange);font-weight:600;font-size:13px;text-decoration:underline;text-underline-offset:2px}
+@media (max-width:1000px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.grid2,.grid2b,.runs{grid-template-columns:1fr}.rlist{max-height:340px}}
+@media (max-width:560px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}nav{margin-left:0;width:100%}.io{grid-template-columns:1fr}.wrow,.axis{grid-template-columns:120px 1fr}.replay{margin-left:0}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div class="logo"><span class="box" aria-hidden="true"></span>Cosignal</div>
+    <span class="ws" id="ws">Acme Finance</span>
+    <span class="src" id="src">Demo data</span>
+    <nav role="tablist" aria-label="Views">
+      <button role="tab" aria-selected="true" data-tab="overview">Overview</button>
+      <button role="tab" aria-selected="false" data-tab="runs">Runs</button>
+      <button role="tab" aria-selected="false" data-tab="approvals">Approvals<span class="tabcount" id="aprCount" hidden></span></button>
+      <button role="tab" aria-selected="false" data-tab="policies">Policies</button>
+    </nav>
+    <div class="seg" role="group" aria-label="Time range">
+      <button aria-pressed="false" data-range="1">24h</button>
+      <button aria-pressed="true" data-range="7">7 days</button>
+    </div>
+  </div>
+</header>
+<main class="wrap">
+  <section id="v-overview">
+    <div class="kpis" id="kpis"></div>
+    <div class="grid2">
+      <div class="panel"><div class="ph"><h2>Spend per day, by agent</h2><div class="legend" id="legend"></div></div><div class="pb" id="spend"></div></div>
+      <div class="panel"><div class="ph"><h2>Alerts</h2></div><div class="pb" id="alerts"></div></div>
+    </div>
+    <div class="grid2b">
+      <div class="panel"><div class="ph"><h2>Agents</h2><span class="hint" style="margin:0" title="100 × (0.5 success + 0.2 × (1 − risky-step rate) + 0.15 latency + 0.15 cost stability)">How the reliability score works ⓘ</span></div><div class="pb tscroll"><table id="agents"></table></div></div>
+      <div class="panel"><div class="ph"><h2>Top failure causes</h2></div><div class="pb" id="causes"></div></div>
+    </div>
+  </section>
+  <section id="v-runs" hidden>
+    <div class="runs">
+      <div class="panel">
+        <div class="filters">
+          <select id="fAgent" aria-label="Agent"></select>
+          <select id="fStatus" aria-label="Status"><option value="">All statuses</option><option value="success">Success</option><option value="failed">Failed</option><option value="blocked">Blocked</option><option value="flagged">Hit a policy</option></select>
+          <input id="fText" placeholder="Search runs" aria-label="Search runs">
+        </div>
+        <div class="rlist" id="rlist" role="listbox" aria-label="Runs"></div>
+      </div>
+      <div class="panel" id="trace"></div>
+    </div>
+  </section>
+  <section id="v-approvals" hidden>
+    <div class="grid2" style="margin-top:18px">
+      <div class="panel"><div class="ph"><h2>Waiting for your approval</h2><span class="hint" style="margin:0">Agents pause here until a person decides</span></div><div class="pb"><div class="inbox" id="inbox"></div></div></div>
+      <div class="panel"><div class="ph"><h2>Recent decisions</h2></div><div class="pb tscroll"><table id="decisions"></table></div></div>
+    </div>
+    <div class="panel" style="margin-top:18px"><div class="ph"><h2>Audit trail</h2><span class="hint" style="margin:0">Every guardrail check and human decision, newest first</span></div><div class="pb tscroll"><table id="audit"></table></div></div>
+  </section>
+  <section id="v-policies" hidden>
+    <div class="panel" style="margin-top:18px"><div class="ph"><h2>Guardrail policies</h2></div><div class="pb tscroll"><table id="policies"></table>
+      <p class="hint">Policies are checked by the SDK before an action runs (<code>lens.check()</code>) and again on ingest, so every decision lands in the audit trail.</p></div></div>
+  </section>
+</main>
+<script>
+/* ---------------- data: live API if served by the Cosignal server, else realistic demo data ---------------- */
+const AGENTS=[
+ {id:'invoice-processor',name:'Invoice Processor',color:'--a1',target:9000},
+ {id:'support-agent',name:'Customer Support Agent',color:'--a2',target:12000},
+ {id:'sales-research',name:'Sales Research Agent',color:'--a3',target:15000},
+ {id:'hr-onboarding',name:'HR Onboarding Agent',color:'--a4',target:10000}];
+const POLICIES=[
+ {id:'high-value-payment',name:'High-value payment',rule:'Payment amount above $10,000',action:'require_approval',severity:'high',on:true},
+ {id:'new-payee',name:'New payee',rule:'First payment to a vendor not on the approved list',action:'require_approval',severity:'high',on:true},
+ {id:'payment-review',name:'Payment review',rule:'Payment amount $5,000–$10,000',action:'flag',severity:'medium',on:true},
+ {id:'external-email',name:'External email',rule:'Email sent to a domain outside acme.com',action:'flag',severity:'low',on:true},
+ {id:'pii-access',name:'Customer PII access',rule:'Tool reads customer personal data',action:'flag',severity:'low',on:true},
+ {id:'runaway-cost',name:'Runaway cost',rule:'Single run costs more than $0.20 (e.g. retry loops)',action:'flag',severity:'medium',on:true}];
+const PRICE={'gpt-4o':[2.5,10],'gpt-4o-mini':[.15,.6]};
+function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function demoData(){
+  const R=rng(42),r=(a,b)=>a+(b-a)*R(),ri=(a,b)=>Math.floor(r(a,b+1)),pick=a=>a[Math.floor(R()*a.length)];
+  const now=Date.UTC(2026,8,25,16,0,0),runs=[];let n=0;
+  const vendors=['Northwind Supplies','Contoso Metals','Fabrikam Logistics','Tailspin Parts','Litware Labs','Adatum Office'];
+  const customers=['Priya S.','Marcus T.','Elena R.','Jordan K.','Aisha B.','Tom W.'];
+  const companies=['Brightline Health','Keystone Freight','Orchid Retail','Summit Dental','Vantage Robotics','Harbor Credit Union'];
+  const hires=['Sam Lee','Nina Patel','Diego Ruiz','Chloe Martin'];
+  const llm=(name,model,ti,to,dur,input,output,status='ok',error)=>({kind:'llm',name,model,tokens_in:ti,tokens_out:to,dur,input,output,status,error});
+  const tool=(kind,name,dur,input,output,status='ok',error,extra={})=>({kind,name,dur,input,output,status,error,...extra});
+  for(let d=13;d>=0;d--){
+    AGENTS.forEach((a,ai)=>{
+      const count=[130,180,70,24][ai]+ri(-12,12);
+      for(let k=0;k<count;k++){
+        const t0=now-d*864e5-ri(0,23)*36e5-ri(0,59)*6e4,steps=[];let status='success',fail=null;
+        const recent=d===0;
+        if(a.id==='invoice-processor'){
+          const v=pick(vendors),amt=Math.round(Math.exp(r(6,9.45))),po='PO-'+ri(40000,49999);
+          steps.push(tool('tool','read_inbox',ri(250,600),'mailbox: ap@acme.com, unread invoices','1 invoice PDF from '+v));
+          steps.push(llm('extract_invoice_fields','gpt-4o',ri(6000,11000),ri(180,320),ri(1600,3400),'Extract vendor, amount, PO number and due date from the attached invoice PDF.',`{"vendor":"${v}","amount":${amt},"po":"${po}","due":"2026-10-${String(ri(1,28)).padStart(2,'0')}"}`));
+          const timeout=R()<(recent?.2:.05);
+          if(timeout){steps.push(tool('tool','lookup_vendor',ri(5000,5200),`SELECT * FROM vendors WHERE name='${v}'`,'',`error`,'Timeout after 5000 ms: vendor_db'));status='failed';fail='Tool timeout: vendor_db';}
+          else{steps.push(tool('tool','lookup_vendor',ri(180,700),`SELECT * FROM vendors WHERE name='${v}'`,`vendor_id=V${ri(100,999)}, bank verified, terms NET30`));
+            const hall=R()<.04;
+            steps.push(llm('match_purchase_order','gpt-4o-mini',ri(3000,5000),ri(40,90),ri(700,1500),`Match invoice to open purchase orders for ${v}.`,hall?`Matched ${'PO-'+ri(50000,59999)} (not found in ERP)`:`Matched ${po}: quantities and prices agree`,hall?'error':'ok',hall?'Hallucinated PO number: not found in ERP':undefined));
+            if(hall){status='failed';fail='Hallucinated PO number';}
+            else{steps.push(tool('action','create_payment',amt>1e4?1:ri(300,800),`create_payment(vendor="${v}", amount=${amt}, po="${po}")`,amt>1e4?'require_approval: High-value payment (above $10,000). Routed to finance controller.':'Payment scheduled',amt>1e4?'held':'ok',undefined,{amount:amt}));
+              if(amt<=1e4)steps.push(tool('action','notify_ap_team',ri(150,400),'send_email(to="ap-team@acme.com")','Sent',undefined,undefined,{to:'ap-team@acme.com'}));}}
+        }else if(a.id==='support-agent'){
+          const c=pick(customers),topic=pick(['refund status','login problem','invoice copy','plan upgrade','shipping delay']);
+          steps.push(tool('tool','fetch_ticket',ri(150,400),'ticket queue: priority=normal',`#${ri(18000,19999)} from ${c}: "${topic}"`));
+          steps.push(tool('retrieval','search_knowledge_base',ri(300,900),`query: ${topic}`,`${ri(3,6)} articles, top match: "How to handle ${topic}"`));
+          steps.push(tool('tool','read_customer_record',ri(200,500),`crm.get_customer("${c}")`,'name, email, phone, order history (12 orders)',undefined,undefined,{pii:true}));
+          const rl=R()<(recent?.08:.04);const tin=recent?ri(11000,16000):ri(7000,11000);
+          if(rl){steps.push(llm('draft_reply','gpt-4o',tin,0,ri(300,600),`Draft a reply about ${topic} using the KB articles and customer history.`,'','error','Rate limit (429) from model provider'));status='failed';fail='Rate limit (429)';}
+          else{steps.push(llm('draft_reply','gpt-4o',tin,ri(220,420),ri(2400,5200),`Draft a reply about ${topic} using the KB articles and customer history.`,`Hi ${c.split(' ')[0]}, thanks for reaching out about your ${topic}. Here's what I found…`));
+            steps.push(tool('action','send_email',ri(200,500),`send_email(to="${c.split(' ')[0].toLowerCase()}@${pick(['gmail.com','outlook.com','yahoo.com'])}")`,'Sent',undefined,undefined,{to:'external'}));}
+        }else if(a.id==='sales-research'){
+          const co=pick(companies);
+          steps.push(tool('tool','search_web',ri(900,2400),`"${co}" news, funding, headcount`,`${ri(6,12)} results`));
+          steps.push(tool('tool','fetch_company_profile',ri(500,1400),`profile("${co}")`,`industry, ${ri(80,2400)} employees, HQ`));
+          steps.push(llm('summarize_company','gpt-4o',ri(14000,24000),ri(350,600),ri(3500,7000),`Summarize ${co} for a sales rep: priorities, triggers, risks.`,`${co} is expanding… likely pain points: manual reporting, vendor sprawl.`));
+          if(R()<.05)for(let q=0;q<4;q++)steps.push(llm('summarize_company (retry '+(q+1)+')','gpt-4o',ri(22000,30000),ri(350,600),ri(3500,6000),'Previous summary failed validation. Summarize again with sources.','Summary regenerated; validation still failing.'));
+          steps.push(llm('score_lead','gpt-4o-mini',ri(3000,5000),ri(60,120),ri(800,1600),'Score fit 0–100 against our ideal customer profile.',`fit_score: ${ri(38,94)}`));
+          const sm=R()<.07;
+          steps.push(tool('action','crm_update',ri(300,700),`crm.update_lead("${co}")`,sm?'':'Lead updated',sm?'error':'ok',sm?'Schema mismatch: field "fit_score" expects integer':undefined));
+          if(sm){status='failed';fail='CRM schema mismatch';}
+        }else{
+          const h=pick(hires);
+          steps.push(tool('retrieval','read_offer_letter',ri(300,700),`docs.get("offer/${h}")`,'role, start date, manager, location'));
+          steps.push(tool('action','create_accounts',ri(800,1800),`it.create_accounts("${h}")`,'email, Slack, HR portal created',undefined,undefined,{pii:true}));
+          const cal=R()<.06;
+          steps.push(tool('tool','schedule_meetings',cal?ri(5000,5100):ri(500,1200),'calendar.book(first_week)',cal?'':'4 meetings booked',cal?'error':'ok',cal?'Timeout after 5000 ms: calendar_api':undefined));
+          if(cal){status='failed';fail='Tool timeout: calendar_api';}
+          else{steps.push(llm('write_welcome_note','gpt-4o-mini',ri(2000,3500),ri(150,260),ri(900,1800),`Write a friendly welcome note for ${h}.`,`Welcome to Acme, ${h.split(' ')[0]}! Your first week…`));
+            steps.push(tool('action','send_welcome_email',ri(200,400),`send_email(to="${h.split(' ')[0].toLowerCase()}@${pick(['gmail.com','icloud.com'])}")`,'Sent',undefined,undefined,{to:'external'}));}
+        }
+        runs.push(finalize({id:'run_'+(10000+(n++)).toString(36),agent:a.id,started_at:t0,status,fail,steps}));
+      }
+    });
+  }
+  runs.sort((x,y)=>y.started_at-x.started_at);
+  const approvals=[],audit=[],people=['maria.lopez','dev.patel','sam.chen'];
+  runs.filter(r=>r.status==='blocked').forEach((r,k)=>{const st=r.steps.find(x=>x.amount),vend=(r.steps[1]?.output||'').match(/"vendor":"([^"]+)/)?.[1]||'Vendor';
+    const recent=r.started_at>now-864e5,ok=R()<.85,by=pick(people),dec=recent?null:r.started_at+ri(10,240)*6e4;
+    approvals.push({id:'apr_'+(5000+k).toString(36),run_id:r.id,agent:r.agent,action:'create_payment',payload:{amount:st.amount,vendor:vend},policies:['high-value-payment'],
+      reason:'High-value payment: Payments above $10,000 wait for a human to approve',status:recent?'pending':ok?'approved':'rejected',created_at:r.started_at,decided_at:dec,decided_by:recent?null:by,note:recent?null:ok?'Matches PO and contract':'Duplicate invoice, already paid'});
+    audit.push({ts:r.started_at,kind:'check',run_id:r.id,agent:r.agent,action:'create_payment',decision:'require_approval',actor:'cosignal',detail:{payload:{amount:st.amount,vendor:vend}}});
+    if(!recent)audit.push({ts:dec,kind:'approval',run_id:r.id,agent:r.agent,action:'create_payment',decision:ok?'approved':'rejected',actor:by,detail:{payload:{amount:st.amount,vendor:vend},note:ok?'Matches PO and contract':'Duplicate invoice, already paid'}});});
+  audit.sort((a,b)=>b.ts-a.ts);
+  return{runs,policies:POLICIES,approvals,audit,workspace:'Acme Finance (demo)',live:false};
+}
+function stepCost(s){if(s.kind!=='llm')return s.kind==='tool'&&s.name.startsWith('search_web')?.004:0;const p=PRICE[s.model]||[1,4];return(s.tokens_in*p[0]+s.tokens_out*p[1])/1e6;}
+function evalPolicies(s,run){const f=[];
+  if(s.name==='create_payment'&&s.amount>1e4)f.push('high-value-payment');else if(s.name==='create_payment'&&s.amount>5e3)f.push('payment-review');
+  if(s.to==='external')f.push('external-email');if(s.pii)f.push('pii-access');return f;}
+function finalize(run){let t=0;run.cost=0;run.tokens=0;
+  run.steps.forEach((s,i)=>{s.i=i;s.start=t;t+=s.dur+Math.round(40+Math.random()*0);s.cost=s.cost??stepCost(s);run.cost+=s.cost;run.tokens+=(s.tokens_in||0)+(s.tokens_out||0);s.flags=s.flags||evalPolicies(s,run);});
+  run.duration=t;if(run.cost>.2)run.flags=['runaway-cost'];else run.flags=[];
+  run.steps.forEach(s=>run.flags.push(...s.flags));
+  if(run.status==='success'&&run.steps.some(s=>s.flags.includes('high-value-payment'))){run.status='blocked';run.fail='Awaiting approval: high-value payment';}
+  run.risky=run.steps.filter(s=>s.flags.some(f=>SEV[f]!=='low')).length+(run.flags.includes('runaway-cost')?1:0);return run;}
+const SEV=Object.fromEntries(POLICIES.map(p=>[p.id,p.severity]));
+
+/* ---------------- state + helpers ---------------- */
+let DATA=null,RANGE=7,SEL=null,SELSTEP=null,REPLAY=null;
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const money=v=>!v?'$0':v>=100?'$'+v.toFixed(0):v>=1?'$'+v.toFixed(2):'$'+v.toFixed(3);
+const ms=v=>v>=1000?(v/1000).toFixed(1)+'s':Math.round(v)+'ms';
+const pct=v=>(v*100).toFixed(1)+'%';
+const agentOf=id=>AGENTS.find(a=>a.id===id)||{id,name:id,color:'--a2',target:10000};
+const pol=id=>(DATA.policies||POLICIES).find(p=>p.id===id)||{id,name:id,action:'flag',severity:'low'};
+const nowT=()=>DATA.runs.length?Math.max(...DATA.runs.map(r=>r.started_at)):Date.now();
+const inRange=(runs,days,offset=0)=>{const end=nowT()-offset*days*864e5,start=end-days*864e5;return runs.filter(r=>r.started_at>start&&r.started_at<=end);};
+const p95=a=>{if(!a.length)return 0;const s=[...a].sort((x,y)=>x-y);return s[Math.min(s.length-1,Math.floor(.95*s.length))];};
+function agentStats(runs,a){const rs=runs.filter(r=>r.agent===a.id);const n=rs.length||1;
+  const succ=rs.filter(r=>r.status!=='failed').length/n,steps=rs.reduce((x,r)=>x+r.steps.length,0)||1,risky=rs.reduce((x,r)=>x+r.risky,0)/steps;
+  const lat=p95(rs.map(r=>r.duration)),latScore=clamp(1-(lat-a.target)/(2*a.target)),costs=rs.map(r=>r.cost),mean=costs.reduce((x,y)=>x+y,0)/n;
+  const sd=Math.sqrt(costs.reduce((x,y)=>x+(y-mean)**2,0)/n),stab=clamp(1-(mean?sd/mean:0));
+  const score=Math.round(100*(.5*succ+.2*(1-risky)+.15*latScore+.15*stab));
+  const fails={};rs.filter(r=>r.fail&&r.status==='failed').forEach(r=>fails[r.fail]=(fails[r.fail]||0)+1);
+  const top=Object.entries(fails).sort((x,y)=>y[1]-x[1])[0];
+  return{a,runs:rs.length,succ,spend:costs.reduce((x,y)=>x+y,0),avgCost:mean,lat,score,top:top?top[0]:'—'};}
+const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+
+/* ---------------- overview ---------------- */
+function renderOverview(){
+  const cur=inRange(DATA.runs,RANGE),prev=inRange(DATA.runs,RANGE,1);
+  const k=rs=>{const n=rs.length||1;return{runs:rs.length,succ:rs.filter(r=>r.status!=='failed').length/n,spend:rs.reduce((x,r)=>x+r.cost,0),lat:p95(rs.map(r=>r.duration)),risky:rs.reduce((x,r)=>x+r.risky,0),blocked:rs.filter(r=>r.status==='blocked').length};};
+  const A=k(cur),B=k(prev),delta=(a,b,good)=>{if(!b)return'<span class="d" style="color:var(--muted)">new</span>';const d=(a-b)/b;const cls=(d>0)===good?'up-good':'up-bad';return`<span class="d ${Math.abs(d)<.005?'':cls}">${d>=0?'▲':'▼'} ${Math.abs(d*100).toFixed(0)}% vs prev</span>`;};
+  const scores=AGENTS.map(a=>agentStats(cur,a).score),avgScore=Math.round(scores.reduce((x,y)=>x+y,0)/scores.length);
+  $('#kpis').innerHTML=[['Agent runs',A.runs.toLocaleString(),delta(A.runs,B.runs,true)],['Success rate',pct(A.succ),delta(A.succ,B.succ,true)],['Spend',money(A.spend),delta(A.spend,B.spend,false)],
+   ['p95 run time',ms(A.lat),delta(A.lat,B.lat,false)],['Risky actions caught',A.risky,delta(A.risky,B.risky,false)],['Avg reliability',avgScore+'/100','<span class="d" style="color:var(--muted)">'+A.blocked+' actions held for approval</span>']]
+   .map(([l,v,d])=>`<div class="kpi"><div class="l">${l}</div><div class="v">${v}</div>${d}</div>`).join('');
+  // spend chart
+  const days=RANGE===1?24:7,bucket=RANGE===1?36e5:864e5,end=nowT(),rows=[];
+  for(let i=days-1;i>=0;i--){const s=end-(i+1)*bucket,e=end-i*bucket;const r={label:RANGE===1?new Date(e).getUTCHours()+':00':new Date(e).toLocaleDateString('en-US',{weekday:'short',timeZone:'UTC'})};
+    AGENTS.forEach(a=>r[a.id]=DATA.runs.filter(x=>x.agent===a.id&&x.started_at>s&&x.started_at<=e).reduce((t,x)=>t+x.cost,0));rows.push(r);}
+  const W=640,H=220,pl=44,pb=24,max=Math.max(...rows.map(r=>AGENTS.reduce((t,a)=>t+r[a.id],0)))*1.15||1,bw=(W-pl)/rows.length;
+  let svg=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Spend per ${RANGE===1?'hour':'day'} by agent">`;
+  for(let g=0;g<=4;g++){const y=(H-pb)-(H-pb-10)*g/4;svg+=`<line x1="${pl}" x2="${W}" y1="${y}" y2="${y}" stroke="${css('--line')}"/><text x="${pl-6}" y="${y+4}" text-anchor="end">${money(max*g/4)}</text>`;}
+  rows.forEach((r,i)=>{let y=H-pb;const x=pl+i*bw+bw*.18,w=bw*.64;AGENTS.forEach(a=>{const h=(H-pb-10)*r[a.id]/max;if(h>0){y-=h;svg+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${css(a.color)}" rx="2"><title>${a.name}: ${money(r[a.id])}</title></rect>`;}});
+    if(RANGE!==1||i%3===0)svg+=`<text x="${x+w/2}" y="${H-6}" text-anchor="middle">${r.label}</text>`;});
+  $('#spend').innerHTML=svg+'</svg>';
+  $('#legend').innerHTML=AGENTS.map(a=>`<span><i style="background:var(${a.color})"></i>${a.name}</span>`).join('');
+  // alerts
+  $('#alerts').innerHTML=buildAlerts().map((al,i)=>`<div class="alert" tabindex="0" data-alert="${i}"><div class="sev" style="background:var(${al.sev})"></div><div><b>${esc(al.title)}</b><p>${esc(al.body)}</p></div></div>`).join('')||'<div class="empty">No alerts. All agents within normal ranges.</div>';
+  document.querySelectorAll('[data-alert]').forEach(el=>el.onclick=el.onkeydown=e=>{if(e.type==='keydown'&&e.key!=='Enter')return;const al=ALERTS[+el.dataset.alert];if(al.tab)setTab(al.tab);else openRuns(al.agent,al.status);});
+  // agents table
+  const st=AGENTS.map(a=>agentStats(cur,a)).sort((x,y)=>x.score-y.score);
+  $('#agents').innerHTML=`<thead><tr><th>Agent</th><th>Runs</th><th>Success</th><th>Spend</th><th>p95 time</th><th>Reliability</th><th>Top failure</th></tr></thead><tbody>`+
+   st.map(s=>{const c=s.score>=85?'--ok':s.score>=70?'--warn':'--bad';return`<tr class="click" tabindex="0" data-agent="${s.a.id}"><td><span class="dot" style="background:var(${s.a.color})"></span>${s.a.name}</td><td>${s.runs}</td><td>${pct(s.succ)}</td><td>${money(s.spend)}</td><td>${ms(s.lat)}</td>
+     <td><div class="score"><div class="track"><div class="fill" style="width:${s.score}%;background:var(${c})"></div></div><b>${s.score}</b></div></td><td style="color:var(--muted)">${esc(s.top)}</td></tr>`;}).join('')+'</tbody>';
+  document.querySelectorAll('[data-agent]').forEach(el=>el.onclick=el.onkeydown=e=>{if(e.type==='keydown'&&e.key!=='Enter')return;openRuns(el.dataset.agent,'');});
+  // causes
+  const fails={};cur.filter(r=>r.fail&&r.status==='failed').forEach(r=>fails[r.fail]=(fails[r.fail]||0)+1);const fe=Object.entries(fails).sort((a,b)=>b[1]-a[1]).slice(0,6),fm=fe[0]?fe[0][1]:1;
+  $('#causes').innerHTML=fe.map(([c,v])=>`<div class="cause"><span>${esc(c)}</span><b>${v}</b><div class="t"><div style="width:${100*v/fm}%;background:var(${c.startsWith('Awaiting')?'--warn':'--bad'})"></div></div></div>`).join('')||'<div class="empty">No failures in this range.</div>';
+}
+let ALERTS=[];
+function buildAlerts(){const cur=inRange(DATA.runs,1),base=DATA.runs.filter(r=>r.started_at<=nowT()-864e5&&r.started_at>nowT()-7*864e5);ALERTS=[];
+  AGENTS.forEach(a=>{const c=cur.filter(r=>r.agent===a.id),b=base.filter(r=>r.agent===a.id);if(!c.length||!b.length)return;
+    const fc=c.filter(r=>r.status==='failed').length/c.length,fb=b.filter(r=>r.status==='failed').length/b.length;
+    if(fc-fb>.06)ALERTS.push({sev:'--bad',agent:a.id,status:'failed',title:`${a.name}: failures up ${Math.round((fc-fb)*100)} pts today`,body:`${pct(fc)} of runs failed in the last 24h vs ${pct(fb)} the prior 6 days. Most common: ${agentStats(c,a).top}.`});
+    const cc=c.reduce((x,r)=>x+r.cost,0)/c.length,cb=b.reduce((x,r)=>x+r.cost,0)/b.length;
+    if(cc/cb>1.25)ALERTS.push({sev:'--warn',agent:a.id,status:'',title:`${a.name}: cost per run up ${Math.round((cc/cb-1)*100)}%`,body:`Average ${money(cc)} per run today vs ${money(cb)}. Prompts are sending more tokens to the model.`});});
+  const held=inRange(DATA.runs,RANGE).filter(r=>r.status==='blocked');
+  const pend=(DATA.approvals||[]).filter(a=>a.status==='pending');if(pend.length)ALERTS.push({sev:'--orange',agent:'invoice-processor',status:'blocked',tab:'approvals',title:`${pend.length} payments waiting for your approval`,body:`Largest: ${money(Math.max(...held.map(r=>r.steps.find(s=>s.amount)?.amount||0)))} to ${held[0].steps[1]?.output?.match(/"vendor":"([^"]+)/)?.[1]||'a vendor'}. Policy: High-value payment.`});
+  return ALERTS;}
+
+/* ---------------- runs + trace replay ---------------- */
+function openRuns(agent,status){$('#fAgent').value=agent||'';$('#fStatus').value=status||'';setTab('runs');renderRuns(true);}
+function filtered(){const a=$('#fAgent').value,s=$('#fStatus').value,q=$('#fText').value.toLowerCase();
+  return inRange(DATA.runs,RANGE).filter(r=>(!a||r.agent===a)&&(!s||(s==='flagged'?r.flags.length>0:r.status===s))&&(!q||(r.id+agentOf(r.agent).name+(r.fail||'')+r.steps.map(x=>x.name+x.input).join(' ')).toLowerCase().includes(q)));}
+function renderRuns(selectFirst){const rs=filtered().slice(0,300);
+  $('#rlist').innerHTML=rs.map(r=>`<div class="ritem" role="option" tabindex="0" aria-selected="${SEL===r.id}" data-run="${r.id}"><span class="dot" style="background:var(${agentOf(r.agent).color})"></span><span class="n">${esc(agentOf(r.agent).name)}</span>${badge(r)}
+    <span class="m">${fmtTime(r.started_at)} · ${ms(r.duration)} · ${money(r.cost)}${r.risky?` · ${r.risky} flagged`:''}</span></div>`).join('')||'<div class="empty">No runs match these filters.</div>';
+  document.querySelectorAll('[data-run]').forEach(el=>el.onclick=el.onkeydown=e=>{if(e.type==='keydown'&&e.key!=='Enter')return;selectRun(el.dataset.run);});
+  if(selectFirst||!SEL||!rs.find(r=>r.id===SEL)){const pref=rs.find(r=>r.status==='blocked'&&$('#fStatus').value!=='failed')||rs.find(r=>r.status!=='success')||rs[0];if(pref)selectRun(pref.id);else $('#trace').innerHTML='<div class="empty">Select a run to replay it.</div>';}}
+const fmtTime=t=>new Date(t).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZone:'UTC'});
+const badge=r=>`<span class="badge b-${r.status}">${r.status==='blocked'?'held':r.status}</span>`;
+function selectRun(id){stopReplay();SEL=id;SELSTEP=null;document.querySelectorAll('[data-run]').forEach(el=>el.setAttribute('aria-selected',el.dataset.run===id));
+  const r=DATA.runs.find(x=>x.id===id),a=agentOf(r.agent);const first=r.steps.find(s=>s.status==='error'||s.status==='held')||r.steps.find(s=>s.flags.length);SELSTEP=first?first.i:0;
+  $('#trace').innerHTML=`<div class="thead"><span class="title">${esc(a.name)}</span>${badge(r)}<div class="replay"><button class="btn primary" id="play">▶ Replay</button></div>
+    <div class="meta" style="width:100%"><span>Run <b>${r.id}</b></span><span>${fmtTime(r.started_at)} UTC</span><span>Duration <b>${ms(r.duration)}</b></span><span>Cost <b>${money(r.cost)}</b></span><span>Tokens <b>${r.tokens.toLocaleString()}</b></span>${r.fail?`<span style="color:var(${r.status==='blocked'?'--warn':'--bad'})">${esc(r.fail)}</span>`:''}</div></div>
+    <div class="io"><div><span>Input</span>${esc(r.input||r.steps[0].output)}</div><div><span>Outcome</span>${esc(r.status==='success'?(r.output||r.steps[r.steps.length-1].output):r.fail)}</div></div>
+    <div class="axis"><div></div><div><span>0</span><span>${ms(r.duration/2)}</span><span>${ms(r.duration)}</span></div></div>
+    <div class="wf" id="wf">${r.steps.map(s=>`<div class="wrow" tabindex="0" data-step="${s.i}" aria-selected="${s.i===SELSTEP}"><div class="wname"><span class="k" style="background:var(--${s.kind})">${s.kind}</span><span class="nm">${esc(s.name)}</span></div>
+      <div class="track2"><div class="seg2 ${s.status==='error'?'err':''}" style="left:${100*s.start/r.duration}%;width:${100*s.dur/r.duration}%;background:var(${s.status==='error'?'--bad':s.status==='held'?'--warn':'--'+s.kind})"></div>${s.flags.length?`<div class="fl" style="left:calc(${100*(s.start+s.dur)/r.duration}% + 4px)" title="${esc(s.flags.map(f=>pol(f).name).join(', '))}"></div>`:''}</div></div>`).join('')}
+      <div class="head" id="head" hidden></div></div><div class="detail" id="detail"></div>`;
+  document.querySelectorAll('[data-step]').forEach(el=>el.onclick=el.onkeydown=e=>{if(e.type==='keydown'&&e.key!=='Enter')return;stopReplay();showStep(r,+el.dataset.step);});
+  $('#play').onclick=()=>REPLAY?stopReplay():replay(r);showStep(r,SELSTEP);}
+function showStep(r,i){SELSTEP=i;const s=r.steps[i];document.querySelectorAll('[data-step]').forEach(el=>el.setAttribute('aria-selected',+el.dataset.step===i));
+  const fl=s.flags.map(f=>{const p=pol(f);const dec=p.action==='require_approval'?'Held for human approval':p.action==='block'?'Blocked':'Flagged, allowed';return`<div class="flagbox"><b>${esc(p.name)}</b> · ${esc(p.rule||'')}<br>${dec} · severity ${p.severity}</div>`;}).join('');
+  $('#detail').innerHTML=`<div class="row"><span>Step <b>${i+1} of ${r.steps.length}</b></span><span><b>${esc(s.name)}</b> (${s.kind})</span>${s.model?`<span>Model <b>${s.model}</b></span>`:''}<span>Time <b>${ms(s.dur)}</b></span>${s.kind==='llm'?`<span>Tokens <b>${s.tokens_in}</b> in / <b>${s.tokens_out}</b> out</span>`:''}<span>Cost <b>${money(s.cost)}</b></span>${s.status==='error'?'<span class="badge b-failed">error</span>':s.status==='held'?'<span class="badge b-blocked">held for approval</span>':''}</div>
+    ${s.error?`<div class="flagbox" style="border-color:color-mix(in srgb,var(--bad) 45%,var(--line));background:color-mix(in srgb,var(--bad) 7%,var(--panel))"><b style="color:var(--bad)">Error</b> · ${esc(s.error)}</div>`:''}${fl}
+    <div><div class="lab">Input</div><pre>${esc(s.input||'(none recorded)')}</pre></div><div><div class="lab">Output</div><pre>${esc(s.output||'(no output)')}</pre></div>`;}
+function replay(r){stopReplay();const head=$('#head'),wf=$('#wf'),rows=[...document.querySelectorAll('[data-step]')];const t0=performance.now(),T=Math.min(7000,Math.max(3500,r.steps.length*900));
+  $('#play').textContent='■ Stop';head.hidden=false;let last=-1;const name=wf.querySelector('.wname').getBoundingClientRect(),trk=wf.querySelector('.track2').getBoundingClientRect(),wr=wf.getBoundingClientRect();
+  const tick=now=>{const p=Math.min(1,(now-t0)/T),tt=p*r.duration;head.style.left=(trk.left-wr.left+p*trk.width)+'px';
+    const cur=r.steps.findIndex(s=>tt>=s.start&&tt<=s.start+s.dur+40);rows.forEach((el,i)=>el.classList.toggle('dim',r.steps[i].start>tt));
+    if(cur>=0&&cur!==last){last=cur;showStep(r,cur);}
+    if(p<1)REPLAY=requestAnimationFrame(tick);else{REPLAY=null;$('#play').textContent='▶ Replay';setTimeout(()=>{head.hidden=true;},600);const f=r.steps.find(s=>s.status==='error'||s.flags.length);if(f)showStep(r,f.i);}};
+  REPLAY=requestAnimationFrame(tick);}
+function stopReplay(){if(REPLAY){cancelAnimationFrame(REPLAY);REPLAY=null;}const b=$('#play');if(b)b.textContent='▶ Replay';const h=$('#head');if(h)h.hidden=true;document.querySelectorAll('.wrow.dim').forEach(e=>e.classList.remove('dim'));}
+
+/* ---------------- approvals inbox + audit trail ---------------- */
+const fmtAmt=v=>typeof v==='number'?'$'+v.toLocaleString('en-US'):'';
+const ago=t=>{const m=Math.round((nowT()-t)/6e4);return m<60?m+' min ago':m<1440?Math.round(m/60)+' h ago':Math.round(m/1440)+' d ago';};
+function updateCount(){const n=(DATA.approvals||[]).filter(a=>a.status==='pending').length,c=$('#aprCount');c.hidden=!n;c.textContent=n;}
+function renderApprovals(){const ap=DATA.approvals||[],pend=ap.filter(a=>a.status==='pending'),done=ap.filter(a=>a.status!=='pending').sort((a,b)=>(b.decided_at||0)-(a.decided_at||0));
+  $('#inbox').innerHTML=pend.map(a=>`<div class="apr" data-apr="${a.id}"><div><div class="why">${esc(agentOf(a.agent).name)} wants to run <b>${esc(a.action)}</b> · ${ago(a.created_at)}</div>
+      <div class="amt">${fmtAmt(a.payload.amount)}${a.payload.vendor?` <span style="font-size:15px;font-weight:500;color:var(--muted)">to ${esc(a.payload.vendor)}</span>`:''}</div>
+      <div class="why">${esc(a.reason||'')}</div>${a.run_id?`<button class="link" data-openrun="${a.run_id}">Replay the run</button>`:''}</div>
+    <div class="acts"><input placeholder="Note (optional)" aria-label="Note"><button class="btn no" data-dec="reject">Reject</button><button class="btn ok" data-dec="approve">Approve</button></div></div>`).join('')||'<div class="empty">Nothing waiting. Every held action has been reviewed.</div>';
+  $('#decisions').innerHTML='<thead><tr><th>When</th><th>Agent</th><th>Amount</th><th>Decision</th><th>By</th><th>Note</th></tr></thead><tbody>'+done.slice(0,40).map(a=>`<tr><td>${fmtTime(a.decided_at||a.created_at)}</td><td>${esc(agentOf(a.agent).name)}</td><td>${fmtAmt(a.payload.amount)}</td><td><span class="badge b-${a.status}">${a.status}</span></td><td>${esc(a.decided_by||'')}</td><td style="color:var(--muted)">${esc(a.note||'')}</td></tr>`).join('')+'</tbody>';
+  $('#audit').innerHTML='<thead><tr><th>Time</th><th>Event</th><th>Agent</th><th>Action</th><th>Decision</th><th>By</th></tr></thead><tbody>'+(DATA.audit||[]).slice(0,60).map(e=>`<tr><td>${fmtTime(e.ts)}</td><td>${e.kind==='approval'?'Human decision':'Guardrail check'}</td><td>${esc(agentOf(e.agent).name)}</td><td>${esc(e.action)} ${fmtAmt(e.detail?.payload?.amount)}</td><td><span class="badge b-${{approved:'approved',rejected:'rejected',require_approval:'pending',flag:'flag',block:'failed',allow:'success'}[e.decision]||'flag'}">${e.decision==='require_approval'?'held':e.decision}</span></td><td>${esc(e.actor||'')}</td></tr>`).join('')+'</tbody>';
+  document.querySelectorAll('[data-openrun]').forEach(b=>b.onclick=()=>{$('#fAgent').value='';$('#fStatus').value='';$('#fText').value='';setTab('runs');selectRun(b.dataset.openrun);});
+  document.querySelectorAll('[data-apr] [data-dec]').forEach(b=>b.onclick=()=>{const card=b.closest('[data-apr]');decide(card.dataset.apr,b.dataset.dec,card.querySelector('input').value);});
+  updateCount();}
+async function decide(id,dec,note){const a=DATA.approvals.find(x=>x.id===id);if(!a)return;
+  if(DATA.live){try{const r=await fetch(`/v1/approvals/${id}/decision`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({decision:dec,by:'dashboard',note:note||null})});
+      if(r.ok){Object.assign(a,await r.json());}const au=await fetch('/v1/audit');if(au.ok)DATA.audit=await au.json();}catch(e){}}
+  else{const t=Date.now();Object.assign(a,{status:dec==='approve'?'approved':'rejected',decided_at:t,decided_by:'you',note:note||null});
+    DATA.audit.unshift({ts:t,kind:'approval',run_id:a.run_id,agent:a.agent,action:a.action,decision:a.status,actor:'you',detail:{payload:a.payload,note}});}
+  renderApprovals();}
+
+/* ---------------- policies ---------------- */
+function renderPolicies(){const rs=inRange(DATA.runs,RANGE);
+  $('#policies').innerHTML=`<thead><tr><th>On</th><th>Policy</th><th>Rule</th><th>Action</th><th>Severity</th><th>Hits (${RANGE===1?'24h':'7d'})</th><th>Last hit</th></tr></thead><tbody>`+
+   (DATA.policies||POLICIES).map(p=>{const hits=rs.filter(r=>r.flags.includes(p.id));const act=p.action==='require_approval'?'Require approval':p.action==='block'?'Block':'Flag';
+    return`<tr class="click" data-pol="${p.id}"><td><button class="switch" role="switch" aria-checked="${p.on!==false}" aria-label="Toggle ${esc(p.name)}"></button></td><td><b style="font-weight:600">${esc(p.name)}</b></td><td style="color:var(--muted)">${esc(p.rule)}</td>
+     <td><span class="act" style="color:var(${p.action==='flag'?'--orange':'--warn'})">${act}</span></td><td>${p.severity}</td><td>${hits.length}</td><td style="color:var(--muted)">${hits[0]?fmtTime(hits[0].started_at):'—'}</td></tr>`;}).join('')+'</tbody>';
+  document.querySelectorAll('.switch').forEach(b=>b.onclick=e=>{e.stopPropagation();b.setAttribute('aria-checked',b.getAttribute('aria-checked')!=='true');});
+  document.querySelectorAll('[data-pol]').forEach(el=>el.onclick=()=>{$('#fText').value='';$('#fAgent').value='';$('#fStatus').value='flagged';setTab('runs');
+    const r=inRange(DATA.runs,RANGE).find(x=>x.flags.includes(el.dataset.pol));renderRuns(false);if(r)selectRun(r.id);});}
+
+/* ---------------- shell ---------------- */
+function setTab(t){document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));['overview','runs','approvals','policies'].forEach(v=>$('#v-'+v).hidden=v!==t);if(t==='approvals')renderApprovals();
+  if(t==='runs')renderRuns(false);if(t==='policies')renderPolicies();if(t!=='runs')stopReplay();try{sessionStorage.setItem('al-tab',t);}catch(e){}}
+function renderAll(){renderOverview();if(!$('#v-runs').hidden)renderRuns(false);if(!$('#v-policies').hidden)renderPolicies();}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
+document.querySelectorAll('[data-range]').forEach(b=>b.onclick=()=>{RANGE=+b.dataset.range;document.querySelectorAll('[data-range]').forEach(x=>x.setAttribute('aria-pressed',x===b));renderAll();});
+['fAgent','fStatus'].forEach(id=>$('#'+id).onchange=()=>renderRuns(true));$('#fText').oninput=()=>renderRuns(false);
+matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',()=>renderOverview());
+async function load(){
+  try{const ctl=new AbortController();setTimeout(()=>ctl.abort(),2500);const res=await fetch('/v1/export',{signal:ctl.signal});
+    if(res.ok){const j=await res.json();if(j&&j.runs&&j.runs.length){j.runs.forEach(r=>{r.started_at=typeof r.started_at==='string'?Date.parse(r.started_at):r.started_at;});
+      j.runs.forEach(r=>{r.flags=r.flags||[];r.risky=r.risky??r.steps.filter(s=>(s.flags||[]).length).length;});(j.agents||[]).forEach(a=>{if(!AGENTS.find(x=>x.id===a.id))AGENTS.push({id:a.id,name:a.name||a.id,color:['--a1','--a2','--a3','--a4'][AGENTS.length%4],target:a.target||10000});});
+      DATA={...j,live:true};}}}catch(e){}
+  if(!DATA)DATA=demoData();
+  $('#src').textContent=DATA.live?'Live':'Demo data';$('#src').classList.toggle('live',!!DATA.live);$('#ws').textContent=DATA.workspace||'Workspace';
+  $('#fAgent').innerHTML='<option value="">All agents</option>'+AGENTS.map(a=>`<option value="${a.id}">${esc(a.name)}</option>`).join('');
+  updateCount();renderOverview();let t='overview';try{t=sessionStorage.getItem('al-tab')||t;}catch(e){}if(location.hash==='#approvals')t='approvals';setTab(t);}
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+__pycache__/
+*.db
+.cosignal_buffer.jsonl
+.pytest_cache/
+.venv/
+venv/
+.DS_Store
+.env

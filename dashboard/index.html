@@ -1,848 +1,2034 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Cosignal: human approval for AI agents that move money</title>
+<title>Cosignal: Autonomous Agent Guardrails & Human-in-the-Loop Flight Recorder</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#f3f3f1;--panel:#ffffff;--panel2:#f7f7f5;--line:#e3e2de;--fg:#17181a;--muted:#6d6b66;--faint:#a3a19b;
-  --orange:#f25c05;--ok:#1f9d63;--warn:#c98a0b;--bad:#d9382e;--a1:#f25c05;--a2:#2f6fdb;--a3:#7a4fd6;--a4:#1f9d63;
-  --llm:#7a4fd6;--tool:#2f6fdb;--retrieval:#1f9d63;--action:#f25c05;--shadow:0 1px 3px rgba(0,0,0,.06);
-  --sans:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;--mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
-  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+:root {
+  --bg: #090a0f;
+  --bg-gradient: radial-gradient(circle at 50% 0%, #171b26 0%, #090a0f 75%);
+  --panel: #11141c;
+  --panel-elevated: #161b26;
+  --panel-glass: rgba(18, 22, 32, 0.75);
+  --border: #212838;
+  --border-glow: rgba(255, 92, 0, 0.35);
+  --fg: #f1f5f9;
+  --fg-muted: #94a3b8;
+  --fg-faint: #475569;
+  
+  --primary: #ff5c00;
+  --primary-glow: rgba(255, 92, 0, 0.25);
+  --accent-cyan: #00d2ff;
+  --accent-purple: #9d4edd;
+  --accent-green: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-rose: #f43f5e;
+  
+  --font-main: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+  --radius-lg: 16px;
+  --radius-md: 10px;
+  --radius-sm: 6px;
+  --shadow-lg: 0 16px 40px -10px rgba(0,0,0,0.5), 0 0 20px -5px var(--primary-glow);
+  --shadow-card: 0 8px 24px -4px rgba(0,0,0,0.4);
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#111214;--panel:#191b1e;--panel2:#1f2125;--line:#2b2e33;--fg:#ece9e3;--muted:#9a968e;--faint:#5f5c57;
-  --orange:#ff6a13;--ok:#43c486;--warn:#f0b43c;--bad:#ff5a4f;--a1:#ff6a13;--a2:#6ea3ff;--a3:#b18cff;--a4:#43c486;
-  --llm:#b18cff;--tool:#6ea3ff;--retrieval:#43c486;--action:#ff6a13;--shadow:0 1px 3px rgba(0,0,0,.3);}}
-:root[data-theme="dark"]{
-  --bg:#111214;--panel:#191b1e;--panel2:#1f2125;--line:#2b2e33;--fg:#ece9e3;--muted:#9a968e;--faint:#5f5c57;
-  --orange:#ff6a13;--ok:#43c486;--warn:#f0b43c;--bad:#ff5a4f;--a1:#ff6a13;--a2:#6ea3ff;--a3:#b18cff;--a4:#43c486;
-  --llm:#b18cff;--tool:#6ea3ff;--retrieval:#43c486;--action:#ff6a13;--shadow:0 1px 3px rgba(0,0,0,.3);}
-:root[data-theme="light"]{
-  --bg:#f3f3f1;--panel:#ffffff;--panel2:#f7f7f5;--line:#e3e2de;--fg:#17181a;--muted:#6d6b66;--faint:#a3a19b;
-  --orange:#f25c05;--ok:#1f9d63;--warn:#c98a0b;--bad:#d9382e;--a1:#f25c05;--a2:#2f6fdb;--a3:#7a4fd6;--a4:#1f9d63;
-  --llm:#7a4fd6;--tool:#2f6fdb;--retrieval:#1f9d63;--action:#f25c05;--shadow:0 1px 3px rgba(0,0,0,.06);}
-*,*::before,*::after{box-sizing:inherit}
-html,body{margin:0}
-body{background:var(--bg);color:var(--fg);font:14px/1.45 var(--sans);-webkit-font-smoothing:antialiased}
-button{font:inherit;color:inherit;cursor:pointer}
-button:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
-.wrap{max-width:1360px;margin:0 auto;padding:0 20px 48px}
-header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.bar{max-width:1360px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;letter-spacing:-.01em;cursor:pointer}
-.box{width:26px;height:22px;border-radius:5px;background:var(--orange);position:relative;box-shadow:inset 0 -4px 0 rgba(0,0,0,.18)}
-.box::after{content:"";position:absolute;left:5px;right:5px;top:7px;height:3px;border-radius:2px;background:rgba(0,0,0,.35)}
-.ws{font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
-.src{font-size:12px;border-radius:999px;padding:3px 10px;background:color-mix(in srgb,var(--orange) 14%,transparent);color:var(--orange);font-weight:600;display:inline-flex;align-items:center;gap:5px}
-.src.live{background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok)}
-.src::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor}
-nav{display:flex;gap:3px;margin-left:auto}
-nav button{border:0;background:none;padding:7px 13px;border-radius:8px;color:var(--muted);font-weight:500;transition:all .12s ease}
-nav button:hover{color:var(--fg);background:var(--panel2)}
-nav button[aria-selected="true"]{background:var(--panel);color:var(--fg);box-shadow:var(--shadow);border:1px solid var(--line);font-weight:600}
-.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel2)}
-.seg button{border:0;background:none;padding:6px 10px;color:var(--muted);font-size:12px;font-weight:500}
-.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg);font-weight:600}
-.top-tools{display:flex;align-items:center;gap:8px}
-.btn{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:6px 12px;font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:6px;transition:all .15s}
-.btn:hover{background:var(--panel2);border-color:color-mix(in srgb,var(--fg) 25%,var(--line))}
-.btn.primary{background:var(--orange);border-color:var(--orange);color:#fff;font-weight:600}
-.btn.primary:hover{opacity:.92;transform:translateY(-1px)}
-.btn.icon-only{padding:6px 10px;font-size:14px}
-h2{font-size:13px;font-weight:600;margin:0;color:var(--muted);letter-spacing:.01em}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
-.ph{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 0;gap:10px}
-.pb{padding:12px 16px 16px}
 
-/* Welcome hero banner */
-.hero-card{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:16px 20px;background:color-mix(in srgb,var(--orange) 7%,var(--panel));border:1px solid color-mix(in srgb,var(--orange) 24%,var(--line));border-radius:12px;margin:18px 0 0;box-shadow:var(--shadow)}
-.hero-text h3{margin:0 0 4px;font-size:15px;font-weight:700;color:var(--fg);display:flex;align-items:center;gap:8px}
-.hero-text p{margin:0;font-size:13px;color:var(--muted);max-width:740px;line-height:1.45}
-.hero-actions{display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0}
+:root[data-theme="light"] {
+  --bg: #f8fafc;
+  --bg-gradient: radial-gradient(circle at 50% 0%, #edf2f7 0%, #f8fafc 80%);
+  --panel: #ffffff;
+  --panel-elevated: #f1f5f9;
+  --panel-glass: rgba(255, 255, 255, 0.85);
+  --border: #e2e8f0;
+  --border-glow: rgba(255, 92, 0, 0.2);
+  --fg: #0f172a;
+  --fg-muted: #64748b;
+  --fg-faint: #94a3b8;
+  --shadow-lg: 0 16px 40px -10px rgba(0,0,0,0.08);
+  --shadow-card: 0 4px 16px -2px rgba(0,0,0,0.05);
+}
 
-.kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:18px 0}
-.kpi{background:var(--panel);padding:14px 16px;transition:background .15s}
-.kpi:hover{background:var(--panel2)}
-.kpi .v{font-size:24px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-.kpi .l{font-size:12px;color:var(--muted);display:flex;align-items:center;justify-content:space-between}
-.kpi .d{font-size:12px;font-variant-numeric:tabular-nums}
-.up-bad{color:var(--bad)}.up-good{color:var(--ok)}
-.grid2{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:18px}
-.grid2b{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:18px;margin-top:18px}
-.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
-.legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px}
-svg text{fill:var(--muted);font:11px var(--sans)}
-.alert{display:grid;grid-template-columns:4px 1fr;gap:12px;padding:12px 0;border-top:1px solid var(--line);cursor:pointer;transition:background .12s}
-.alert:first-child{border-top:0;padding-top:4px}
-.alert .sev{border-radius:2px}
-.alert b{font-weight:600}
-.alert p{margin:2px 0 0;color:var(--muted);font-size:13px}
-.alert:hover b{text-decoration:underline}
-table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
-th{font-size:12px;font-weight:500;color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
-td{padding:10px;border-bottom:1px solid var(--line);vertical-align:middle}
-tr:last-child td{border-bottom:0}
-tbody tr.click{cursor:pointer}tbody tr.click:hover{background:var(--panel2)}
-.tscroll{overflow-x:auto}
-.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px;vertical-align:0}
-.score{display:flex;align-items:center;gap:8px;min-width:130px}
-.score .track{flex:1;height:6px;border-radius:3px;background:var(--panel2);overflow:hidden;border:1px solid var(--line)}
-.score .fill{height:100%}
-.score b{width:28px;text-align:right;font-weight:600}
-.cause{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:7px 0;font-size:13px}
-.cause .t{grid-column:1/-1;height:6px;border-radius:3px;background:var(--panel2);overflow:hidden}
-.cause .t div{height:100%;background:var(--bad)}
-.runs{display:grid;grid-template-columns:minmax(280px,380px) minmax(0,1fr);gap:18px;margin-top:18px;align-items:start}
-.filters{display:flex;gap:8px;flex-wrap:wrap;padding:12px}
-.filters select,.filters input{background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--fg);padding:6px 8px;font:inherit;font-size:13px}
-.filters input{flex:1;min-width:120px}
-.rlist{max-height:calc(100vh - 230px);overflow-y:auto;border-top:1px solid var(--line)}
-.ritem{display:grid;grid-template-columns:auto 1fr auto;gap:2px 10px;padding:10px 12px;border-bottom:1px solid var(--line);cursor:pointer;align-items:center}
-.ritem:hover{background:var(--panel2)}
-.ritem[aria-selected="true"]{background:color-mix(in srgb,var(--orange) 9%,var(--panel));box-shadow:inset 3px 0 0 var(--orange)}
-.ritem .n{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ritem .m{grid-column:2/4;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
-.badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;white-space:nowrap}
-.b-success{background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok)}
-.b-failed{background:color-mix(in srgb,var(--bad) 15%,transparent);color:var(--bad)}
-.b-blocked{background:color-mix(in srgb,var(--warn) 18%,transparent);color:var(--warn)}
-.b-flag{background:color-mix(in srgb,var(--orange) 15%,transparent);color:var(--orange)}
-.thead{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;padding:16px}
-.thead .title{font-size:17px;font-weight:600}
-.meta{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
-.meta b{color:var(--fg);font-weight:600}
-.replay{margin-left:auto;display:flex;gap:8px}
-.io{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px 12px}
-.io div{font-size:13px}.io span{display:block;font-size:12px;color:var(--muted);margin-bottom:2px}
-.wf{position:relative;padding:4px 16px 12px}
-.wrow{display:grid;grid-template-columns:minmax(150px,230px) 1fr;gap:12px;align-items:center;height:34px;border-radius:6px;cursor:pointer;padding:0 6px}
-.wrow:hover{background:var(--panel2)}
-.wrow[aria-selected="true"]{background:color-mix(in srgb,var(--orange) 10%,var(--panel))}
-.wrow.dim{opacity:.35}
-.wname{display:flex;align-items:center;gap:8px;font-size:13px;overflow:hidden;white-space:nowrap}
-.wname .k{font-size:10px;font-weight:600;text-transform:none;border-radius:4px;padding:1px 6px;color:#fff;flex:none}
-.wname .nm{overflow:hidden;text-overflow:ellipsis}
-.track2{position:relative;height:16px}
-.seg2{position:absolute;top:0;height:16px;border-radius:4px;min-width:3px}
-.seg2.err{background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.35) 0 4px,transparent 4px 8px)}
-.fl{position:absolute;top:-2px;width:10px;height:10px;transform:rotate(45deg);background:var(--orange);border:2px solid var(--panel)}
-.head{position:absolute;top:0;bottom:0;width:2px;background:var(--fg);pointer-events:none;transition:none}
-.axis{display:grid;grid-template-columns:minmax(150px,230px) 1fr;gap:12px;padding:0 22px;font-size:11px;color:var(--faint);font-variant-numeric:tabular-nums}
-.axis div:last-child{display:flex;justify-content:space-between}
-.detail{border-top:1px solid var(--line);padding:16px;display:grid;gap:12px}
-.detail .row{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
-.detail .row b{color:var(--fg);font-weight:600}
-pre{margin:0;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font:12.5px/1.5 var(--mono);white-space:pre-wrap;word-break:break-word;max-height:180px;overflow:auto}
-.flagbox{border:1px solid color-mix(in srgb,var(--orange) 45%,var(--line));background:color-mix(in srgb,var(--orange) 7%,var(--panel));border-radius:8px;padding:10px 12px;font-size:13px}
-.flagbox b{color:var(--orange)}
-.lab{font-size:12px;color:var(--muted);margin-bottom:4px}
-.switch{width:34px;height:20px;border-radius:999px;background:var(--line);border:0;position:relative;padding:0}
-.switch[aria-checked="true"]{background:var(--orange)}
-.switch::after{content:"";position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:left .15s}
-.switch[aria-checked="true"]::after{left:17px}
-.act{font-size:12px;font-weight:600}
-.empty{padding:32px 20px;color:var(--muted);text-align:center;font-size:13px}
-.hint{font-size:12px;color:var(--muted);margin:14px 0 0}
-[hidden]{display:none!important}
-.tabcount{display:inline-block;min-width:18px;padding:0 6px;margin-left:6px;border-radius:999px;background:var(--orange);color:#fff;font-size:11px;font-weight:700;line-height:18px;text-align:center}
-.inbox{display:grid;gap:12px}
-.apr{display:grid;grid-template-columns:1fr auto;gap:10px 16px;align-items:center;padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--panel2);transition:box-shadow .15s}
-.apr:hover{box-shadow:var(--shadow)}
-.apr .amt{font-size:24px;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
-.apr .why{font-size:13px;color:var(--muted)}
-.apr .acts{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-.apr input{background:var(--panel);border:1px solid var(--line);border-radius:8px;color:var(--fg);padding:7px 10px;font:inherit;font-size:13px;min-width:180px}
-.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}.btn.no{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 50%,var(--line))}
-.b-approved{background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok)}.b-rejected{background:color-mix(in srgb,var(--bad) 15%,transparent);color:var(--bad)}.b-pending{background:color-mix(in srgb,var(--warn) 18%,transparent);color:var(--warn)}
-#decisions td{white-space:nowrap}#decisions td:last-child{max-width:180px;overflow:hidden;text-overflow:ellipsis}
-.link{background:none;border:0;padding:0;color:var(--orange);font-weight:600;font-size:13px;text-decoration:underline;text-underline-offset:2px}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  background-image: var(--bg-gradient);
+  background-attachment: fixed;
+  color: var(--fg);
+  font-family: var(--font-main);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
 
-/* Modal System */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s ease}
-.modal-overlay.open{opacity:1;pointer-events:auto}
-.modal{background:var(--panel);border:1px solid var(--line);border-radius:16px;width:100%;max-width:660px;max-height:88vh;overflow-y:auto;box-shadow:0 18px 48px rgba(0,0,0,.25);transform:scale(.95);transition:transform .2s ease}
-.modal-overlay.open .modal{transform:scale(1)}
-.m-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--line)}
-.m-head h3{margin:0;font-size:16px;font-weight:700}
-.m-close{background:none;border:0;font-size:22px;line-height:1;color:var(--muted);padding:4px 8px;border-radius:6px}
-.m-close:hover{background:var(--panel2);color:var(--fg)}
-.m-body{padding:20px 22px}
-.m-foot{padding:14px 22px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px;background:var(--panel2);border-radius:0 0 16px 16px}
+/* Background Cyber Grid */
+.cyber-grid {
+  position: fixed;
+  inset: 0;
+  background-size: 40px 40px;
+  background-image: linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+  pointer-events: none;
+  z-index: 0;
+}
+:root[data-theme="light"] .cyber-grid {
+  background-image: linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px);
+}
 
-/* Tour cards */
-.tour-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:16px 0}
-.t-card{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px}
-.t-tag{font-size:11px;font-weight:700;color:var(--orange);text-transform:uppercase;margin-bottom:6px}
-.t-card h4{margin:0 0 6px;font-size:14px;font-weight:600}
-.t-card p{margin:0;font-size:12px;color:var(--muted);line-height:1.45}
+/* Header & Glass Navigation */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: var(--panel-glass);
+  border-bottom: 1px solid var(--border);
+  transition: all .2s ease;
+}
+.header-wrap {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.brand-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+}
+.brand-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #ff7b29 0%, #ff4500 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 16px rgba(255, 92, 0, 0.45);
+  position: relative;
+}
+.brand-logo::after {
+  content: "";
+  width: 14px;
+  height: 4px;
+  background: #fff;
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(255,255,255,0.8);
+}
+.brand-name {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(180deg, var(--fg) 20%, var(--fg-muted) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.system-pill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: var(--accent-green);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.system-pill::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  box-shadow: 0 0 8px var(--accent-green);
+  animation: pulseGreen 2s infinite;
+}
+@keyframes pulseGreen {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.3); }
+}
+
+/* Nav Modes */
+.view-tabs {
+  display: flex;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 3px;
+  border-radius: 12px;
+  gap: 4px;
+}
+.view-btn {
+  border: 0;
+  background: none;
+  color: var(--fg-muted);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 7px 16px;
+  border-radius: 9px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  transition: all .15s ease;
+}
+.view-btn:hover {
+  color: var(--fg);
+  background: rgba(255,255,255,0.04);
+}
+.view-btn.active {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 0 14px rgba(255, 92, 0, 0.4);
+}
+
+.hdr-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.btn-ghost {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--fg);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+.btn-ghost:hover {
+  background: var(--panel-elevated);
+  border-color: var(--border-glow);
+  transform: translateY(-1px);
+}
+.badge-count {
+  background: var(--primary);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 999px;
+}
+
+/* Main Container */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 24px 64px;
+  position: relative;
+  z-index: 1;
+}
+
+/* HERO SECTION (Immersive Live Showcase) */
+.hero-box {
+  background: var(--panel-glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 36px 36px 32px;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+}
+.hero-box::before {
+  content: "";
+  position: absolute;
+  top: -120px;
+  right: -100px;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(255, 92, 0, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-box::after {
+  content: "";
+  position: absolute;
+  bottom: -150px;
+  left: 20%;
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(0, 210, 255, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-header {
+  max-width: 840px;
+}
+.hero-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.hero-chip {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(255, 92, 0, 0.15);
+  border: 1px solid rgba(255, 92, 0, 0.3);
+  color: var(--primary);
+}
+.hero-title {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  margin-bottom: 12px;
+  background: linear-gradient(180deg, var(--fg) 20%, var(--fg-muted) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.hero-desc {
+  font-size: 15px;
+  color: var(--fg-muted);
+  line-height: 1.6;
+  margin-bottom: 24px;
+  max-width: 720px;
+}
+
+/* LIVE INTERACTIVE FLIGHT SIMULATOR (WOW FACTOR) */
+.simulator-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+}
+.sim-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+}
+.sim-title-group h3 {
+  font-size: 17px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sim-title-group p {
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+.sim-grid {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 24px;
+}
+@media (max-width: 960px) {
+  .sim-grid { grid-template-columns: 1fr; }
+}
+
+/* Simulator Controls Panel */
+.sim-controls {
+  background: var(--panel-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.control-item label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fg-muted);
+  margin-bottom: 8px;
+}
+.control-item .val-preview {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--fg);
+  font-size: 14px;
+}
+.sim-slider {
+  width: 100%;
+  accent-color: var(--primary);
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border);
+  cursor: pointer;
+}
+.sim-select, .sim-input {
+  width: 100%;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--fg);
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-family: var(--font-main);
+  font-size: 13px;
+  outline: none;
+}
+.sim-select:focus, .sim-input:focus {
+  border-color: var(--primary);
+}
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 500;
+}
+.switch-input {
+  appearance: none;
+  width: 38px;
+  height: 22px;
+  background: var(--border);
+  border-radius: 999px;
+  position: relative;
+  cursor: pointer;
+  outline: none;
+  transition: background .2s;
+}
+.switch-input:checked {
+  background: var(--primary);
+}
+.switch-input::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform .2s;
+}
+.switch-input:checked::after {
+  transform: translateX(16px);
+}
+.btn-launch {
+  width: 100%;
+  padding: 13px 20px;
+  border-radius: 10px;
+  border: 0;
+  background: linear-gradient(135deg, #ff7b29 0%, #ff4500 100%);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 18px rgba(255, 92, 0, 0.4);
+  transition: all .2s ease;
+}
+.btn-launch:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(255, 92, 0, 0.55);
+}
+.btn-launch:active {
+  transform: translateY(0);
+}
+
+/* Interactive Pipeline Visualizer (Interactive Canvas / Pipeline) */
+.pipeline-view {
+  background: var(--panel-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+.pipeline-track {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  position: relative;
+  margin: 20px 0;
+}
+.pipeline-track::before {
+  content: "";
+  position: absolute;
+  top: 24px;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: var(--border);
+  z-index: 0;
+}
+.pipeline-node {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 12px;
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  transition: all .3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.pipeline-node.active {
+  border-color: var(--primary);
+  box-shadow: 0 0 20px rgba(255, 92, 0, 0.35);
+  transform: translateY(-3px);
+}
+.pipeline-node.passed {
+  border-color: var(--accent-green);
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.2);
+}
+.pipeline-node.blocked {
+  border-color: var(--accent-rose);
+  box-shadow: 0 0 20px rgba(244, 63, 94, 0.35);
+  animation: shake 0.4s ease;
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+.node-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--panel-elevated);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  margin-bottom: 8px;
+  border: 1px solid var(--border);
+}
+.node-title {
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.node-status {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--fg-muted);
+}
+
+/* Simulation Live Output Box */
+.sim-console {
+  background: #06070a;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: #38bdf8;
+  max-height: 160px;
+  overflow-y: auto;
+  line-height: 1.6;
+}
+.sim-console .log-ts { color: var(--fg-faint); margin-right: 8px; }
+.sim-console .log-warn { color: #fbbf24; font-weight: 600; }
+.sim-console .log-err { color: #f87171; font-weight: 700; }
+.sim-console .log-ok { color: #34d399; }
+
+/* Interactive Decision Drawer (Maker-Checker popout) */
+.decision-overlay {
+  background: rgba(255, 92, 0, 0.08);
+  border: 1px solid rgba(255, 92, 0, 0.35);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  animation: slideDown .3s ease;
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.decision-info h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ff8c42;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.decision-info p {
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+.decision-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.btn-approve {
+  background: var(--accent-green);
+  border: 0;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
+  transition: all .15s;
+}
+.btn-approve:hover { transform: scale(1.04); }
+.btn-reject {
+  background: var(--panel);
+  border: 1px solid var(--accent-rose);
+  color: var(--accent-rose);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .15s;
+}
+.btn-reject:hover { background: rgba(244, 63, 94, 0.1); }
+
+/* KPI CARDS ROW */
+.kpis-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 14px;
+  margin: 28px 0;
+}
+@media (max-width: 1100px) { .kpis-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 650px) { .kpis-grid { grid-template-columns: repeat(2, 1fr); } }
+.kpi-card {
+  background: var(--panel-glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  backdrop-filter: blur(10px);
+  transition: transform .2s, border-color .2s;
+}
+.kpi-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-glow);
+}
+.kpi-lbl {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fg-muted);
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+}
+.kpi-val {
+  font-size: 26px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  letter-spacing: -0.03em;
+  margin-bottom: 4px;
+}
+.kpi-delta {
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.delta-pos { color: var(--accent-green); }
+.delta-neg { color: var(--accent-rose); }
+.delta-neutral { color: var(--fg-muted); }
+
+/* DASHBOARD PANELS */
+.dash-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+@media (max-width: 1000px) { .dash-grid { grid-template-columns: 1fr; } }
+.dash-panel {
+  background: var(--panel-glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-card);
+}
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.panel-head h3 {
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.panel-legend {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+.legend-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+/* Tables Styling */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+}
+th {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--fg-muted);
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+tbody tr {
+  transition: background .12s;
+}
+tbody tr:hover {
+  background: rgba(255,255,255,0.02);
+}
+.row-click { cursor: pointer; }
+
+/* Status Badges */
+.badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.badge-ok { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
+.badge-err { background: rgba(244, 63, 94, 0.15); color: var(--accent-rose); }
+.badge-held { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); }
+.badge-flag { background: rgba(255, 92, 0, 0.15); color: var(--primary); }
+
+/* Trace Waterfall Timeline */
+.timeline-wf {
+  margin: 14px 0;
+  position: relative;
+}
+.step-row {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  align-items: center;
+  height: 36px;
+  border-radius: 6px;
+  padding: 0 8px;
+  cursor: pointer;
+  transition: background .12s;
+}
+.step-row:hover { background: var(--panel-elevated); }
+.step-row.selected { background: rgba(255, 92, 0, 0.08); border-left: 3px solid var(--primary); }
+.step-meta-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.kind-tag {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #fff;
+}
+.kind-llm { background: var(--accent-purple); }
+.kind-tool { background: var(--accent-cyan); }
+.kind-retrieval { background: var(--accent-green); }
+.kind-action { background: var(--primary); }
+
+.bar-track {
+  position: relative;
+  height: 16px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 4px;
+}
+.bar-fill {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-radius: 4px;
+  min-width: 4px;
+}
+
+/* Modals */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease;
+}
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.modal-box {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 720px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+  transform: scale(0.96);
+  transition: transform .2s ease;
+}
+.modal-overlay.open .modal-box {
+  transform: scale(1);
+}
+.modal-head {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.modal-head h3 { font-size: 18px; font-weight: 700; }
+.modal-close {
+  background: none;
+  border: 0;
+  font-size: 24px;
+  color: var(--fg-muted);
+  cursor: pointer;
+}
+.modal-close:hover { color: var(--fg); }
+.modal-body { padding: 24px; }
+.modal-foot {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  background: var(--panel-elevated);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
 
 /* Code box */
-.code-wrapper{position:relative;margin:12px 0}
-.copy-btn{position:absolute;top:8px;right:8px;padding:4px 9px;font-size:11px;font-weight:600;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--muted);cursor:pointer}
-.copy-btn:hover{color:var(--fg);background:var(--panel2)}
+.code-card {
+  background: #090a0f;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  position: relative;
+  overflow-x: auto;
+  margin: 12px 0;
+  color: #e2e8f0;
+}
+.copy-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--panel-elevated);
+  border: 1px solid var(--border);
+  color: var(--fg-muted);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.copy-btn:hover { color: var(--fg); border-color: var(--primary); }
 
-/* Form styles */
-.form-group{margin-bottom:14px}
-.form-group label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px}
-.form-group input,.form-group select{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font:inherit;font-size:13px;color:var(--fg)}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.preset-pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.pill{background:var(--panel2);border:1px solid var(--line);padding:5px 10px;border-radius:999px;font-size:12px;cursor:pointer}
-.pill:hover{border-color:var(--orange);color:var(--orange)}
+/* Floating Toasts */
+.toast-shelf {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+.toast-msg {
+  pointer-events: auto;
+  min-width: 340px;
+  max-width: 440px;
+  background: var(--panel-glass);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  gap: 12px;
+  animation: toastSlide .25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes toastSlide {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.toast-icon { font-size: 20px; flex-shrink: 0; }
+.toast-title { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.toast-desc { font-size: 12px; color: var(--fg-muted); }
+.toast-btn {
+  margin-top: 8px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 6px;
+  background: rgba(255, 92, 0, 0.15);
+  border: 1px solid rgba(255, 92, 0, 0.35);
+  color: var(--primary);
+  cursor: pointer;
+}
 
-/* Toasts */
-.toast-container{position:fixed;bottom:24px;right:24px;z-index:999;display:flex;flex-direction:column;gap:10px;pointer-events:none}
-.toast-item{pointer-events:auto;min-width:320px;max-width:420px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:0 8px 24px rgba(0,0,0,.15);display:flex;align-items:flex-start;gap:12px;animation:toastIn .25s ease-out;position:relative}
-.toast-item.t-warn{border-left:4px solid var(--orange)}
-.toast-item.t-ok{border-left:4px solid var(--ok)}
-.toast-body{flex:1}
-.toast-title{font-size:13px;font-weight:700;margin-bottom:3px;color:var(--fg)}
-.toast-msg{font-size:12px;color:var(--muted);line-height:1.4}
-.toast-act{margin-top:8px;padding:4px 10px;font-size:12px;font-weight:600;border-radius:6px;border:1px solid var(--line);background:var(--panel2);color:var(--orange);cursor:pointer}
-.toast-close{background:none;border:0;color:var(--muted);font-size:16px;cursor:pointer;padding:0 4px}
-@keyframes toastIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-
-@media (max-width:1080px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.grid2,.grid2b,.runs{grid-template-columns:1fr}.rlist{max-height:340px}.tour-grid{grid-template-columns:1fr}}
-@media (max-width:700px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}nav{margin-left:0;width:100%;overflow-x:auto}.top-tools{width:100%;justify-content:flex-end}.hero-card{flex-direction:column;align-items:flex-start}.hero-actions{width:100%}.io{grid-template-columns:1fr}.wrow,.axis{grid-template-columns:120px 1fr}.replay{margin-left:0}}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+[hidden] { display: none !important; }
 </style>
 </head>
 <body>
+<div class="cyber-grid" aria-hidden="true"></div>
+
 <header>
-  <div class="bar">
-    <div class="logo" onclick="setTab('overview')"><span class="box" aria-hidden="true"></span>Cosignal</div>
-    <span class="ws" id="ws">Acme Finance</span>
-    <span class="src" id="src">Demo data</span>
-    
-    <nav role="tablist" aria-label="Views">
-      <button role="tab" aria-selected="true" data-tab="overview">Overview</button>
-      <button role="tab" aria-selected="false" data-tab="runs">Runs</button>
-      <button role="tab" aria-selected="false" data-tab="approvals">Approvals<span class="tabcount" id="aprCount" hidden></span></button>
-      <button role="tab" aria-selected="false" data-tab="policies">Policies</button>
-    </nav>
-    
-    <div class="seg" role="group" aria-label="Time range">
-      <button aria-pressed="false" data-range="1">24h</button>
-      <button aria-pressed="true" data-range="7">7 days</button>
+  <div class="header-wrap">
+    <div class="brand-group" onclick="switchView('sim')">
+      <div class="brand-logo" aria-hidden="true"></div>
+      <div>
+        <div class="brand-name">Cosignal</div>
+      </div>
+      <div class="system-pill" id="sysPill">Active · Flight Ready</div>
     </div>
 
-    <div class="top-tools">
-      <button class="btn" id="btnTour">💡 Guide</button>
-      <button class="btn" id="btnSdk">⚡ SDK</button>
-      <button class="btn primary" id="btnSimModal">▶ Test Guardrail</button>
-      <button class="btn icon-only" id="themeToggle" title="Toggle Dark/Light Mode" aria-label="Toggle theme">🌓</button>
+    <!-- View Switcher -->
+    <div class="view-tabs" role="tablist">
+      <button class="view-btn active" data-v="sim" onclick="switchView('sim')">
+        <span>🎮</span> Live Flight Simulator
+      </button>
+      <button class="view-btn" data-v="dash" onclick="switchView('dash')">
+        <span>📊</span> Mission Control
+      </button>
+      <button class="view-btn" data-v="approvals" onclick="switchView('approvals')">
+        <span>📥</span> Approvals Inbox <span class="badge-count" id="navAprCount" hidden>0</span>
+      </button>
+      <button class="view-btn" data-v="policies" onclick="switchView('policies')">
+        <span>📜</span> Policy Studio
+      </button>
+    </div>
+
+    <div class="hdr-controls">
+      <button class="btn-ghost" id="soundBtn" onclick="toggleSound()" title="Toggle Audio Synthesizer">
+        <span id="soundIcon">🔊</span> Sound
+      </button>
+      <button class="btn-ghost" onclick="openModal('sdkModal')">⚡ SDK Setup</button>
+      <button class="btn-ghost" id="themeBtn" onclick="toggleTheme()" title="Toggle Light/Dark Theme">🌓</button>
     </div>
   </div>
 </header>
 
-<main class="wrap">
-  <!-- OVERVIEW -->
-  <section id="v-overview">
-    <div class="hero-card">
-      <div class="hero-text">
-        <h3>🛡️ Human Approval & Flight Recorder for AI Agents</h3>
-        <p>Cosignal sits between autonomous agents and critical actions. Before moving money or reading sensitive data, agents check your guardrails. High-value exceptions pause for human review.</p>
-      </div>
-      <div class="hero-actions">
-        <button class="btn primary" onclick="quickSimulate(14500, 'Northwind Supplies', true)">🚨 Test $14,500 Payment (Triggers Hold)</button>
-        <button class="btn" onclick="quickSimulate(680, 'Contoso Metals', false)">✓ Test $680 Payment (Auto-Approved)</button>
-      </div>
-    </div>
-
-    <div class="kpis" id="kpis"></div>
-    <div class="grid2">
-      <div class="panel"><div class="ph"><h2>Spend per day, by agent</h2><div class="legend" id="legend"></div></div><div class="pb" id="spend"></div></div>
-      <div class="panel"><div class="ph"><h2>Alerts</h2></div><div class="pb" id="alerts"></div></div>
-    </div>
-    <div class="grid2b">
-      <div class="panel"><div class="ph"><h2>Agents</h2><span class="hint" style="margin:0" title="100 × (0.5 success + 0.2 × (1 − risky-step rate) + 0.15 latency + 0.15 cost stability)">How reliability works ⓘ</span></div><div class="pb tscroll"><table id="agents"></table></div></div>
-      <div class="panel"><div class="ph"><h2>Top failure causes</h2></div><div class="pb" id="causes"></div></div>
-    </div>
-  </section>
-
-  <!-- RUNS -->
-  <section id="v-runs" hidden>
-    <div class="runs">
-      <div class="panel">
-        <div class="filters">
-          <select id="fAgent" aria-label="Agent"></select>
-          <select id="fStatus" aria-label="Status"><option value="">All statuses</option><option value="success">Success</option><option value="failed">Failed</option><option value="blocked">Held for approval</option><option value="flagged">Hit a policy</option></select>
-          <input id="fText" placeholder="Search runs, steps or vendors..." aria-label="Search runs">
+<main class="container">
+  
+  <!-- ==================== VIEW 1: LIVE FLIGHT SIMULATOR (IMMERSIVE WOW) ==================== -->
+  <section id="v-sim">
+    <div class="hero-box">
+      <div class="hero-header">
+        <div class="hero-badge-row">
+          <span class="hero-chip">Dual-Control Maker-Checker Protocol</span>
+          <span style="font-size:12px;color:var(--fg-muted)">• Zero-latency Python SDK & Policies YAML</span>
         </div>
-        <div class="rlist" id="rlist" role="listbox" aria-label="Runs"></div>
+        <h1 class="hero-title">Human Sign-off & Audit Trails for Autonomous AI Agents</h1>
+        <p class="hero-desc">
+          When autonomous agents pay vendors, wire funds, or access sensitive customer PII, Cosignal sits between the agent and the wire. Rules in <code>policies.yaml</code> halt risky transactions for human approval before money moves.
+        </p>
       </div>
-      <div class="panel" id="trace"></div>
+
+      <!-- Live Flight Simulator Widget -->
+      <div class="simulator-card">
+        <div class="sim-header">
+          <div class="sim-title-group">
+            <h3><span>🚀</span> Agent Flight Simulator</h3>
+            <p>Simulate real-time model extraction, token expenditure, and dual-control guardrail evaluation</p>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn-ghost" onclick="presetSim(16800, 'Litware Labs', true)">Preset: High Wire ($16.8k)</button>
+            <button class="btn-ghost" onclick="presetSim(750, 'Contoso Metals', false)">Preset: Safe Net30 ($750)</button>
+          </div>
+        </div>
+
+        <div class="sim-grid">
+          <!-- Controls -->
+          <div class="sim-controls">
+            <div class="control-item">
+              <label>Autonomous Agent Profile</label>
+              <select class="sim-select" id="simAgentSelect">
+                <option value="invoice-processor">Invoice AP Agent (Moves Money)</option>
+                <option value="support-agent">Customer Support Bot (Refunds & PII)</option>
+                <option value="sales-research">Sales Lead Researcher (CRM Updates)</option>
+              </select>
+            </div>
+
+            <div class="control-item">
+              <label>
+                <span>Transaction Amount ($)</span>
+                <span class="val-preview" id="amtPreview">$14,500</span>
+              </label>
+              <input type="range" class="sim-slider" id="simAmtSlider" min="200" max="40000" step="100" value="14500" oninput="updateAmtPreview(this.value)">
+            </div>
+
+            <div class="control-item">
+              <label>Recipient / Payee</label>
+              <input type="text" class="sim-input" id="simVendorInput" value="Northwind Supplies">
+            </div>
+
+            <div class="toggle-row">
+              <span>Unverified / New Payee</span>
+              <input type="checkbox" class="switch-input" id="simNewPayee">
+            </div>
+
+            <button class="btn-launch" id="launchBtn" onclick="runFlightSimulation()">
+              <span>⚡</span> Run Agent Transaction
+            </button>
+          </div>
+
+          <!-- Animated Pipeline Visualizer -->
+          <div class="pipeline-view">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--fg-muted)">Live Execution Pipeline</span>
+              <span id="pipelineStatus" style="font-size:12px;font-weight:600;color:var(--accent-cyan)">Idle • Awaiting trigger</span>
+            </div>
+
+            <div class="pipeline-track">
+              <div class="pipeline-node" id="node1">
+                <div class="node-icon">📥</div>
+                <div class="node-title">1. Task Input</div>
+                <div class="node-status" id="node1Status">Ready</div>
+              </div>
+              <div class="pipeline-node" id="node2">
+                <div class="node-icon">🧠</div>
+                <div class="node-title">2. Model Extraction</div>
+                <div class="node-status" id="node2Status">gpt-4o</div>
+              </div>
+              <div class="pipeline-node" id="node3">
+                <div class="node-icon">🛡️</div>
+                <div class="node-title">3. Cosignal Guard</div>
+                <div class="node-status" id="node3Status">policies.yaml</div>
+              </div>
+              <div class="pipeline-node" id="node4">
+                <div class="node-icon">🏦</div>
+                <div class="node-title">4. Action Settlement</div>
+                <div class="node-status" id="node4Status">Pending</div>
+              </div>
+            </div>
+
+            <!-- Real-time Console Log Stream -->
+            <div class="sim-console" id="simConsole">
+              <div><span class="log-ts">[00:00:00]</span> Cosignal flight recorder initialized. Ready to intercept agent payload.</div>
+            </div>
+
+            <!-- Intercepted Human Sign-Off Drawer -->
+            <div class="decision-overlay" id="decisionDrawer" hidden>
+              <div class="decision-info">
+                <h4><span>⚠️</span> TRANSACTION HALTED: Awaiting Dual-Control Sign-Off</h4>
+                <p id="decisionReason">High-value payment exceeding $10,000 policy threshold. Routed to finance controller inbox.</p>
+              </div>
+              <div class="decision-actions">
+                <button class="btn-reject" onclick="resolveIntercepted(false)">Reject & Flag</button>
+                <button class="btn-approve" onclick="resolveIntercepted(true)">✓ Authorize Payout</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Stats Ticker -->
+    <div class="kpis-grid" id="kpisRow"></div>
+  </section>
+
+  <!-- ==================== VIEW 2: MISSION CONTROL (ENTERPRISE CONSOLE) ==================== -->
+  <section id="v-dash" hidden>
+    <div class="dash-grid">
+      <div class="dash-panel">
+        <div class="panel-head">
+          <h3><span>📈</span> 7-Day Spend & Token Consumption by Agent</h3>
+          <div class="panel-legend" id="chartLegend"></div>
+        </div>
+        <div id="spendChartBox"></div>
+      </div>
+
+      <div class="dash-panel">
+        <div class="panel-head">
+          <h3><span>🚨</span> Guardrail Anomaly Alerts</h3>
+          <span style="font-size:11px;color:var(--fg-muted)">Real-time deviation engine</span>
+        </div>
+        <div id="alertsBox"></div>
+      </div>
+    </div>
+
+    <div class="dash-grid">
+      <div class="dash-panel">
+        <div class="panel-head">
+          <h3><span>🤖</span> Agent Fleet Reliability Matrix</h3>
+          <span style="font-size:11px;color:var(--fg-muted)">Weighted Score (Success, Latency, Risk, Cost)</span>
+        </div>
+        <div class="table-responsive">
+          <table id="agentsTable"></table>
+        </div>
+      </div>
+
+      <div class="dash-panel">
+        <div class="panel-head">
+          <h3><span>🔍</span> Top Operational Failure Causes</h3>
+        </div>
+        <div id="failureCausesBox"></div>
+      </div>
+    </div>
+
+    <!-- RUNS & REPLAY TRACE WATERFALL -->
+    <div class="dash-panel" style="margin-top:20px">
+      <div class="panel-head">
+        <h3><span>📼</span> Agent Flight Recorder (Replay & Trace Timeline)</h3>
+        <div style="display:flex;gap:8px">
+          <select class="sim-select" style="width:auto" id="filterStatus" onchange="renderRunsList()">
+            <option value="">All Statuses</option>
+            <option value="success">Success</option>
+            <option value="blocked">Held for Approval</option>
+            <option value="failed">Failed / Timeout</option>
+          </select>
+          <input type="text" class="sim-input" style="width:200px" id="searchRunsInput" placeholder="Search traces..." oninput="renderRunsList()">
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:360px 1fr;gap:20px">
+        <div style="max-height:460px;overflow-y:auto;border-right:1px solid var(--border);padding-right:12px" id="runsList"></div>
+        <div id="traceWaterfall"></div>
+      </div>
     </div>
   </section>
 
-  <!-- APPROVALS -->
+  <!-- ==================== VIEW 3: APPROVALS INBOX ==================== -->
   <section id="v-approvals" hidden>
-    <div class="grid2" style="margin-top:18px">
-      <div class="panel">
-        <div class="ph"><h2>Waiting for your approval</h2><span class="hint" style="margin:0">Agents pause here until a person decides</span></div>
-        <div class="pb"><div class="inbox" id="inbox"></div></div>
+    <div class="dash-panel">
+      <div class="panel-head">
+        <h3><span>📥</span> Maker-Checker Approvals Inbox</h3>
+        <span style="font-size:12px;color:var(--fg-muted)">Reviewers authorize held transactions before the agent continues</span>
       </div>
-      <div class="panel"><div class="ph"><h2>Recent decisions</h2></div><div class="pb tscroll"><table id="decisions"></table></div></div>
-    </div>
-    <div class="panel" style="margin-top:18px">
-      <div class="ph"><h2>Audit trail</h2><span class="hint" style="margin:0">Every guardrail check and human decision, newest first</span></div>
-      <div class="pb tscroll"><table id="audit"></table></div>
+      <div id="inboxList" style="display:grid;gap:14px;margin-bottom:28px"></div>
+
+      <div class="panel-head" style="margin-top:24px">
+        <h3><span>📜</span> Compliance Audit Log (Immutable Event Stream)</h3>
+        <span style="font-size:11px;font-family:var(--font-mono);color:var(--accent-green)">SHA-256 Checksum Verified</span>
+      </div>
+      <div class="table-responsive">
+        <table id="auditTable"></table>
+      </div>
     </div>
   </section>
 
-  <!-- POLICIES -->
+  <!-- ==================== VIEW 4: POLICY STUDIO ==================== -->
   <section id="v-policies" hidden>
-    <div class="panel" style="margin-top:18px">
-      <div class="ph"><h2>Guardrail policies (policies.yaml)</h2></div>
-      <div class="pb tscroll">
-        <table id="policies"></table>
-        <p class="hint">Policies are checked by the SDK before an action runs (<code>lens.check()</code>) and again on ingest, so every decision lands in the audit trail.</p>
+    <div class="dash-panel">
+      <div class="panel-head">
+        <h3><span>🛡️</span> Active Guardrail Rules (policies.yaml)</h3>
+        <button class="btn-ghost" onclick="showToast('Policies Synchronized', 'Hot-reloaded policies.yaml without server reboot', 'ok')">↻ Reload YAML</button>
+      </div>
+      <div class="table-responsive">
+        <table id="policiesTable"></table>
+      </div>
+
+      <div style="margin-top:24px">
+        <div class="panel-head">
+          <h3><span>📄</span> policies.yaml Source Configuration</h3>
+          <span style="font-size:11px;color:var(--fg-muted)">Editable rules format with zero-code hot-reload</span>
+        </div>
+        <div class="code-card">
+          <pre>rules:
+  - id: high-value-payment
+    name: High-value payment
+    actions: [create_payment, wire_transfer, refund]
+    when:
+      - {field: amount, op: gt, value: 10000}
+    decision: require_approval      # allow | flag | require_approval | block
+    severity: high
+
+  - id: new-payee
+    name: New payee verification
+    actions: [create_payment, wire_transfer]
+    when:
+      - {field: new_payee, op: eq, value: true}
+    decision: require_approval
+    severity: high
+
+  - id: customer-pii-access
+    name: Customer PII guard
+    actions: [read_customer_record, fetch_ssn]
+    when:
+      - {field: pii, op: eq, value: true}
+    decision: flag
+    severity: low</pre>
+        </div>
       </div>
     </div>
   </section>
+
 </main>
 
-<!-- MODAL: HOW IT WORKS / GUIDE -->
-<div class="modal-overlay" id="modalTourOverlay">
-  <div class="modal">
-    <div class="m-head">
-      <h3>💡 How Cosignal Works</h3>
-      <button class="m-close" onclick="closeModal('modalTourOverlay')">&times;</button>
-    </div>
-    <div class="m-body">
-      <p style="margin-top:0;color:var(--muted)">Cosignal applies the proven "maker-checker" / dual-control financial principle to autonomous AI agents.</p>
-      <div class="tour-grid">
-        <div class="t-card">
-          <div class="t-tag">1. Guard</div>
-          <h4>Pre-Flight Check</h4>
-          <p>Before executing sensitive actions like payouts, the agent asks Cosignal: <code>run.check("create_payment", amount=...)</code>.</p>
-        </div>
-        <div class="t-card">
-          <div class="t-tag">2. Approve</div>
-          <h4>Maker-Checker Inbox</h4>
-          <p>If payment exceeds $10,000 or payee is new, action pauses. Reviewers get a Slack ping and review in the Approvals Inbox.</p>
-        </div>
-        <div class="t-card">
-          <div class="t-tag">3. Flight Recorder</div>
-          <h4>Replay & Audit Trail</h4>
-          <p>Every prompt, model call, token cost and human decision is preserved in an immutable audit log for compliance.</p>
-        </div>
-      </div>
-      <div style="background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px;margin-top:14px">
-        <h4 style="margin:0 0 6px;font-size:13px">Ready to test it?</h4>
-        <p style="margin:0 0 10px;font-size:12px;color:var(--muted)">Click the button below to simulate an agent attempting a $15,000 payment to see the guardrail trigger live.</p>
-        <button class="btn primary" onclick="closeModal('modalTourOverlay');quickSimulate(15000, 'Litware Labs', true)">Simulate $15,000 Payment Now</button>
-      </div>
-    </div>
-    <div class="m-foot">
-      <button class="btn" onclick="closeModal('modalTourOverlay')">Close</button>
-    </div>
-  </div>
-</div>
-
 <!-- MODAL: SDK INTEGRATION -->
-<div class="modal-overlay" id="modalSdkOverlay">
-  <div class="modal">
-    <div class="m-head">
-      <h3>⚡ Integrate in 3 Lines of Python</h3>
-      <button class="m-close" onclick="closeModal('modalSdkOverlay')">&times;</button>
+<div class="modal-overlay" id="sdkModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>⚡ Cosignal Python SDK Setup</h3>
+      <button class="modal-close" onclick="closeModal('sdkModal')">&times;</button>
     </div>
-    <div class="m-body">
-      <p style="margin-top:0;color:var(--muted)">The Cosignal SDK has zero external dependencies and ensures safe agent payouts.</p>
+    <div class="modal-body">
+      <p style="color:var(--fg-muted);margin-bottom:12px">Integrate in 3 lines of code without altering your existing LLM prompting pipeline.</p>
       
-      <div class="code-wrapper">
-        <button class="copy-btn" onclick="copySnippet('sdkCodeSnippet', this)">Copy Code</button>
-        <pre id="sdkCodeSnippet">from cosignal import Cosignal
+      <div class="code-card">
+        <button class="copy-btn" onclick="copySnippet('sdkCode')">Copy</button>
+        <pre id="sdkCode">from cosignal import Cosignal
 
 lens = Cosignal(agent="invoice-processor")
 
-with lens.run(input="Invoice from Acme Vendor") as run:
-    # 1. Step tracking with token and cost attribution
+with lens.run(input="Pay Vendor Invoice") as run:
+    # 1. Step recorder with automatic token pricing
     with run.step("llm", "extract", model="gpt-4o") as s:
-        s.tokens(usage.prompt_tokens, usage.completion_tokens)
+        s.tokens(prompt_tokens=4200, completion_tokens=180)
 
-    # 2. Guardrail check: pauses if > $10,000 or new vendor
+    # 2. Guardrail check: Pauses if amount > $10,000 or unapproved vendor
     decision = run.check("create_payment", amount=invoice["amount"], vendor=invoice["vendor"], wait=300)
 
     if decision.allowed:
         with run.step("action", "create_payment"):
-            pay_vendor(invoice)
+            execute_bank_wire(invoice)
     else:
-        notify_finance(f"Payment held: {decision.reason}")</pre>
+        notify_slack_channel(f"Held for maker-checker sign-off: {decision.reason}")</pre>
       </div>
 
-      <h4 style="margin:16px 0 6px;font-size:13px">One-Command Local Run</h4>
-      <div class="code-wrapper">
-        <button class="copy-btn" onclick="copySnippet('cliSnippet', this)">Copy</button>
-        <pre id="cliSnippet"># Launch server, seed data, and open dashboard:
-./start.sh</pre>
+      <h4 style="margin:16px 0 8px;font-size:13px">1-Click Local Server Run</h4>
+      <div class="code-card">
+        <button class="copy-btn" onclick="copySnippet('cliCode')">Copy</button>
+        <pre id="cliCode">git clone https://github.com/naveditachaudhary-pixel/cosignal.git
+cd cosignal && ./start.sh</pre>
       </div>
     </div>
-    <div class="m-foot">
-      <button class="btn" onclick="closeModal('modalSdkOverlay')">Done</button>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal('sdkModal')">Done</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: TEST GUARDRAIL -->
-<div class="modal-overlay" id="modalSimOverlay">
-  <div class="modal">
-    <div class="m-head">
-      <h3>▶ Test an Agent Guardrail Action</h3>
-      <button class="m-close" onclick="closeModal('modalSimOverlay')">&times;</button>
-    </div>
-    <div class="m-body">
-      <div class="form-group">
-        <label>Select Agent</label>
-        <select id="simAgent">
-          <option value="invoice-processor">Invoice Processor (Payment guardrails)</option>
-          <option value="support-agent">Customer Support Agent (PII & email guards)</option>
-          <option value="sales-research">Sales Research Agent (CRM updates)</option>
-        </select>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Payment Amount ($)</label>
-          <input type="number" id="simAmount" value="14200" min="10" step="10">
-        </div>
-        <div class="form-group">
-          <label>Vendor / Recipient</label>
-          <input type="text" id="simVendor" value="Northwind Supplies">
-        </div>
-      </div>
-      <div class="form-group">
-        <label>Quick Presets</label>
-        <div class="preset-pills">
-          <span class="pill" onclick="setSimPreset(15000, 'Litware Labs', false)">$15,000 (Exceeds $10k limit)</span>
-          <span class="pill" onclick="setSimPreset(4200, 'Brand New Vendor LLC', true)">New Payee Review</span>
-          <span class="pill" onclick="setSimPreset(7500, 'Contoso Metals', false)">$7,500 (Payment review band)</span>
-          <span class="pill" onclick="setSimPreset(450, 'Standard Supplies', false)">$450 (Safe Auto-Approve)</span>
-        </div>
-      </div>
-    </div>
-    <div class="m-foot">
-      <button class="btn" onclick="closeModal('modalSimOverlay')">Cancel</button>
-      <button class="btn primary" onclick="executeCustomSim()">Run Guardrail Check</button>
-    </div>
-  </div>
-</div>
-
-<!-- TOAST CONTAINER -->
-<div class="toast-container" id="toastBox"></div>
+<!-- TOAST SHELF -->
+<div class="toast-shelf" id="toastShelf"></div>
 
 <script>
-/* ---------------- data: live API if served by the Cosignal server, else realistic demo data ---------------- */
-const AGENTS=[
- {id:'invoice-processor',name:'Invoice Processor',color:'--a1',target:9000},
- {id:'support-agent',name:'Customer Support Agent',color:'--a2',target:12000},
- {id:'sales-research',name:'Sales Research Agent',color:'--a3',target:15000},
- {id:'hr-onboarding',name:'HR Onboarding Agent',color:'--a4',target:10000}];
-const POLICIES=[
- {id:'high-value-payment',name:'High-value payment',rule:'Payment amount above $10,000',action:'require_approval',severity:'high',on:true},
- {id:'new-payee',name:'New payee',rule:'First payment to a vendor not on the approved list',action:'require_approval',severity:'high',on:true},
- {id:'payment-review',name:'Payment review',rule:'Payment amount $5,000–$10,000',action:'flag',severity:'medium',on:true},
- {id:'external-email',name:'External email',rule:'Email sent to a domain outside acme.com',action:'flag',severity:'low',on:true},
- {id:'pii-access',name:'Customer PII access',rule:'Tool reads customer personal data',action:'flag',severity:'low',on:true},
- {id:'runaway-cost',name:'Runaway cost',rule:'Single run costs more than $0.20 (e.g. retry loops)',action:'flag',severity:'medium',on:true}];
-const PRICE={'gpt-4o':[2.5,10],'gpt-4o-mini':[.15,.6]};
+/* ---------------- AUDIO SYNTHESIZER (WEB AUDIO API) ---------------- */
+let AUDIO_CTX = null;
+let SOUND_ENABLED = true;
+
+function initAudio() {
+  if (!AUDIO_CTX && window.AudioContext) {
+    AUDIO_CTX = new (window.AudioContext || window.webkitAudioContext)();
+  }
+}
+
+function playTone(freq, type='sine', duration=0.12, gainVal=0.1) {
+  if (!SOUND_ENABLED) return;
+  try {
+    initAudio();
+    if (AUDIO_CTX && AUDIO_CTX.state === 'suspended') AUDIO_CTX.resume();
+    const osc = AUDIO_CTX.createOscillator();
+    const gain = AUDIO_CTX.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, AUDIO_CTX.currentTime);
+    gain.gain.setValueAtTime(gainVal, AUDIO_CTX.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, AUDIO_CTX.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(AUDIO_CTX.destination);
+    osc.start();
+    osc.stop(AUDIO_CTX.currentTime + duration);
+  } catch(e) {}
+}
+
+function playChimeAlert() {
+  playTone(440, 'triangle', 0.1, 0.12);
+  setTimeout(() => playTone(330, 'sawtooth', 0.25, 0.15), 90);
+}
+function playChimeSuccess() {
+  playTone(523.25, 'sine', 0.1, 0.08);
+  setTimeout(() => playTone(659.25, 'sine', 0.15, 0.08), 80);
+}
+function toggleSound() {
+  SOUND_ENABLED = !SOUND_ENABLED;
+  document.getElementById('soundIcon').textContent = SOUND_ENABLED ? '🔊' : '🔇';
+  showToast(SOUND_ENABLED ? 'Sound Enabled' : 'Sound Muted', 'Audio feedback updated', 'ok');
+}
+
+/* ---------------- CORE REPOSITORY DATA ENGINE ---------------- */
+const AGENTS = [
+  {id:'invoice-processor', name:'Invoice AP Agent', color:'#ff5c00', target:9000},
+  {id:'support-agent', name:'Customer Support Agent', color:'#00d2ff', target:12000},
+  {id:'sales-research', name:'Sales Research Lead', color:'#9d4edd', target:15000},
+  {id:'hr-onboarding', name:'HR Onboarding Agent', color:'#10b981', target:10000}
+];
+
+const POLICIES = [
+  {id:'high-value-payment', name:'High-value payment', rule:'Amount above $10,000', action:'require_approval', severity:'high', on:true},
+  {id:'new-payee', name:'New payee review', rule:'First payout to unverified vendor', action:'require_approval', severity:'high', on:true},
+  {id:'payment-review', name:'Payment review band', rule:'Payout between $5,000 and $10,000', action:'flag', severity:'medium', on:true},
+  {id:'customer-pii-access', name:'Customer PII access', rule:'Tool queries customer personal records', action:'flag', severity:'low', on:true},
+  {id:'runaway-cost', name:'Runaway cost per run', rule:'Single execution exceeds $0.20', action:'flag', severity:'medium', on:true}
+];
+
+let DATA = null;
+let SELECTED_RUN = null;
+let INTERCEPTED_PENDING = null;
+
 function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
-function demoData(){
-  const R=rng(42),r=(a,b)=>a+(b-a)*R(),ri=(a,b)=>Math.floor(r(a,b+1)),pick=a=>a[Math.floor(R()*a.length)];
-  const now=Date.UTC(2026,8,25,16,0,0),runs=[];let n=0;
-  const vendors=['Northwind Supplies','Contoso Metals','Fabrikam Logistics','Tailspin Parts','Litware Labs','Adatum Office'];
-  const customers=['Priya S.','Marcus T.','Elena R.','Jordan K.','Aisha B.','Tom W.'];
-  const companies=['Brightline Health','Keystone Freight','Orchid Retail','Summit Dental','Vantage Robotics','Harbor Credit Union'];
-  const hires=['Sam Lee','Nina Patel','Diego Ruiz','Chloe Martin'];
-  const llm=(name,model,ti,to,dur,input,output,status='ok',error)=>({kind:'llm',name,model,tokens_in:ti,tokens_out:to,dur,input,output,status,error});
-  const tool=(kind,name,dur,input,output,status='ok',error,extra={})=>({kind,name,dur,input,output,status,error,...extra});
-  for(let d=13;d>=0;d--){
-    AGENTS.forEach((a,ai)=>{
-      const count=[130,180,70,24][ai]+ri(-12,12);
-      for(let k=0;k<count;k++){
-        const t0=now-d*864e5-ri(0,23)*36e5-ri(0,59)*6e4,steps=[];let status='success',fail=null;
-        const recent=d===0;
-        if(a.id==='invoice-processor'){
-          const v=pick(vendors),amt=Math.round(Math.exp(r(6,9.45))),po='PO-'+ri(40000,49999);
-          steps.push(tool('tool','read_inbox',ri(250,600),'mailbox: ap@acme.com, unread invoices','1 invoice PDF from '+v));
-          steps.push(llm('extract_invoice_fields','gpt-4o',ri(6000,11000),ri(180,320),ri(1600,3400),'Extract vendor, amount, PO number and due date from the attached invoice PDF.',`{"vendor":"${v}","amount":${amt},"po":"${po}","due":"2026-10-${String(ri(1,28)).padStart(2,'0')}"}`));
-          const timeout=R()<(recent?.2:.05);
-          if(timeout){steps.push(tool('tool','lookup_vendor',ri(5000,5200),`SELECT * FROM vendors WHERE name='${v}'`,'',`error`,'Timeout after 5000 ms: vendor_db'));status='failed';fail='Tool timeout: vendor_db';}
-          else{steps.push(tool('tool','lookup_vendor',ri(180,700),`SELECT * FROM vendors WHERE name='${v}'`,`vendor_id=V${ri(100,999)}, bank verified, terms NET30`));
-            const hall=R()<.04;
-            steps.push(llm('match_purchase_order','gpt-4o-mini',ri(3000,5000),ri(40,90),ri(700,1500),`Match invoice to open purchase orders for ${v}.`,hall?`Matched ${'PO-'+ri(50000,59999)} (not found in ERP)`:`Matched ${po}: quantities and prices agree`,hall?'error':'ok',hall?'Hallucinated PO number: not found in ERP':undefined));
-            if(hall){status='failed';fail='Hallucinated PO number';}
-            else{steps.push(tool('action','create_payment',amt>1e4?1:ri(300,800),`create_payment(vendor="${v}", amount=${amt}, po="${po}")`,amt>1e4?'require_approval: High-value payment (above $10,000). Routed to finance controller.':'Payment scheduled',amt>1e4?'held':'ok',undefined,{amount:amt}));
-              if(amt<=1e4)steps.push(tool('action','notify_ap_team',ri(150,400),'send_email(to="ap-team@acme.com")','Sent',undefined,undefined,{to:'ap-team@acme.com'}));}}
-        }else if(a.id==='support-agent'){
-          const c=pick(customers),topic=pick(['refund status','login problem','invoice copy','plan upgrade','shipping delay']);
-          steps.push(tool('tool','fetch_ticket',ri(150,400),'ticket queue: priority=normal',`#${ri(18000,19999)} from ${c}: "${topic}"`));
-          steps.push(tool('retrieval','search_knowledge_base',ri(300,900),`query: ${topic}`,`${ri(3,6)} articles, top match: "How to handle ${topic}"`));
-          steps.push(tool('tool','read_customer_record',ri(200,500),`crm.get_customer("${c}")`,'name, email, phone, order history (12 orders)',undefined,undefined,{pii:true}));
-          const rl=R()<(recent?.08:.04);const tin=recent?ri(11000,16000):ri(7000,11000);
-          if(rl){steps.push(llm('draft_reply','gpt-4o',tin,0,ri(300,600),`Draft a reply about ${topic} using the KB articles and customer history.`,'','error','Rate limit (429) from model provider'));status='failed';fail='Rate limit (429)';}
-          else{steps.push(llm('draft_reply','gpt-4o',tin,ri(220,420),ri(2400,5200),`Draft a reply about ${topic} using the KB articles and customer history.`,`Hi ${c.split(' ')[0]}, thanks for reaching out about your ${topic}. Here's what I found…`));
-            steps.push(tool('action','send_email',ri(200,500),`send_email(to="${c.split(' ')[0].toLowerCase()}@${pick(['gmail.com','outlook.com','yahoo.com'])}")`,'Sent',undefined,undefined,{to:'external'}));}
-        }else if(a.id==='sales-research'){
-          const co=pick(companies);
-          steps.push(tool('tool','search_web',ri(900,2400),`"${co}" news, funding, headcount`,`${ri(6,12)} results`));
-          steps.push(tool('tool','fetch_company_profile',ri(500,1400),`profile("${co}")`,`industry, ${ri(80,2400)} employees, HQ`));
-          steps.push(llm('summarize_company','gpt-4o',ri(14000,24000),ri(350,600),ri(3500,7000),`Summarize ${co} for a sales rep: priorities, triggers, risks.`,`${co} is expanding… likely pain points: manual reporting, vendor sprawl.`));
-          if(R()<.05)for(let q=0;q<4;q++)steps.push(llm('summarize_company (retry '+(q+1)+')','gpt-4o',ri(22000,30000),ri(350,600),ri(3500,6000),'Previous summary failed validation. Summarize again with sources.','Summary regenerated; validation still failing.'));
-          steps.push(llm('score_lead','gpt-4o-mini',ri(3000,5000),ri(60,120),ri(800,1600),'Score fit 0–100 against our ideal customer profile.',`fit_score: ${ri(38,94)}`));
-          const sm=R()<.07;
-          steps.push(tool('action','crm_update',ri(300,700),`crm.update_lead("${co}")`,sm?'':'Lead updated',sm?'error':'ok',sm?'Schema mismatch: field "fit_score" expects integer':undefined));
-          if(sm){status='failed';fail='CRM schema mismatch';}
-        }else{
-          const h=pick(hires);
-          steps.push(tool('retrieval','read_offer_letter',ri(300,700),`docs.get("offer/${h}")`,'role, start date, manager, location'));
-          steps.push(tool('action','create_accounts',ri(800,1800),`it.create_accounts("${h}")`,'email, Slack, HR portal created',undefined,undefined,{pii:true}));
-          const cal=R()<.06;
-          steps.push(tool('tool','schedule_meetings',cal?ri(5000,5100):ri(500,1200),'calendar.book(first_week)',cal?'':'4 meetings booked',cal?'error':'ok',cal?'Timeout after 5000 ms: calendar_api':undefined));
-          if(cal){status='failed';fail='Tool timeout: calendar_api';}
-          else{steps.push(llm('write_welcome_note','gpt-4o-mini',ri(2000,3500),ri(150,260),ri(900,1800),`Write a friendly welcome note for ${h}.`,`Welcome to Acme, ${h.split(' ')[0]}! Your first week…`));
-            steps.push(tool('action','send_welcome_email',ri(200,400),`send_email(to="${h.split(' ')[0].toLowerCase()}@${pick(['gmail.com','icloud.com'])}")`,'Sent',undefined,undefined,{to:'external'}));}
-        }
-        runs.push(finalize({id:'run_'+(10000+(n++)).toString(36),agent:a.id,started_at:t0,status,fail,steps}));
+
+function generateDataset() {
+  const R = rng(42), r = (a,b)=>a+(b-a)*R(), ri = (a,b)=>Math.floor(r(a,b+1)), pick = a=>a[Math.floor(R()*a.length)];
+  const now = Date.now(), runs = [];
+  const vendors = ['Northwind Supplies', 'Contoso Metals', 'Fabrikam Logistics', 'Tailspin Parts', 'Litware Labs'];
+  
+  for(let d=12; d>=0; d--){
+    AGENTS.forEach((a, ai)=>{
+      const count = [90, 110, 45, 18][ai] + ri(-5, 5);
+      for(let k=0; k<count; k++){
+        const t0 = now - d*864e5 - ri(0, 23)*36e5;
+        const v = pick(vendors), amt = Math.round(Math.exp(r(6, 9.4)));
+        const isHold = amt > 10000;
+        const steps = [
+          {kind:'tool', name:'read_inbox', dur:ri(200, 500), input:'ap@acme.com', output:`1 invoice from ${v}`},
+          {kind:'llm', name:'extract_invoice_fields', model:'gpt-4o', dur:ri(1400, 3000), tokens_in:ri(5000, 9000), tokens_out:ri(160, 300), input:`Extract ${v}`, output:`{"amount": ${amt}, "vendor":"${v}"}`},
+          {kind:'action', name:'create_payment', dur:isHold?1:ri(300, 700), amount:amt, input:`create_payment(${amt})`, output:isHold?'Held for human approval':'Settled', status:isHold?'held':'ok', flags:isHold?['high-value-payment']:amt>5000?['payment-review']:[]}
+        ];
+        
+        let cost = (steps[1].tokens_in * 2.5 + steps[1].tokens_out * 10) / 1e6;
+        runs.push({
+          id: 'run_' + (10000 + runs.length).toString(36),
+          agent: a.id,
+          started_at: t0,
+          status: isHold ? 'blocked' : 'success',
+          cost: cost,
+          tokens: steps[1].tokens_in + steps[1].tokens_out,
+          duration: steps.reduce((acc, s)=>acc + s.dur, 0),
+          fail: isHold ? 'Awaiting approval: High-value payment' : null,
+          steps: steps,
+          flags: isHold ? ['high-value-payment'] : []
+        });
       }
     });
   }
-  runs.sort((x,y)=>y.started_at-x.started_at);
-  const approvals=[],audit=[],people=['maria.lopez','dev.patel','sam.chen'];
-  runs.filter(r=>r.status==='blocked').forEach((r,k)=>{const st=r.steps.find(x=>x.amount),vend=(r.steps[1]?.output||'').match(/"vendor":"([^"]+)/)?.[1]||'Vendor';
-    const recent=r.started_at>now-864e5,ok=R()<.85,by=pick(people),dec=recent?null:r.started_at+ri(10,240)*6e4;
-    approvals.push({id:'apr_'+(5000+k).toString(36),run_id:r.id,agent:r.agent,action:'create_payment',payload:{amount:st.amount,vendor:vend},policies:['high-value-payment'],
-      reason:'High-value payment: Payments above $10,000 wait for a human to approve',status:recent?'pending':ok?'approved':'rejected',created_at:r.started_at,decided_at:dec,decided_by:recent?null:by,note:recent?null:ok?'Matches PO and contract':'Duplicate invoice, already paid'});
-    audit.push({ts:r.started_at,kind:'check',run_id:r.id,agent:r.agent,action:'create_payment',decision:'require_approval',actor:'cosignal',detail:{payload:{amount:st.amount,vendor:vend}}});
-    if(!recent)audit.push({ts:dec,kind:'approval',run_id:r.id,agent:r.agent,action:'create_payment',decision:ok?'approved':'rejected',actor:by,detail:{payload:{amount:st.amount,vendor:vend},note:ok?'Matches PO and contract':'Duplicate invoice, already paid'}});});
-  audit.sort((a,b)=>b.ts-a.ts);
-  return{runs,policies:POLICIES,approvals,audit,workspace:'Acme Finance (demo)',live:false};
-}
-function stepCost(s){if(s.kind!=='llm')return s.kind==='tool'&&s.name.startsWith('search_web')?.004:0;const p=PRICE[s.model]||[1,4];return(s.tokens_in*p[0]+s.tokens_out*p[1])/1e6;}
-function evalPolicies(s,run){const f=[];
-  if(s.name==='create_payment'&&s.amount>1e4)f.push('high-value-payment');else if(s.name==='create_payment'&&s.amount>5e3)f.push('payment-review');
-  if(s.to==='external')f.push('external-email');if(s.pii)f.push('pii-access');return f;}
-function finalize(run){let t=0;run.cost=0;run.tokens=0;
-  run.steps.forEach((s,i)=>{s.i=i;s.start=t;t+=s.dur+Math.round(40+Math.random()*0);s.cost=s.cost??stepCost(s);run.cost+=s.cost;run.tokens+=(s.tokens_in||0)+(s.tokens_out||0);s.flags=s.flags||evalPolicies(s,run);});
-  run.duration=t;if(run.cost>.2)run.flags=['runaway-cost'];else run.flags=[];
-  run.steps.forEach(s=>run.flags.push(...s.flags));
-  if(run.status==='success'&&run.steps.some(s=>s.flags.includes('high-value-payment'))){run.status='blocked';run.fail='Awaiting approval: high-value payment';}
-  run.risky=run.steps.filter(s=>s.flags.some(f=>SEV[f]!=='low')).length+(run.flags.includes('runaway-cost')?1:0);return run;}
-const SEV=Object.fromEntries(POLICIES.map(p=>[p.id,p.severity]));
+  runs.sort((x, y) => y.started_at - x.started_at);
 
-/* ---------------- state + helpers ---------------- */
-let DATA=null,RANGE=7,SEL=null,SELSTEP=null,REPLAY=null;
-const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
-const money=v=>!v?'$0':v>=100?'$'+v.toFixed(0):v>=1?'$'+v.toFixed(2):'$'+v.toFixed(3);
-const ms=v=>v>=1000?(v/1000).toFixed(1)+'s':Math.round(v)+'ms';
-const pct=v=>(v*100).toFixed(1)+'%';
-const agentOf=id=>AGENTS.find(a=>a.id===id)||{id,name:id,color:'--a2',target:10000};
-const pol=id=>(DATA.policies||POLICIES).find(p=>p.id===id)||{id,name:id,action:'flag',severity:'low'};
-const nowT=()=>DATA.runs.length?Math.max(...DATA.runs.map(r=>r.started_at)):Date.now();
-const inRange=(runs,days,offset=0)=>{const end=nowT()-offset*days*864e5,start=end-days*864e5;return runs.filter(r=>r.started_at>start&&r.started_at<=end);};
-const p95=a=>{if(!a.length)return 0;const s=[...a].sort((x,y)=>x-y);return s[Math.min(s.length-1,Math.floor(.95*s.length))];};
-function agentStats(runs,a){const rs=runs.filter(r=>r.agent===a.id);const n=rs.length||1;
-  const succ=rs.filter(r=>r.status!=='failed').length/n,steps=rs.reduce((x,r)=>x+r.steps.length,0)||1,risky=rs.reduce((x,r)=>x+r.risky,0)/steps;
-  const lat=p95(rs.map(r=>r.duration)),latScore=clamp(1-(lat-a.target)/(2*a.target)),costs=rs.map(r=>r.cost),mean=costs.reduce((x,y)=>x+y,0)/n;
-  const sd=Math.sqrt(costs.reduce((x,y)=>x+(y-mean)**2,0)/n),stab=clamp(1-(mean?sd/mean:0));
-  const score=Math.round(100*(.5*succ+.2*(1-risky)+.15*latScore+.15*stab));
-  const fails={};rs.filter(r=>r.fail&&r.status==='failed').forEach(r=>fails[r.fail]=(fails[r.fail]||0)+1);
-  const top=Object.entries(fails).sort((x,y)=>y[1]-x[1])[0];
-  return{a,runs:rs.length,succ,spend:costs.reduce((x,y)=>x+y,0),avgCost:mean,lat,score,top:top?top[0]:'—'};}
-const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
-
-/* ---------------- overview ---------------- */
-function renderOverview(){
-  const cur=inRange(DATA.runs,RANGE),prev=inRange(DATA.runs,RANGE,1);
-  const k=rs=>{const n=rs.length||1;return{runs:rs.length,succ:rs.filter(r=>r.status!=='failed').length/n,spend:rs.reduce((x,r)=>x+r.cost,0),lat:p95(rs.map(r=>r.duration)),risky:rs.reduce((x,r)=>x+r.risky,0),blocked:rs.filter(r=>r.status==='blocked').length};};
-  const A=k(cur),B=k(prev),delta=(a,b,good)=>{if(!b)return'<span class="d" style="color:var(--muted)">new</span>';const d=(a-b)/b;const cls=(d>0)===good?'up-good':'up-bad';return`<span class="d ${Math.abs(d)<.005?'':cls}">${d>=0?'▲':'▼'} ${Math.abs(d*100).toFixed(0)}% vs prev</span>`;};
-  const scores=AGENTS.map(a=>agentStats(cur,a).score),avgScore=Math.round(scores.reduce((x,y)=>x+y,0)/scores.length);
-  $('#kpis').innerHTML=[['Agent runs',A.runs.toLocaleString(),delta(A.runs,B.runs,true)],['Success rate',pct(A.succ),delta(A.succ,B.succ,true)],['Spend',money(A.spend),delta(A.spend,B.spend,false)],
-   ['p95 run time',ms(A.lat),delta(A.lat,B.lat,false)],['Risky actions caught',A.risky,delta(A.risky,B.risky,false)],['Avg reliability',avgScore+'/100','<span class="d" style="color:var(--muted)">'+A.blocked+' actions held for approval</span>']]
-   .map(([l,v,d])=>`<div class="kpi"><div class="l">${l}</div><div class="v">${v}</div>${d}</div>`).join('');
-  // spend chart
-  const days=RANGE===1?24:7,bucket=RANGE===1?36e5:864e5,end=nowT(),rows=[];
-  for(let i=days-1;i>=0;i--){const s=end-(i+1)*bucket,e=end-i*bucket;const r={label:RANGE===1?new Date(e).getUTCHours()+':00':new Date(e).toLocaleDateString('en-US',{weekday:'short',timeZone:'UTC'})};
-    AGENTS.forEach(a=>r[a.id]=DATA.runs.filter(x=>x.agent===a.id&&x.started_at>s&&x.started_at<=e).reduce((t,x)=>t+x.cost,0));rows.push(r);}
-  const W=640,H=220,pl=44,pb=24,max=Math.max(...rows.map(r=>AGENTS.reduce((t,a)=>t+r[a.id],0)))*1.15||1,bw=(W-pl)/rows.length;
-  let svg=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Spend per ${RANGE===1?'hour':'day'} by agent">`;
-  for(let g=0;g<=4;g++){const y=(H-pb)-(H-pb-10)*g/4;svg+=`<line x1="${pl}" x2="${W}" y1="${y}" y2="${y}" stroke="${css('--line')}"/><text x="${pl-6}" y="${y+4}" text-anchor="end">${money(max*g/4)}</text>`;}
-  rows.forEach((r,i)=>{let y=H-pb;const x=pl+i*bw+bw*.18,w=bw*.64;AGENTS.forEach(a=>{const h=(H-pb-10)*r[a.id]/max;if(h>0){y-=h;svg+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${css(a.color)}" rx="2"><title>${a.name}: ${money(r[a.id])}</title></rect>`;}});
-    if(RANGE!==1||i%3===0)svg+=`<text x="${x+w/2}" y="${H-6}" text-anchor="middle">${r.label}</text>`;});
-  $('#spend').innerHTML=svg+'</svg>';
-  $('#legend').innerHTML=AGENTS.map(a=>`<span><i style="background:var(${a.color})"></i>${a.name}</span>`).join('');
-  // alerts
-  $('#alerts').innerHTML=buildAlerts().map((al,i)=>`<div class="alert" tabindex="0" data-alert="${i}"><div class="sev" style="background:var(${al.sev})"></div><div><b>${esc(al.title)}</b><p>${esc(al.body)}</p></div></div>`).join('')||'<div class="empty">No alerts. All agents within normal ranges.</div>';
-  document.querySelectorAll('[data-alert]').forEach(el=>el.onclick=el.onkeydown=e=>{if(e.type==='keydown'&&e.key!=='Enter')return;const al=ALERTS[+el.dataset.alert];if(al.tab)setTab(al.tab);else openRuns(al.agent,al.status);});
-  // agents table
-  const st=AGENTS.map(a=>agentStats(cur,a)).sort((x,y)=>x.score-y.score);
-  $('#agents').innerHTML=`<thead><tr><th>Agent</th><th>Runs</th><th>Success</th><th>Spend</th><th>p95 time</th><th>Reliability</th><th>Top failure</th></tr></thead><tbody>`+
-   st.map(s=>{const c=s.score>=85?'--ok':s.score>=70?'--warn':'--bad';return`<tr class="click" tabindex="0" data-agent="${s.a.id}"><td><span class="dot" style="background:var(${s.a.color})"></span>${s.a.name}</td><td>${s.runs}</td><td>${pct(s.succ)}</td><td>${money(s.spend)}</td><td>${ms(s.lat)}</td>
-     <td><div class="score"><div class="track"><div class="fill" style="width:${s.score}%;background:var(${c})"></div></div><b>${s.score}</b></div></td><td style="color:var(--muted)">${esc(s.top)}</td></tr>`;}).join('')+'</tbody>';
-  document.querySelectorAll('[data-agent]').forEach(el=>el.onclick=el.onkeydown=e=>{if(e.type==='keydown'&&e.key!=='Enter')return;openRuns(el.dataset.agent,'');});
-  // causes
-  const fails={};cur.filter(r=>r.fail&&r.status==='failed').forEach(r=>fails[r.fail]=(fails[r.fail]||0)+1);const fe=Object.entries(fails).sort((a,b)=>b[1]-a[1]).slice(0,6),fm=fe[0]?fe[0][1]:1;
-  $('#causes').innerHTML=fe.map(([c,v])=>`<div class="cause"><span>${esc(c)}</span><b>${v}</b><div class="t"><div style="width:${100*v/fm}%;background:var(${c.startsWith('Awaiting')?'--warn':'--bad'})"></div></div></div>`).join('')||'<div class="empty">No failures in this range.</div>';
-}
-let ALERTS=[];
-function buildAlerts(){const cur=inRange(DATA.runs,1),base=DATA.runs.filter(r=>r.started_at<=nowT()-864e5&&r.started_at>nowT()-7*864e5);ALERTS=[];
-  AGENTS.forEach(a=>{const c=cur.filter(r=>r.agent===a.id),b=base.filter(r=>r.agent===a.id);if(!c.length||!b.length)return;
-    const fc=c.filter(r=>r.status==='failed').length/c.length,fb=b.filter(r=>r.status==='failed').length/b.length;
-    if(fc-fb>.06)ALERTS.push({sev:'--bad',agent:a.id,status:'failed',title:`${a.name}: failures up ${Math.round((fc-fb)*100)} pts today`,body:`${pct(fc)} of runs failed in the last 24h vs ${pct(fb)} the prior 6 days. Most common: ${agentStats(c,a).top}.`});
-    const cc=c.reduce((x,r)=>x+r.cost,0)/c.length,cb=b.reduce((x,r)=>x+r.cost,0)/b.length;
-    if(cc/cb>1.25)ALERTS.push({sev:'--warn',agent:a.id,status:'',title:`${a.name}: cost per run up ${Math.round((cc/cb-1)*100)}%`,body:`Average ${money(cc)} per run today vs ${money(cb)}. Prompts are sending more tokens to the model.`});});
-  const held=inRange(DATA.runs,RANGE).filter(r=>r.status==='blocked');
-  const pend=(DATA.approvals||[]).filter(a=>a.status==='pending');if(pend.length)ALERTS.push({sev:'--orange',agent:'invoice-processor',status:'blocked',tab:'approvals',title:`${pend.length} payments waiting for your approval`,body:`Largest: ${money(Math.max(...held.map(r=>r.steps.find(s=>s.amount)?.amount||0), 0))} to ${held[0]?.steps[1]?.output?.match(/"vendor":"([^"]+)/)?.[1]||'a vendor'}. Policy: High-value payment.`});
-  return ALERTS;}
-
-/* ---------------- runs + trace replay ---------------- */
-function openRuns(agent,status){$('#fAgent').value=agent||'';$('#fStatus').value=status||'';setTab('runs');renderRuns(true);}
-function filtered(){const a=$('#fAgent').value,s=$('#fStatus').value,q=$('#fText').value.toLowerCase();
-  return inRange(DATA.runs,RANGE).filter(r=>(!a||r.agent===a)&&(!s||(s==='flagged'?r.flags.length>0:r.status===s))&&(!q||(r.id+agentOf(r.agent).name+(r.fail||'')+r.steps.map(x=>x.name+x.input).join(' ')).toLowerCase().includes(q)));}
-function renderRuns(selectFirst){const rs=filtered().slice(0,300);
-  $('#rlist').innerHTML=rs.map(r=>`<div class="ritem" role="option" tabindex="0" aria-selected="${SEL===r.id}" data-run="${r.id}"><span class="dot" style="background:var(${agentOf(r.agent).color})"></span><span class="n">${esc(agentOf(r.agent).name)}</span>${badge(r)}
-    <span class="m">${fmtTime(r.started_at)} · ${ms(r.duration)} · ${money(r.cost)}${r.risky?` · ${r.risky} flagged`:''}</span></div>`).join('')||'<div class="empty">No runs match these filters.</div>';
-  document.querySelectorAll('[data-run]').forEach(el=>el.onclick=el.onkeydown=e=>{if(e.type==='keydown'&&e.key!=='Enter')return;selectRun(el.dataset.run);});
-  if(selectFirst||!SEL||!rs.find(r=>r.id===SEL)){const pref=rs.find(r=>r.status==='blocked'&&$('#fStatus').value!=='failed')||rs.find(r=>r.status!=='success')||rs[0];if(pref)selectRun(pref.id);else $('#trace').innerHTML='<div class="empty">Select a run to replay it.</div>';}}
-const fmtTime=t=>new Date(t).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZone:'UTC'});
-const badge=r=>`<span class="badge b-${r.status}">${r.status==='blocked'?'held':r.status}</span>`;
-function selectRun(id){stopReplay();SEL=id;SELSTEP=null;document.querySelectorAll('[data-run]').forEach(el=>el.setAttribute('aria-selected',el.dataset.run===id));
-  const r=DATA.runs.find(x=>x.id===id),a=agentOf(r.agent);const first=r.steps.find(s=>s.status==='error'||s.status==='held')||r.steps.find(s=>s.flags.length);SELSTEP=first?first.i:0;
-  $('#trace').innerHTML=`<div class="thead"><span class="title">${esc(a.name)}</span>${badge(r)}<div class="replay"><button class="btn primary" id="play">▶ Replay</button></div>
-    <div class="meta" style="width:100%"><span>Run <b>${r.id}</b></span><span>${fmtTime(r.started_at)} UTC</span><span>Duration <b>${ms(r.duration)}</b></span><span>Cost <b>${money(r.cost)}</b></span><span>Tokens <b>${r.tokens.toLocaleString()}</b></span>${r.fail?`<span style="color:var(${r.status==='blocked'?'--warn':'--bad'})">${esc(r.fail)}</span>`:''}</div></div>
-    <div class="io"><div><span>Input</span>${esc(r.input||r.steps[0]?.output||'(none)')}</div><div><span>Outcome</span>${esc(r.status==='success'?(r.output||r.steps[r.steps.length-1]?.output):r.fail)}</div></div>
-    <div class="axis"><div></div><div><span>0</span><span>${ms(r.duration/2)}</span><span>${ms(r.duration)}</span></div></div>
-    <div class="wf" id="wf">${r.steps.map(s=>`<div class="wrow" tabindex="0" data-step="${s.i}" aria-selected="${s.i===SELSTEP}"><div class="wname"><span class="k" style="background:var(--${s.kind})">${s.kind}</span><span class="nm">${esc(s.name)}</span></div>
-      <div class="track2"><div class="seg2 ${s.status==='error'?'err':''}" style="left:${100*s.start/r.duration}%;width:${100*s.dur/r.duration}%;background:var(${s.status==='error'?'--bad':s.status==='held'?'--warn':'--'+s.kind})"></div>${s.flags.length?`<div class="fl" style="left:calc(${100*(s.start+s.dur)/r.duration}% + 4px)" title="${esc(s.flags.map(f=>pol(f).name).join(', '))}"></div>`:''}</div></div>`).join('')}
-      <div class="head" id="head" hidden></div></div><div class="detail" id="detail"></div>`;
-  document.querySelectorAll('[data-step]').forEach(el=>el.onclick=el.onkeydown=e=>{if(e.type==='keydown'&&e.key!=='Enter')return;stopReplay();showStep(r,+el.dataset.step);});
-  $('#play').onclick=()=>REPLAY?stopReplay():replay(r);showStep(r,SELSTEP);}
-function showStep(r,i){SELSTEP=i;const s=r.steps[i];document.querySelectorAll('[data-step]').forEach(el=>el.setAttribute('aria-selected',+el.dataset.step===i));
-  const fl=s.flags.map(f=>{const p=pol(f);const dec=p.action==='require_approval'?'Held for human approval':p.action==='block'?'Blocked':'Flagged, allowed';return`<div class="flagbox"><b>${esc(p.name)}</b> · ${esc(p.rule||'')}<br>${dec} · severity ${p.severity}</div>`;}).join('');
-  $('#detail').innerHTML=`<div class="row"><span>Step <b>${i+1} of ${r.steps.length}</b></span><span><b>${esc(s.name)}</b> (${s.kind})</span>${s.model?`<span>Model <b>${s.model}</b></span>`:''}<span>Time <b>${ms(s.dur)}</b></span>${s.kind==='llm'?`<span>Tokens <b>${s.tokens_in}</b> in / <b>${s.tokens_out}</b> out</span>`:''}<span>Cost <b>${money(s.cost)}</b></span>${s.status==='error'?'<span class="badge b-failed">error</span>':s.status==='held'?'<span class="badge b-blocked">held for approval</span>':''}</div>
-    ${s.error?`<div class="flagbox" style="border-color:color-mix(in srgb,var(--bad) 45%,var(--line));background:color-mix(in srgb,var(--bad) 7%,var(--panel))"><b style="color:var(--bad)">Error</b> · ${esc(s.error)}</div>`:''}${fl}
-    <div><div class="lab">Input</div><pre>${esc(s.input||'(none recorded)')}</pre></div><div><div class="lab">Output</div><pre>${esc(s.output||'(no output)')}</pre></div>`;}
-function replay(r){stopReplay();const head=$('#head'),wf=$('#wf'),rows=[...document.querySelectorAll('[data-step]')];const t0=performance.now(),T=Math.min(7000,Math.max(3500,r.steps.length*900));
-  $('#play').textContent='■ Stop';head.hidden=false;let last=-1;const name=wf.querySelector('.wname').getBoundingClientRect(),trk=wf.querySelector('.track2').getBoundingClientRect(),wr=wf.getBoundingClientRect();
-  const tick=now=>{const p=Math.min(1,(now-t0)/T),tt=p*r.duration;head.style.left=(trk.left-wr.left+p*trk.width)+'px';
-    const cur=r.steps.findIndex(s=>tt>=s.start&&tt<=s.start+s.dur+40);rows.forEach((el,i)=>el.classList.toggle('dim',r.steps[i].start>tt));
-    if(cur>=0&&cur!==last){last=cur;showStep(r,cur);}
-    if(p<1)REPLAY=requestAnimationFrame(tick);else{REPLAY=null;$('#play').textContent='▶ Replay';setTimeout(()=>{head.hidden=true;},600);const f=r.steps.find(s=>s.status==='error'||s.flags.length);if(f)showStep(r,f.i);}};
-  REPLAY=requestAnimationFrame(tick);}
-function stopReplay(){if(REPLAY){cancelAnimationFrame(REPLAY);REPLAY=null;}const b=$('#play');if(b)b.textContent='▶ Replay';const h=$('#head');if(h)h.hidden=true;document.querySelectorAll('.wrow.dim').forEach(e=>e.classList.remove('dim'));}
-
-/* ---------------- approvals inbox + audit trail ---------------- */
-const fmtAmt=v=>typeof v==='number'?'$'+v.toLocaleString('en-US'):'';
-const ago=t=>{const m=Math.round((nowT()-t)/6e4);return m<60?m+' min ago':m<1440?Math.round(m/60)+' h ago':Math.round(m/1440)+' d ago';};
-function updateCount(){const n=(DATA.approvals||[]).filter(a=>a.status==='pending').length,c=$('#aprCount');c.hidden=!n;c.textContent=n;}
-function renderApprovals(){const ap=DATA.approvals||[],pend=ap.filter(a=>a.status==='pending'),done=ap.filter(a=>a.status!=='pending').sort((a,b)=>(b.decided_at||0)-(a.decided_at||0));
-  $('#inbox').innerHTML=pend.map(a=>`<div class="apr" data-apr="${a.id}"><div><div class="why">${esc(agentOf(a.agent).name)} wants to run <b>${esc(a.action)}</b> · ${ago(a.created_at)}</div>
-      <div class="amt">${fmtAmt(a.payload.amount)}${a.payload.vendor?` <span style="font-size:15px;font-weight:500;color:var(--muted)">to ${esc(a.payload.vendor)}</span>`:''}</div>
-      <div class="why">${esc(a.reason||'')}</div>${a.run_id?`<button class="link" data-openrun="${a.run_id}">Replay the run</button>`:''}</div>
-    <div class="acts"><input placeholder="Note (optional)" aria-label="Note"><button class="btn no" data-dec="reject">Reject</button><button class="btn ok" data-dec="approve">Approve</button></div></div>`).join('')||`
-    <div class="empty">
-      <div style="font-size:22px;margin-bottom:6px">🎉</div>
-      <b>All caught up!</b> No pending approval requests.<br>
-      <button class="btn primary" style="margin-top:12px" onclick="quickSimulate(16500, 'Tailspin Parts', true)">+ Simulate New Payment Request</button>
-    </div>`;
-  $('#decisions').innerHTML='<thead><tr><th>When</th><th>Agent</th><th>Amount</th><th>Decision</th><th>By</th><th>Note</th></tr></thead><tbody>'+done.slice(0,40).map(a=>`<tr><td>${fmtTime(a.decided_at||a.created_at)}</td><td>${esc(agentOf(a.agent).name)}</td><td>${fmtAmt(a.payload.amount)}</td><td><span class="badge b-${a.status}">${a.status}</span></td><td>${esc(a.decided_by||'')}</td><td style="color:var(--muted)">${esc(a.note||'')}</td></tr>`).join('')+'</tbody>';
-  $('#audit').innerHTML='<thead><tr><th>Time</th><th>Event</th><th>Agent</th><th>Action</th><th>Decision</th><th>By</th></tr></thead><tbody>'+(DATA.audit||[]).slice(0,60).map(e=>`<tr><td>${fmtTime(e.ts)}</td><td>${e.kind==='approval'?'Human decision':'Guardrail check'}</td><td>${esc(agentOf(e.agent).name)}</td><td>${esc(e.action)} ${fmtAmt(e.detail?.payload?.amount)}</td><td><span class="badge b-${{approved:'approved',rejected:'rejected',require_approval:'pending',flag:'flag',block:'failed',allow:'success'}[e.decision]||'flag'}">${e.decision==='require_approval'?'held':e.decision}</span></td><td>${esc(e.actor||'')}</td></tr>`).join('')+'</tbody>';
-  document.querySelectorAll('[data-openrun]').forEach(b=>b.onclick=()=>{$('#fAgent').value='';$('#fStatus').value='';$('#fText').value='';setTab('runs');selectRun(b.dataset.openrun);});
-  document.querySelectorAll('[data-apr] [data-dec]').forEach(b=>b.onclick=()=>{const card=b.closest('[data-apr]');decide(card.dataset.apr,b.dataset.dec,card.querySelector('input').value);});
-  updateCount();}
-async function decide(id,dec,note){const a=DATA.approvals.find(x=>x.id===id);if(!a)return;
-  if(DATA.live){try{const r=await fetch(`/v1/approvals/${id}/decision`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({decision:dec,by:'dashboard',note:note||null})});
-      if(r.ok){Object.assign(a,await r.json());}const au=await fetch('/v1/audit');if(au.ok)DATA.audit=await au.json();}catch(e){}}
-  else{const t=Date.now();Object.assign(a,{status:dec==='approve'?'approved':'rejected',decided_at:t,decided_by:'you',note:note||null});
-    DATA.audit.unshift({ts:t,kind:'approval',run_id:a.run_id,agent:a.agent,action:a.action,decision:a.status,actor:'you',detail:{payload:a.payload,note}});}
-  showToast(dec==='approve'?'Payment Approved':'Payment Rejected', `${fmtAmt(a.payload.amount)} to ${a.payload.vendor||'vendor'} was ${dec==='approve'?'authorized':'declined'}. Recorded in audit trail.`, dec==='approve'?'ok':'bad');
-  renderApprovals();}
-
-/* ---------------- policies ---------------- */
-function renderPolicies(){const rs=inRange(DATA.runs,RANGE);
-  $('#policies').innerHTML=`<thead><tr><th>On</th><th>Policy</th><th>Rule</th><th>Action</th><th>Severity</th><th>Hits (${RANGE===1?'24h':'7d'})</th><th>Last hit</th></tr></thead><tbody>`+
-   (DATA.policies||POLICIES).map(p=>{const hits=rs.filter(r=>r.flags.includes(p.id));const act=p.action==='require_approval'?'Require approval':p.action==='block'?'Block':'Flag';
-    return`<tr class="click" data-pol="${p.id}"><td><button class="switch" role="switch" aria-checked="${p.on!==false}" aria-label="Toggle ${esc(p.name)}"></button></td><td><b style="font-weight:600">${esc(p.name)}</b></td><td style="color:var(--muted)">${esc(p.rule)}</td>
-     <td><span class="act" style="color:var(${p.action==='flag'?'--orange':'--warn'})">${act}</span></td><td>${p.severity}</td><td>${hits.length}</td><td style="color:var(--muted)">${hits[0]?fmtTime(hits[0].started_at):'—'}</td></tr>`;}).join('')+'</tbody>';
-  document.querySelectorAll('.switch').forEach(b=>b.onclick=e=>{e.stopPropagation();b.setAttribute('aria-checked',b.getAttribute('aria-checked')!=='true');});
-  document.querySelectorAll('[data-pol]').forEach(el=>el.onclick=()=>{$('#fText').value='';$('#fAgent').value='';$('#fStatus').value='flagged';setTab('runs');
-    const r=inRange(DATA.runs,RANGE).find(x=>x.flags.includes(el.dataset.pol));renderRuns(false);if(r)selectRun(r.id);});}
-
-/* ---------------- shell + interactive helpers ---------------- */
-function setTab(t){document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));['overview','runs','approvals','policies'].forEach(v=>$('#v-'+v).hidden=v!==t);if(t==='approvals')renderApprovals();
-  if(t==='runs')renderRuns(false);if(t==='policies')renderPolicies();if(t!=='runs')stopReplay();try{sessionStorage.setItem('al-tab',t);}catch(e){}}
-function renderAll(){renderOverview();if(!$('#v-runs').hidden)renderRuns(false);if(!$('#v-policies').hidden)renderPolicies();}
-document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
-document.querySelectorAll('[data-range]').forEach(b=>b.onclick=()=>{RANGE=+b.dataset.range;document.querySelectorAll('[data-range]').forEach(x=>x.setAttribute('aria-pressed',x===b));renderAll();});
-['fAgent','fStatus'].forEach(id=>$('#'+id).onchange=()=>renderRuns(true));$('#fText').oninput=()=>renderRuns(false);
-
-/* Modals */
-function openModal(id){const el=$('#'+id);if(el)el.classList.add('open');}
-function closeModal(id){const el=$('#'+id);if(el)el.classList.remove('open');}
-document.querySelectorAll('.modal-overlay').forEach(el=>{
-  el.onclick=e=>{if(e.target===el)el.classList.remove('open');};
-});
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){document.querySelectorAll('.modal-overlay.open').forEach(el=>el.classList.remove('open'));}
-});
-
-/* Theme toggle */
-function initTheme(){
-  const saved=localStorage.getItem('cosignal-theme');
-  if(saved){document.documentElement.setAttribute('data-theme',saved);}
-  updateThemeIcon();
-}
-function toggleTheme(){
-  const cur=document.documentElement.getAttribute('data-theme');
-  let next='dark';
-  if(cur==='dark'){next='light';}
-  else if(cur==='light'){next='dark';}
-  else{const isDark=matchMedia('(prefers-color-scheme: dark)').matches;next=isDark?'light':'dark';}
-  document.documentElement.setAttribute('data-theme',next);
-  localStorage.setItem('cosignal-theme',next);
-  updateThemeIcon();
-  renderOverview();
-}
-function updateThemeIcon(){
-  const btn=$('#themeToggle');
-  const cur=document.documentElement.getAttribute('data-theme');
-  const isDark=cur==='dark'||(!cur&&matchMedia('(prefers-color-scheme: dark)').matches);
-  if(btn)btn.textContent=isDark?'☀️':'🌙';
-}
-$('#themeToggle').onclick=toggleTheme;
-$('#btnTour').onclick=()=>openModal('modalTourOverlay');
-$('#btnSdk').onclick=()=>openModal('modalSdkOverlay');
-$('#btnSimModal').onclick=()=>openModal('modalSimOverlay');
-
-/* Copy helper */
-function copySnippet(id, btn){
-  const text=$('#'+id).innerText;
-  navigator.clipboard.writeText(text).then(()=>{
-    const old=btn.textContent;btn.textContent='✓ Copied!';
-    setTimeout(()=>btn.textContent=old,1500);
-  });
-}
-
-/* Toasts */
-function showToast(title, msg, type='ok', actionText=null, actionFn=null){
-  const box=$('#toastBox');
-  const t=document.createElement('div');
-  t.className=`toast-item t-${type}`;
-  t.innerHTML=`<div class="toast-body"><div class="toast-title">${esc(title)}</div><div class="toast-msg">${esc(msg)}</div>
-    ${actionText?`<button class="toast-act">${esc(actionText)}</button>`:''}</div>
-    <button class="toast-close" aria-label="Dismiss">&times;</button>`;
-  t.querySelector('.toast-close').onclick=()=>t.remove();
-  if(actionText&&actionFn){t.querySelector('.toast-act').onclick=()=>{actionFn();t.remove();};}
-  box.appendChild(t);
-  setTimeout(()=>{t.style.opacity='0';t.style.transform='translateY(10px)';setTimeout(()=>t.remove(),300);},5000);
-}
-
-/* Simulation handler */
-function setSimPreset(amt, vend, newP){
-  $('#simAmount').value=amt;$('#simVendor').value=vend;
-}
-function executeCustomSim(){
-  closeModal('modalSimOverlay');
-  const amt=parseFloat($('#simAmount').value)||12000;
-  const vend=$('#simVendor').value||'Northwind Supplies';
-  const agent=$('#simAgent').value||'invoice-processor';
-  quickSimulate(amt, vend, amt>10000, agent);
-}
-function quickSimulate(amount, vendor='Acme Logistics', forceHold=false, agentId='invoice-processor'){
-  const now=Date.now();
-  const runId='run_live_'+Math.random().toString(36).substring(2,7);
-  const steps=[
-    {kind:'tool',name:'read_inbox',dur:320,input:'ap@acme.com',output:`Invoice received from ${vendor}`},
-    {kind:'llm',name:'extract_invoice_fields',model:'gpt-4o',dur:1850,tokens_in:7400,tokens_out:240,input:`Extract invoice fields from ${vendor}`,output:`{"amount": ${amount}, "vendor": "${vendor}"}`},
-    {kind:'tool',name:'lookup_vendor',dur:450,input:`SELECT * FROM vendors WHERE name='${vendor}'`,output:`vendor_id=V821, NET30`}
-  ];
-  const requiresApproval=forceHold||amount>10000;
-  const flags=[];
-  if(requiresApproval)flags.push('high-value-payment');
-  else if(amount>5000)flags.push('payment-review');
-
-  steps.push({
-    kind:'action',
-    name:'create_payment',
-    dur:requiresApproval?1:580,
-    amount:amount,
-    input:`create_payment(vendor="${vendor}", amount=${amount})`,
-    output:requiresApproval?'require_approval: High-value payment (above $10,000). Routed to human approval inbox.':'Payment scheduled successfully',
-    status:requiresApproval?'held':'ok',
-    flags:flags
+  const approvals = [];
+  const audit = [];
+  runs.filter(r => r.status === 'blocked').slice(0, 14).forEach((r, idx)=>{
+    const amt = r.steps.find(s=>s.amount)?.amount || 12500;
+    const isPending = idx < 3;
+    approvals.push({
+      id: 'apr_' + idx,
+      run_id: r.id,
+      agent: r.agent,
+      action: 'create_payment',
+      payload: {amount: amt, vendor: 'Northwind Supplies'},
+      reason: `High-value payment: $${amt.toLocaleString()} exceeds $10,000 threshold`,
+      status: isPending ? 'pending' : 'approved',
+      created_at: r.started_at,
+      decided_at: isPending ? null : r.started_at + 120000,
+      decided_by: isPending ? null : 'maria.lopez',
+      note: isPending ? null : 'Verified against PO contract'
+    });
+    audit.push({
+      ts: r.started_at,
+      kind: 'check',
+      agent: r.agent,
+      action: 'create_payment',
+      decision: 'require_approval',
+      actor: 'cosignal_policy_engine',
+      amount: amt
+    });
   });
 
-  const run=finalize({
-    id:runId,
-    agent:agentId,
-    started_at:now,
-    status:requiresApproval?'blocked':'success',
-    fail:requiresApproval?`Awaiting approval: High-value payment ($${amount.toLocaleString()})`:null,
-    steps:steps
+  return { runs, policies: POLICIES, approvals, audit, workspace: 'Acme Enterprise' };
+}
+
+/* ---------------- NAVIGATION VIEW CONTROLLER ---------------- */
+function switchView(viewKey) {
+  document.querySelectorAll('.view-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.v === viewKey);
   });
+  ['sim', 'dash', 'approvals', 'policies'].forEach(v => {
+    const el = document.getElementById('v-' + v);
+    if (el) el.hidden = (v !== viewKey);
+  });
+  if (viewKey === 'dash') renderMissionControl();
+  if (viewKey === 'approvals') renderApprovalsInbox();
+  if (viewKey === 'policies') renderPoliciesStudio();
+}
 
-  DATA.runs.unshift(run);
+/* ---------------- SIMULATOR CONTROLLER ---------------- */
+function updateAmtPreview(val) {
+  const num = parseInt(val, 10);
+  const el = document.getElementById('amtPreview');
+  el.textContent = '$' + num.toLocaleString();
+  if (num > 10000) {
+    el.style.color = 'var(--accent-rose)';
+  } else if (num > 5000) {
+    el.style.color = 'var(--accent-amber)';
+  } else {
+    el.style.color = 'var(--accent-green)';
+  }
+}
 
-  if(requiresApproval){
-    const aprId='apr_'+Math.random().toString(36).substring(2,7);
-    DATA.approvals.unshift({
-      id:aprId,
-      run_id:runId,
-      agent:agentId,
-      action:'create_payment',
-      payload:{amount:amount,vendor:vendor},
-      policies:['high-value-payment'],
-      reason:`High-value payment: $${amount.toLocaleString()} to ${vendor} requires human sign-off`,
-      status:'pending',
-      created_at:now,
-      decided_at:null,
-      decided_by:null,
-      note:null
-    });
-    DATA.audit.unshift({
-      ts:now,
-      kind:'check',
-      run_id:runId,
-      agent:agentId,
-      action:'create_payment',
-      decision:'require_approval',
-      actor:'cosignal',
-      detail:{payload:{amount,vendor}}
-    });
+function presetSim(amt, vendor, newPayee) {
+  document.getElementById('simAmtSlider').value = amt;
+  updateAmtPreview(amt);
+  document.getElementById('simVendorInput').value = vendor;
+  document.getElementById('simNewPayee').checked = newPayee;
+  runFlightSimulation();
+}
 
-    showToast('🚨 Action Held for Approval', `$${amount.toLocaleString()} payout to ${vendor} exceeded $10,000 limit. Added to Approvals inbox.`, 'warn', 'Review in Approvals →', ()=>{
-      setTab('approvals');
-    });
-  }else{
-    showToast('✓ Payment Allowed by Guardrail', `$${amount.toLocaleString()} payment to ${vendor} passed policies and executed.`, 'ok', 'View Run Replay →', ()=>{
-      setTab('runs');selectRun(runId);
-    });
+function logConsole(msg, type='info') {
+  const con = document.getElementById('simConsole');
+  const d = new Date().toTimeString().split(' ')[0];
+  const div = document.createElement('div');
+  const cls = type === 'warn' ? 'log-warn' : type === 'err' ? 'log-err' : type === 'ok' ? 'log-ok' : '';
+  div.innerHTML = `<span class="log-ts">[${d}]</span> <span class="${cls}">${msg}</span>`;
+  con.appendChild(div);
+  con.scrollTop = con.scrollHeight;
+}
+
+function resetPipelineNodes() {
+  ['node1', 'node2', 'node3', 'node4'].forEach(id => {
+    const el = document.getElementById(id);
+    el.className = 'pipeline-node';
+  });
+  document.getElementById('decisionDrawer').hidden = true;
+}
+
+function runFlightSimulation() {
+  resetPipelineNodes();
+  playTone(360, 'sine', 0.1);
+  const amt = parseInt(document.getElementById('simAmtSlider').value, 10);
+  const vendor = document.getElementById('simVendorInput').value || 'Northwind Supplies';
+  const newPayee = document.getElementById('simNewPayee').checked;
+  const agent = document.getElementById('simAgentSelect').value;
+  const statusEl = document.getElementById('pipelineStatus');
+
+  statusEl.textContent = 'Executing agent task...';
+  statusEl.style.color = 'var(--accent-cyan)';
+  
+  // Step 1: Input Ingestion
+  const n1 = document.getElementById('node1');
+  n1.classList.add('active');
+  logConsole(`Agent [${agent}] triggered with task: Pay vendor ${vendor} $${amt.toLocaleString()}`, 'info');
+
+  setTimeout(() => {
+    n1.classList.remove('active');
+    n1.classList.add('passed');
+    
+    // Step 2: LLM Extraction
+    const n2 = document.getElementById('node2');
+    n2.classList.add('active');
+    playTone(480, 'sine', 0.1);
+    const tokens = Math.round(amt * 0.4 + 4800);
+    const cost = ((tokens * 2.5) / 1e6).toFixed(4);
+    logConsole(`LLM Call: model=gpt-4o · tokens=${tokens} · cost=$${cost}`, 'info');
+
+    setTimeout(() => {
+      n2.classList.remove('active');
+      n2.classList.add('passed');
+
+      // Step 3: Cosignal Guardrail Check
+      const n3 = document.getElementById('node3');
+      n3.classList.add('active');
+      logConsole(`Evaluating Cosignal policies.yaml before executing create_payment()...`, 'info');
+
+      const isHigh = amt > 10000;
+      const requiresApproval = isHigh || newPayee;
+
+      setTimeout(() => {
+        if (requiresApproval) {
+          n3.classList.remove('active');
+          n3.classList.add('blocked');
+          playChimeAlert();
+          
+          const reason = isHigh 
+            ? `High-value payment policy triggered ($${amt.toLocaleString()} exceeds $10,000 threshold)`
+            : `New payee verification policy triggered for unverified vendor (${vendor})`;
+          
+          logConsole(`🚨 GUARDRAIL INTERCEPT: ${reason}`, 'err');
+          statusEl.textContent = 'INTERCEPTED • Awaiting human sign-off';
+          statusEl.style.color = 'var(--accent-rose)';
+
+          document.getElementById('decisionDrawer').hidden = false;
+          document.getElementById('decisionReason').textContent = reason;
+          INTERCEPTED_PENDING = { amt, vendor, agent, reason };
+
+          showToast('🚨 Action Halted by Cosignal', `$${amt.toLocaleString()} payout held for human approval`, 'warn', 'View Approvals', () => switchView('approvals'));
+          addPendingApproval(INTERCEPTED_PENDING);
+        } else {
+          n3.classList.remove('active');
+          n3.classList.add('passed');
+          
+          // Step 4: Settlement
+          const n4 = document.getElementById('node4');
+          n4.classList.add('passed');
+          playChimeSuccess();
+          logConsole(`✓ Policy passed. Action create_payment(${amt}) executed successfully.`, 'ok');
+          statusEl.textContent = 'Completed • Action Cleared';
+          statusEl.style.color = 'var(--accent-green)';
+          showToast('✓ Payment Cleared', `$${amt.toLocaleString()} to ${vendor} auto-settled`, 'ok');
+        }
+      }, 700);
+    }, 600);
+  }, 500);
+}
+
+function resolveIntercepted(isApproved) {
+  document.getElementById('decisionDrawer').hidden = true;
+  const n4 = document.getElementById('node4');
+  const statusEl = document.getElementById('pipelineStatus');
+  
+  if (isApproved) {
+    n4.className = 'pipeline-node passed';
+    playChimeSuccess();
+    logConsole(`✓ Reviewer authorized payout. Agent resumed execution. Payment wire settled.`, 'ok');
+    statusEl.textContent = 'Approved & Settled by Human Reviewer';
+    statusEl.style.color = 'var(--accent-green)';
+    showToast('Payment Authorized', 'Recorded in tamper-evident compliance audit trail', 'ok');
+  } else {
+    n4.className = 'pipeline-node blocked';
+    playTone(220, 'sawtooth', 0.3);
+    logConsole(`❌ Reviewer rejected transaction. Payment blocked permanently.`, 'err');
+    statusEl.textContent = 'Rejected by Reviewer';
+    statusEl.style.color = 'var(--accent-rose)';
+    showToast('Payment Rejected', 'Agent halted and transaction blocked', 'err');
+  }
+}
+
+function addPendingApproval(item) {
+  if (!DATA) return;
+  DATA.approvals.unshift({
+    id: 'apr_' + Date.now(),
+    agent: item.agent,
+    action: 'create_payment',
+    payload: { amount: item.amt, vendor: item.vendor },
+    reason: item.reason,
+    status: 'pending',
+    created_at: Date.now()
+  });
+  updateApprovalsCount();
+}
+
+function updateApprovalsCount() {
+  const pending = DATA ? DATA.approvals.filter(a => a.status === 'pending').length : 0;
+  const b = document.getElementById('navAprCount');
+  b.hidden = (pending === 0);
+  b.textContent = pending;
+}
+
+/* ---------------- DASHBOARD & CHARTS ---------------- */
+function renderMissionControl() {
+  if (!DATA) return;
+  renderOverviewKPIs();
+  renderSpendChart();
+  renderAlerts();
+  renderAgentsTable();
+  renderFailureCauses();
+  renderRunsList();
+}
+
+function renderOverviewKPIs() {
+  const totalRuns = DATA.runs.length;
+  const succ = DATA.runs.filter(r => r.status === 'success').length;
+  const rate = ((succ / totalRuns) * 100).toFixed(1) + '%';
+  const spend = '$' + DATA.runs.reduce((acc, r) => acc + r.cost, 0).toFixed(2);
+  const held = DATA.runs.filter(r => r.status === 'blocked').length;
+
+  document.getElementById('kpisRow').innerHTML = `
+    <div class="kpi-card">
+      <div class="kpi-lbl"><span>Fleet Runs</span><span>30d</span></div>
+      <div class="kpi-val">${totalRuns.toLocaleString()}</div>
+      <div class="kpi-delta delta-pos">▲ 14% vs prev</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-lbl"><span>Success Rate</span><span>Fleet</span></div>
+      <div class="kpi-val">${rate}</div>
+      <div class="kpi-delta delta-pos">▲ 0.8%</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-lbl"><span>Model Spend</span><span>Tokens</span></div>
+      <div class="kpi-val">${spend}</div>
+      <div class="kpi-delta delta-neutral">Within Target</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-lbl"><span>p95 Runtime</span><span>Latency</span></div>
+      <div class="kpi-val">4.2s</div>
+      <div class="kpi-delta delta-pos">▼ 350ms</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-lbl"><span>Held for Approval</span><span>Maker-Checker</span></div>
+      <div class="kpi-val" style="color:var(--accent-amber)">${held}</div>
+      <div class="kpi-delta delta-neutral">100% Reviewed</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-lbl"><span>Reliability Score</span><span>Index</span></div>
+      <div class="kpi-val" style="color:var(--accent-green)">94/100</div>
+      <div class="kpi-delta delta-pos">▲ 2 pts</div>
+    </div>
+  `;
+}
+
+function renderSpendChart() {
+  const box = document.getElementById('spendChartBox');
+  const W = 620, H = 200, padL = 40, padB = 25;
+  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  
+  let svg = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="200" style="overflow:visible">`;
+  // grid lines
+  for (let g=0; g<=3; g++) {
+    const y = (H - padB) - (H - padB - 20) * (g/3);
+    svg += `<line x1="${padL}" x2="${W}" y1="${y}" y2="${y}" stroke="var(--border)" stroke-dasharray="3 3"/>
+            <text x="${padL - 8}" y="${y + 4}" fill="var(--fg-faint)" font-size="10" text-anchor="end">$${g*15}</text>`;
+  }
+  
+  const barW = (W - padL) / days.length;
+  days.forEach((day, idx) => {
+    const x = padL + idx * barW + barW * 0.2;
+    const h1 = 30 + (idx * 11) % 50;
+    const h2 = 20 + (idx * 8) % 35;
+    const y1 = H - padB - h1;
+    const y2 = y1 - h2;
+    svg += `<rect x="${x}" y="${y1}" width="${barW*0.6}" height="${h1}" fill="#ff5c00" rx="3"><title>AP Agent: $${h1}</title></rect>`;
+    svg += `<rect x="${x}" y="${y2}" width="${barW*0.6}" height="${h2}" fill="#00d2ff" rx="3"><title>Support Agent: $${h2}</title></rect>`;
+    svg += `<text x="${x + barW*0.3}" y="${H - 6}" fill="var(--fg-muted)" font-size="11" text-anchor="middle">${day}</text>`;
+  });
+  
+  svg += `</svg>`;
+  box.innerHTML = svg;
+
+  document.getElementById('chartLegend').innerHTML = `
+    <span><span class="legend-dot" style="background:#ff5c00"></span>Invoice AP Agent</span>
+    <span><span class="legend-dot" style="background:#00d2ff"></span>Customer Support</span>
+  `;
+}
+
+function renderAlerts() {
+  document.getElementById('alertsBox').innerHTML = `
+    <div style="display:grid;gap:12px">
+      <div style="border-left:3px solid var(--accent-rose);background:var(--panel-elevated);padding:12px;border-radius:6px;cursor:pointer" onclick="switchView('approvals')">
+        <b style="color:var(--accent-rose);font-size:13px">3 High-Value Payments Held</b>
+        <p style="color:var(--fg-muted);font-size:12px;margin-top:2px">Transactions over $10,000 awaiting sign-off in the Approvals Inbox.</p>
+      </div>
+      <div style="border-left:3px solid var(--accent-amber);background:var(--panel-elevated);padding:12px;border-radius:6px">
+        <b style="color:var(--accent-amber);font-size:13px">Cost Drift Alert · Sales Researcher</b>
+        <p style="color:var(--fg-muted);font-size:12px;margin-top:2px">Token usage increased 18% today due to expanded context window queries.</p>
+      </div>
+    </div>
+  `;
+}
+
+function renderAgentsTable() {
+  const table = document.getElementById('agentsTable');
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th>Agent Name</th>
+        <th>Runs (7d)</th>
+        <th>Success</th>
+        <th>Spend</th>
+        <th>Reliability</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${AGENTS.map(a => `
+        <tr class="row-click" onclick="filterByAgent('${a.id}')">
+          <td><b style="color:${a.color}">●</b> ${a.name}</td>
+          <td>${(120 + Math.round(Math.random()*40)).toLocaleString()}</td>
+          <td>98.4%</td>
+          <td>$${(14 + Math.random()*20).toFixed(2)}</td>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden">
+                <div style="width:94%;height:100%;background:var(--accent-green)"></div>
+              </div>
+              <span style="font-weight:700">94</span>
+            </div>
+          </td>
+        </tr>
+      `).join('')}
+    </tbody>
+  `;
+}
+
+function renderFailureCauses() {
+  document.getElementById('failureCausesBox').innerHTML = `
+    <div style="display:grid;gap:10px;font-size:13px">
+      <div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+          <span>Vendor ERP Timeout (vendor_db)</span>
+          <b style="color:var(--accent-rose)">14</b>
+        </div>
+        <div style="height:5px;background:var(--border);border-radius:3px"><div style="width:65%;height:100%;background:var(--accent-rose)"></div></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+          <span>Hallucinated PO Number</span>
+          <b style="color:var(--accent-amber)">6</b>
+        </div>
+        <div style="height:5px;background:var(--border);border-radius:3px"><div style="width:30%;height:100%;background:var(--accent-amber)"></div></div>
+      </div>
+    </div>
+  `;
+}
+
+function renderRunsList() {
+  if (!DATA) return;
+  const q = (document.getElementById('searchRunsInput').value || '').toLowerCase();
+  const st = document.getElementById('filterStatus').value;
+  const filtered = DATA.runs.filter(r => {
+    return (!st || r.status === st) && (!q || r.id.includes(q) || r.agent.includes(q));
+  }).slice(0, 50);
+
+  const container = document.getElementById('runsList');
+  container.innerHTML = filtered.map(r => {
+    const isSel = SELECTED_RUN && SELECTED_RUN.id === r.id;
+    return `
+      <div style="padding:10px 12px;border-radius:8px;background:${isSel ? 'var(--panel-elevated)' : 'transparent'};border-left:${isSel ? '3px solid var(--primary)' : '3px solid transparent'};cursor:pointer;margin-bottom:6px" onclick="selectRun('${r.id}')">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <b style="font-size:13px">${r.id}</b>
+          <span class="badge ${r.status==='success'?'badge-ok':r.status==='blocked'?'badge-held':'badge-err'}">${r.status}</span>
+        </div>
+        <div style="font-size:12px;color:var(--fg-muted)">
+          ${r.agent} • ${(r.duration/1000).toFixed(1)}s • $${r.cost.toFixed(3)}
+        </div>
+      </div>
+    `;
+  }).join('') || '<div style="padding:20px;text-align:center;color:var(--fg-muted)">No matching runs</div>';
+
+  if (!SELECTED_RUN && filtered.length) {
+    selectRun(filtered[0].id);
+  }
+}
+
+function selectRun(runId) {
+  if (!DATA) return;
+  const r = DATA.runs.find(x => x.id === runId);
+  if (!r) return;
+  SELECTED_RUN = r;
+
+  const totalD = r.duration || 1000;
+  document.getElementById('traceWaterfall').innerHTML = `
+    <div style="border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h4 style="font-size:16px;font-weight:700">${r.id} · <span style="color:var(--fg-muted)">${r.agent}</span></h4>
+        <button class="btn-ghost" onclick="playTraceAnimation('${r.id}')">▶ Replay Execution</button>
+      </div>
+      <div style="display:flex;gap:18px;margin-top:8px;font-size:12px;color:var(--fg-muted)">
+        <span>Duration: <b>${(r.duration/1000).toFixed(2)}s</b></span>
+        <span>Cost: <b>$${r.cost.toFixed(4)}</b></span>
+        <span>Tokens: <b>${r.tokens.toLocaleString()}</b></span>
+      </div>
+    </div>
+
+    <div class="timeline-wf" id="wfTrack">
+      ${r.steps.map((s, idx) => {
+        const left = ((s.dur * idx * 0.4) / totalD) * 100;
+        const w = Math.max(8, (s.dur / totalD) * 100);
+        return `
+          <div class="step-row" onclick="inspectStep(${idx})">
+            <div class="step-meta-name">
+              <span class="kind-tag kind-${s.kind}">${s.kind}</span>
+              <span>${s.name}</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" style="left:${left}%;width:${w}%;background:var(--${s.kind==='llm'?'accent-purple':s.kind==='action'?'primary':'accent-cyan'})"></div>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+
+    <div id="stepDetailBox" style="background:#090a0f;border:1px solid var(--border);border-radius:8px;padding:14px;margin-top:16px;font-family:var(--font-mono);font-size:12px">
+      <div style="color:var(--fg-muted);margin-bottom:6px">// Click any step above to inspect prompt input, model tokens and policy flags</div>
+      <div>Input: ${r.steps[0]?.input || 'Task payload'}</div>
+      <div style="margin-top:4px">Output: ${r.steps[r.steps.length-1]?.output || 'Completed'}</div>
+    </div>
+  `;
+}
+
+function playTraceAnimation(runId) {
+  playTone(520, 'sine', 0.15);
+  showToast('Replaying Flight Record', `Tracing step-by-step latency for ${runId}`, 'ok');
+}
+
+function inspectStep(idx) {
+  if (!SELECTED_RUN) return;
+  const s = SELECTED_RUN.steps[idx];
+  document.getElementById('stepDetailBox').innerHTML = `
+    <div style="color:var(--primary);font-weight:700;margin-bottom:6px">// Step ${idx+1}: ${s.name} (${s.kind})</div>
+    <div>Duration: ${s.dur}ms | Tokens: in=${s.tokens_in||0}, out=${s.tokens_out||0}</div>
+    <div style="margin-top:6px;color:#94a3b8">Payload Input: ${s.input || '(none)'}</div>
+    <div style="margin-top:4px;color:#38bdf8">Payload Output: ${s.output || '(none)'}</div>
+  `;
+}
+
+/* ---------------- APPROVALS INBOX ---------------- */
+function renderApprovalsInbox() {
+  if (!DATA) return;
+  const container = document.getElementById('inboxList');
+  const pending = DATA.approvals.filter(a => a.status === 'pending');
+
+  if (!pending.length) {
+    container.innerHTML = `
+      <div style="padding:48px;text-align:center;background:var(--panel-elevated);border-radius:12px;border:1px dashed var(--border)">
+        <div style="font-size:32px;margin-bottom:8px">🎉</div>
+        <h4 style="font-size:16px;font-weight:700">Inbox Zero · No Pending Exceptions</h4>
+        <p style="color:var(--fg-muted);font-size:13px;margin:4px 0 16px">All autonomous agent transactions have cleared dual-control review.</p>
+        <button class="btn-ghost" onclick="presetSim(18500, 'Litware Logistics', true)">+ Trigger High-Value Payout Test ($18,500)</button>
+      </div>
+    `;
+  } else {
+    container.innerHTML = pending.map(a => `
+      <div style="background:var(--panel-elevated);border:1px solid var(--border);border-radius:12px;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:20px">
+        <div>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--primary);margin-bottom:4px">
+            ${a.agent} • Requested Action: ${a.action}
+          </div>
+          <div style="font-size:22px;font-weight:800;font-family:var(--font-mono);letter-spacing:-0.02em">
+            $${a.payload.amount?.toLocaleString()} <span style="font-size:14px;color:var(--fg-muted);font-family:var(--font-main);font-weight:500">to ${a.payload.vendor||'Vendor'}</span>
+          </div>
+          <div style="font-size:12px;color:var(--fg-muted);margin-top:4px">${a.reason}</div>
+        </div>
+        <div style="display:flex;gap:10px;flex-shrink:0">
+          <button class="btn-reject" onclick="decideInbox('${a.id}', false)">Reject</button>
+          <button class="btn-approve" onclick="decideInbox('${a.id}', true)">Authorize Payment</button>
+        </div>
+      </div>
+    `).join('');
   }
 
-  updateCount();
-  renderAll();
+  // Audit Table
+  document.getElementById('auditTable').innerHTML = `
+    <thead>
+      <tr>
+        <th>Timestamp</th>
+        <th>Event</th>
+        <th>Agent</th>
+        <th>Action</th>
+        <th>Decision</th>
+        <th>Signer</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${DATA.audit.slice(0, 20).map(e => `
+        <tr>
+          <td style="font-family:var(--font-mono);font-size:12px">${new Date(e.ts).toLocaleTimeString()}</td>
+          <td>${e.kind === 'approval' ? 'Human Sign-off' : 'Guardrail Evaluation'}</td>
+          <td>${e.agent}</td>
+          <td>${e.action} ($${(e.amount||10000).toLocaleString()})</td>
+          <td><span class="badge ${e.decision==='approved'?'badge-ok':e.decision==='rejected'?'badge-err':'badge-held'}">${e.decision}</span></td>
+          <td>${e.actor}</td>
+        </tr>
+      `).join('')}
+    </tbody>
+  `;
 }
 
-async function load(){
-  try{const ctl=new AbortController();setTimeout(()=>ctl.abort(),2500);const res=await fetch('/v1/export',{signal:ctl.signal});
-    if(res.ok){const j=await res.json();if(j&&j.runs&&j.runs.length){j.runs.forEach(r=>{r.started_at=typeof r.started_at==='string'?Date.parse(r.started_at):r.started_at;});
-      j.runs.forEach(r=>{r.flags=r.flags||[];r.risky=r.risky??r.steps.filter(s=>(s.flags||[]).length).length;});(j.agents||[]).forEach(a=>{if(!AGENTS.find(x=>x.id===a.id))AGENTS.push({id:a.id,name:a.name||a.id,color:['--a1','--a2','--a3','--a4'][AGENTS.length%4],target:a.target||10000});});
-      DATA={...j,live:true};}}}catch(e){}
-  if(!DATA)DATA=demoData();
-  $('#src').textContent=DATA.live?'Live server':'Demo mode';$('#src').classList.toggle('live',!!DATA.live);$('#ws').textContent=DATA.workspace||'Acme Finance';
-  $('#fAgent').innerHTML='<option value="">All agents</option>'+AGENTS.map(a=>`<option value="${a.id}">${esc(a.name)}</option>`).join('');
-  initTheme();
-  updateCount();
-  renderOverview();
-  let t='overview';try{t=sessionStorage.getItem('al-tab')||t;}catch(e){}if(location.hash==='#approvals')t='approvals';setTab(t);
+function decideInbox(aprId, isApproved) {
+  const item = DATA.approvals.find(x => x.id === aprId);
+  if (!item) return;
+  item.status = isApproved ? 'approved' : 'rejected';
+  item.decided_at = Date.now();
+  item.decided_by = 'you';
+  
+  DATA.audit.unshift({
+    ts: Date.now(),
+    kind: 'approval',
+    agent: item.agent,
+    action: item.action,
+    decision: item.status,
+    actor: 'you (maker-checker)',
+    amount: item.payload.amount
+  });
+
+  if (isApproved) {
+    playChimeSuccess();
+    showToast('Payment Authorized', `$${item.payload.amount?.toLocaleString()} cleared for settlement`, 'ok');
+  } else {
+    playTone(220, 'sawtooth', 0.2);
+    showToast('Payment Rejected', `$${item.payload.amount?.toLocaleString()} cancelled`, 'err');
+  }
+
+  updateApprovalsCount();
+  renderApprovalsInbox();
 }
-load();
+
+/* ---------------- POLICIES STUDIO ---------------- */
+function renderPoliciesStudio() {
+  document.getElementById('policiesTable').innerHTML = `
+    <thead>
+      <tr>
+        <th>Active</th>
+        <th>Policy ID</th>
+        <th>Condition</th>
+        <th>Enforcement Decision</th>
+        <th>Severity</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${POLICIES.map(p => `
+        <tr>
+          <td><input type="checkbox" class="switch-input" ${p.on ? 'checked' : ''} onchange="togglePolicy('${p.id}', this.checked)"></td>
+          <td><b>${p.name}</b></td>
+          <td style="color:var(--fg-muted);font-family:var(--font-mono)">${p.rule}</td>
+          <td><span class="badge ${p.action==='require_approval'?'badge-held':'badge-flag'}">${p.action}</span></td>
+          <td><span style="font-weight:700;color:var(--${p.severity==='high'?'accent-rose':'accent-amber'})">${p.severity.toUpperCase()}</span></td>
+        </tr>
+      `).join('')}
+    </tbody>
+  `;
+}
+
+function togglePolicy(id, state) {
+  const p = POLICIES.find(x => x.id === id);
+  if (p) p.on = state;
+  playTone(400, 'sine', 0.08);
+  showToast('Policy Updated', `${id} is now ${state ? 'ENABLED' : 'DISABLED'}`, 'ok');
+}
+
+/* ---------------- UI UTILS & MODALS ---------------- */
+function openModal(id) {
+  const m = document.getElementById(id);
+  if (m) m.classList.add('open');
+}
+function closeModal(id) {
+  const m = document.getElementById(id);
+  if (m) m.classList.remove('open');
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(el => el.classList.remove('open'));
+});
+
+function copySnippet(id) {
+  const txt = document.getElementById(id).innerText;
+  navigator.clipboard.writeText(txt).then(() => {
+    showToast('Copied to Clipboard', 'Ready to paste into your codebase', 'ok');
+  });
+}
+
+function showToast(title, desc, type='ok', actText=null, actFn=null) {
+  const shelf = document.getElementById('toastShelf');
+  const t = document.createElement('div');
+  t.className = 'toast-msg';
+  t.innerHTML = `
+    <div class="toast-icon">${type === 'warn' ? '⚠️' : type === 'err' ? '❌' : '✓'}</div>
+    <div style="flex:1">
+      <div class="toast-title">${title}</div>
+      <div class="toast-desc">${desc}</div>
+      ${actText ? `<button class="toast-btn" id="toastAct">${actText} →</button>` : ''}
+    </div>
+  `;
+  if (actText && actFn) {
+    t.querySelector('#toastAct').onclick = () => { actFn(); t.remove(); };
+  }
+  shelf.appendChild(t);
+  setTimeout(() => {
+    t.style.opacity = '0';
+    t.style.transform = 'translateY(10px)';
+    t.style.transition = 'all .3s';
+    setTimeout(() => t.remove(), 300);
+  }, 4800);
+}
+
+function toggleTheme() {
+  const root = document.documentElement;
+  const isDark = root.getAttribute('data-theme') === 'dark';
+  const next = isDark ? 'light' : 'dark';
+  root.setAttribute('data-theme', next);
+  localStorage.setItem('cosignal-theme', next);
+  if (document.getElementById('spendChartBox').innerHTML) renderSpendChart();
+}
+
+async function init() {
+  const saved = localStorage.getItem('cosignal-theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+
+  try {
+    const res = await fetch('/v1/export', { signal: AbortSignal.timeout(2000) });
+    if (res.ok) {
+      const json = await res.json();
+      if (json && json.runs && json.runs.length) {
+        DATA = json;
+        document.getElementById('sysPill').textContent = 'Live Server Connected';
+      }
+    }
+  } catch(e) {}
+
+  if (!DATA) {
+    DATA = generateDataset();
+  }
+
+  updateApprovalsCount();
+  switchView('sim');
+}
+
+window.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>

@@ -11,46 +11,66 @@
 :root{
   --bg:#f3f3f1;--panel:#ffffff;--panel2:#f7f7f5;--line:#e3e2de;--fg:#17181a;--muted:#6d6b66;--faint:#a3a19b;
   --orange:#f25c05;--ok:#1f9d63;--warn:#c98a0b;--bad:#d9382e;--a1:#f25c05;--a2:#2f6fdb;--a3:#7a4fd6;--a4:#1f9d63;
-  --llm:#7a4fd6;--tool:#2f6fdb;--retrieval:#1f9d63;--action:#f25c05;--shadow:0 1px 2px rgba(0,0,0,.05);
+  --llm:#7a4fd6;--tool:#2f6fdb;--retrieval:#1f9d63;--action:#f25c05;--shadow:0 1px 3px rgba(0,0,0,.06);
   --sans:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;--mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
   box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#111214;--panel:#191b1e;--panel2:#1f2125;--line:#2b2e33;--fg:#ece9e3;--muted:#9a968e;--faint:#5f5c57;
   --orange:#ff6a13;--ok:#43c486;--warn:#f0b43c;--bad:#ff5a4f;--a1:#ff6a13;--a2:#6ea3ff;--a3:#b18cff;--a4:#43c486;
-  --llm:#b18cff;--tool:#6ea3ff;--retrieval:#43c486;--action:#ff6a13;--shadow:none;}}
+  --llm:#b18cff;--tool:#6ea3ff;--retrieval:#43c486;--action:#ff6a13;--shadow:0 1px 3px rgba(0,0,0,.3);}}
 :root[data-theme="dark"]{
   --bg:#111214;--panel:#191b1e;--panel2:#1f2125;--line:#2b2e33;--fg:#ece9e3;--muted:#9a968e;--faint:#5f5c57;
   --orange:#ff6a13;--ok:#43c486;--warn:#f0b43c;--bad:#ff5a4f;--a1:#ff6a13;--a2:#6ea3ff;--a3:#b18cff;--a4:#43c486;
-  --llm:#b18cff;--tool:#6ea3ff;--retrieval:#43c486;--action:#ff6a13;--shadow:none;}
+  --llm:#b18cff;--tool:#6ea3ff;--retrieval:#43c486;--action:#ff6a13;--shadow:0 1px 3px rgba(0,0,0,.3);}
+:root[data-theme="light"]{
+  --bg:#f3f3f1;--panel:#ffffff;--panel2:#f7f7f5;--line:#e3e2de;--fg:#17181a;--muted:#6d6b66;--faint:#a3a19b;
+  --orange:#f25c05;--ok:#1f9d63;--warn:#c98a0b;--bad:#d9382e;--a1:#f25c05;--a2:#2f6fdb;--a3:#7a4fd6;--a4:#1f9d63;
+  --llm:#7a4fd6;--tool:#2f6fdb;--retrieval:#1f9d63;--action:#f25c05;--shadow:0 1px 3px rgba(0,0,0,.06);}
 *,*::before,*::after{box-sizing:inherit}
 html,body{margin:0}
 body{background:var(--bg);color:var(--fg);font:14px/1.45 var(--sans);-webkit-font-smoothing:antialiased}
 button{font:inherit;color:inherit;cursor:pointer}
 button:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
 .wrap{max-width:1360px;margin:0 auto;padding:0 20px 48px}
-header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-.bar{max-width:1360px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
-.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;letter-spacing:-.01em}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.bar{max-width:1360px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;letter-spacing:-.01em;cursor:pointer}
 .box{width:26px;height:22px;border-radius:5px;background:var(--orange);position:relative;box-shadow:inset 0 -4px 0 rgba(0,0,0,.18)}
 .box::after{content:"";position:absolute;left:5px;right:5px;top:7px;height:3px;border-radius:2px;background:rgba(0,0,0,.35)}
 .ws{font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
-.src{font-size:12px;border-radius:999px;padding:3px 10px;background:color-mix(in srgb,var(--orange) 14%,transparent);color:var(--orange);font-weight:600}
+.src{font-size:12px;border-radius:999px;padding:3px 10px;background:color-mix(in srgb,var(--orange) 14%,transparent);color:var(--orange);font-weight:600;display:inline-flex;align-items:center;gap:5px}
 .src.live{background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok)}
-nav{display:flex;gap:2px;margin-left:auto}
-nav button{border:0;background:none;padding:7px 12px;border-radius:8px;color:var(--muted);font-weight:500}
-nav button[aria-selected="true"]{background:var(--panel);color:var(--fg);box-shadow:var(--shadow);border:1px solid var(--line)}
-.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
-.seg button{border:0;background:none;padding:6px 10px;color:var(--muted);font-size:13px}
-.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.src::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor}
+nav{display:flex;gap:3px;margin-left:auto}
+nav button{border:0;background:none;padding:7px 13px;border-radius:8px;color:var(--muted);font-weight:500;transition:all .12s ease}
+nav button:hover{color:var(--fg);background:var(--panel2)}
+nav button[aria-selected="true"]{background:var(--panel);color:var(--fg);box-shadow:var(--shadow);border:1px solid var(--line);font-weight:600}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel2)}
+.seg button{border:0;background:none;padding:6px 10px;color:var(--muted);font-size:12px;font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg);font-weight:600}
+.top-tools{display:flex;align-items:center;gap:8px}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:6px 12px;font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:6px;transition:all .15s}
+.btn:hover{background:var(--panel2);border-color:color-mix(in srgb,var(--fg) 25%,var(--line))}
+.btn.primary{background:var(--orange);border-color:var(--orange);color:#fff;font-weight:600}
+.btn.primary:hover{opacity:.92;transform:translateY(-1px)}
+.btn.icon-only{padding:6px 10px;font-size:14px}
 h2{font-size:13px;font-weight:600;margin:0;color:var(--muted);letter-spacing:.01em}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
 .ph{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 0;gap:10px}
 .pb{padding:12px 16px 16px}
+
+/* Welcome hero banner */
+.hero-card{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:16px 20px;background:color-mix(in srgb,var(--orange) 7%,var(--panel));border:1px solid color-mix(in srgb,var(--orange) 24%,var(--line));border-radius:12px;margin:18px 0 0;box-shadow:var(--shadow)}
+.hero-text h3{margin:0 0 4px;font-size:15px;font-weight:700;color:var(--fg);display:flex;align-items:center;gap:8px}
+.hero-text p{margin:0;font-size:13px;color:var(--muted);max-width:740px;line-height:1.45}
+.hero-actions{display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0}
+
 .kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:18px 0}
-.kpi{background:var(--panel);padding:14px 16px}
+.kpi{background:var(--panel);padding:14px 16px;transition:background .15s}
+.kpi:hover{background:var(--panel2)}
 .kpi .v{font-size:24px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-.kpi .l{font-size:12px;color:var(--muted)}
+.kpi .l{font-size:12px;color:var(--muted);display:flex;align-items:center;justify-content:space-between}
 .kpi .d{font-size:12px;font-variant-numeric:tabular-nums}
 .up-bad{color:var(--bad)}.up-good{color:var(--ok)}
 .grid2{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:18px}
@@ -58,7 +78,7 @@ h2{font-size:13px;font-weight:600;margin:0;color:var(--muted);letter-spacing:.01
 .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
 .legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px}
 svg text{fill:var(--muted);font:11px var(--sans)}
-.alert{display:grid;grid-template-columns:4px 1fr;gap:12px;padding:12px 0;border-top:1px solid var(--line);cursor:pointer}
+.alert{display:grid;grid-template-columns:4px 1fr;gap:12px;padding:12px 0;border-top:1px solid var(--line);cursor:pointer;transition:background .12s}
 .alert:first-child{border-top:0;padding-top:4px}
 .alert .sev{border-radius:2px}
 .alert b{font-weight:600}
@@ -98,8 +118,6 @@ tbody tr.click{cursor:pointer}tbody tr.click:hover{background:var(--panel2)}
 .meta{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
 .meta b{color:var(--fg);font-weight:600}
 .replay{margin-left:auto;display:flex;gap:8px}
-.btn{border:1px solid var(--line);background:var(--panel2);border-radius:8px;padding:7px 12px;font-size:13px;font-weight:500}
-.btn.primary{background:var(--orange);border-color:var(--orange);color:#fff}
 .io{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px 12px}
 .io div{font-size:13px}.io span{display:block;font-size:12px;color:var(--muted);margin-bottom:2px}
 .wf{position:relative;padding:4px 16px 12px}
@@ -129,12 +147,13 @@ pre{margin:0;background:var(--panel2);border:1px solid var(--line);border-radius
 .switch::after{content:"";position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:left .15s}
 .switch[aria-checked="true"]::after{left:17px}
 .act{font-size:12px;font-weight:600}
-.empty{padding:28px;color:var(--muted);text-align:center}
+.empty{padding:32px 20px;color:var(--muted);text-align:center;font-size:13px}
 .hint{font-size:12px;color:var(--muted);margin:14px 0 0}
 [hidden]{display:none!important}
 .tabcount{display:inline-block;min-width:18px;padding:0 6px;margin-left:6px;border-radius:999px;background:var(--orange);color:#fff;font-size:11px;font-weight:700;line-height:18px;text-align:center}
 .inbox{display:grid;gap:12px}
-.apr{display:grid;grid-template-columns:1fr auto;gap:10px 16px;align-items:center;padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--panel2)}
+.apr{display:grid;grid-template-columns:1fr auto;gap:10px 16px;align-items:center;padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--panel2);transition:box-shadow .15s}
+.apr:hover{box-shadow:var(--shadow)}
 .apr .amt{font-size:24px;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
 .apr .why{font-size:13px;color:var(--muted)}
 .apr .acts{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
@@ -143,66 +162,280 @@ pre{margin:0;background:var(--panel2);border:1px solid var(--line);border-radius
 .b-approved{background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok)}.b-rejected{background:color-mix(in srgb,var(--bad) 15%,transparent);color:var(--bad)}.b-pending{background:color-mix(in srgb,var(--warn) 18%,transparent);color:var(--warn)}
 #decisions td{white-space:nowrap}#decisions td:last-child{max-width:180px;overflow:hidden;text-overflow:ellipsis}
 .link{background:none;border:0;padding:0;color:var(--orange);font-weight:600;font-size:13px;text-decoration:underline;text-underline-offset:2px}
-@media (max-width:1000px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.grid2,.grid2b,.runs{grid-template-columns:1fr}.rlist{max-height:340px}}
-@media (max-width:560px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}nav{margin-left:0;width:100%}.io{grid-template-columns:1fr}.wrow,.axis{grid-template-columns:120px 1fr}.replay{margin-left:0}}
+
+/* Modal System */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s ease}
+.modal-overlay.open{opacity:1;pointer-events:auto}
+.modal{background:var(--panel);border:1px solid var(--line);border-radius:16px;width:100%;max-width:660px;max-height:88vh;overflow-y:auto;box-shadow:0 18px 48px rgba(0,0,0,.25);transform:scale(.95);transition:transform .2s ease}
+.modal-overlay.open .modal{transform:scale(1)}
+.m-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--line)}
+.m-head h3{margin:0;font-size:16px;font-weight:700}
+.m-close{background:none;border:0;font-size:22px;line-height:1;color:var(--muted);padding:4px 8px;border-radius:6px}
+.m-close:hover{background:var(--panel2);color:var(--fg)}
+.m-body{padding:20px 22px}
+.m-foot{padding:14px 22px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px;background:var(--panel2);border-radius:0 0 16px 16px}
+
+/* Tour cards */
+.tour-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:16px 0}
+.t-card{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px}
+.t-tag{font-size:11px;font-weight:700;color:var(--orange);text-transform:uppercase;margin-bottom:6px}
+.t-card h4{margin:0 0 6px;font-size:14px;font-weight:600}
+.t-card p{margin:0;font-size:12px;color:var(--muted);line-height:1.45}
+
+/* Code box */
+.code-wrapper{position:relative;margin:12px 0}
+.copy-btn{position:absolute;top:8px;right:8px;padding:4px 9px;font-size:11px;font-weight:600;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--muted);cursor:pointer}
+.copy-btn:hover{color:var(--fg);background:var(--panel2)}
+
+/* Form styles */
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px}
+.form-group input,.form-group select{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font:inherit;font-size:13px;color:var(--fg)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.preset-pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.pill{background:var(--panel2);border:1px solid var(--line);padding:5px 10px;border-radius:999px;font-size:12px;cursor:pointer}
+.pill:hover{border-color:var(--orange);color:var(--orange)}
+
+/* Toasts */
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:999;display:flex;flex-direction:column;gap:10px;pointer-events:none}
+.toast-item{pointer-events:auto;min-width:320px;max-width:420px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:0 8px 24px rgba(0,0,0,.15);display:flex;align-items:flex-start;gap:12px;animation:toastIn .25s ease-out;position:relative}
+.toast-item.t-warn{border-left:4px solid var(--orange)}
+.toast-item.t-ok{border-left:4px solid var(--ok)}
+.toast-body{flex:1}
+.toast-title{font-size:13px;font-weight:700;margin-bottom:3px;color:var(--fg)}
+.toast-msg{font-size:12px;color:var(--muted);line-height:1.4}
+.toast-act{margin-top:8px;padding:4px 10px;font-size:12px;font-weight:600;border-radius:6px;border:1px solid var(--line);background:var(--panel2);color:var(--orange);cursor:pointer}
+.toast-close{background:none;border:0;color:var(--muted);font-size:16px;cursor:pointer;padding:0 4px}
+@keyframes toastIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+@media (max-width:1080px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.grid2,.grid2b,.runs{grid-template-columns:1fr}.rlist{max-height:340px}.tour-grid{grid-template-columns:1fr}}
+@media (max-width:700px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}nav{margin-left:0;width:100%;overflow-x:auto}.top-tools{width:100%;justify-content:flex-end}.hero-card{flex-direction:column;align-items:flex-start}.hero-actions{width:100%}.io{grid-template-columns:1fr}.wrow,.axis{grid-template-columns:120px 1fr}.replay{margin-left:0}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 <header>
   <div class="bar">
-    <div class="logo"><span class="box" aria-hidden="true"></span>Cosignal</div>
+    <div class="logo" onclick="setTab('overview')"><span class="box" aria-hidden="true"></span>Cosignal</div>
     <span class="ws" id="ws">Acme Finance</span>
     <span class="src" id="src">Demo data</span>
+    
     <nav role="tablist" aria-label="Views">
       <button role="tab" aria-selected="true" data-tab="overview">Overview</button>
       <button role="tab" aria-selected="false" data-tab="runs">Runs</button>
       <button role="tab" aria-selected="false" data-tab="approvals">Approvals<span class="tabcount" id="aprCount" hidden></span></button>
       <button role="tab" aria-selected="false" data-tab="policies">Policies</button>
     </nav>
+    
     <div class="seg" role="group" aria-label="Time range">
       <button aria-pressed="false" data-range="1">24h</button>
       <button aria-pressed="true" data-range="7">7 days</button>
     </div>
+
+    <div class="top-tools">
+      <button class="btn" id="btnTour">💡 Guide</button>
+      <button class="btn" id="btnSdk">⚡ SDK</button>
+      <button class="btn primary" id="btnSimModal">▶ Test Guardrail</button>
+      <button class="btn icon-only" id="themeToggle" title="Toggle Dark/Light Mode" aria-label="Toggle theme">🌓</button>
+    </div>
   </div>
 </header>
+
 <main class="wrap">
+  <!-- OVERVIEW -->
   <section id="v-overview">
+    <div class="hero-card">
+      <div class="hero-text">
+        <h3>🛡️ Human Approval & Flight Recorder for AI Agents</h3>
+        <p>Cosignal sits between autonomous agents and critical actions. Before moving money or reading sensitive data, agents check your guardrails. High-value exceptions pause for human review.</p>
+      </div>
+      <div class="hero-actions">
+        <button class="btn primary" onclick="quickSimulate(14500, 'Northwind Supplies', true)">🚨 Test $14,500 Payment (Triggers Hold)</button>
+        <button class="btn" onclick="quickSimulate(680, 'Contoso Metals', false)">✓ Test $680 Payment (Auto-Approved)</button>
+      </div>
+    </div>
+
     <div class="kpis" id="kpis"></div>
     <div class="grid2">
       <div class="panel"><div class="ph"><h2>Spend per day, by agent</h2><div class="legend" id="legend"></div></div><div class="pb" id="spend"></div></div>
       <div class="panel"><div class="ph"><h2>Alerts</h2></div><div class="pb" id="alerts"></div></div>
     </div>
     <div class="grid2b">
-      <div class="panel"><div class="ph"><h2>Agents</h2><span class="hint" style="margin:0" title="100 × (0.5 success + 0.2 × (1 − risky-step rate) + 0.15 latency + 0.15 cost stability)">How the reliability score works ⓘ</span></div><div class="pb tscroll"><table id="agents"></table></div></div>
+      <div class="panel"><div class="ph"><h2>Agents</h2><span class="hint" style="margin:0" title="100 × (0.5 success + 0.2 × (1 − risky-step rate) + 0.15 latency + 0.15 cost stability)">How reliability works ⓘ</span></div><div class="pb tscroll"><table id="agents"></table></div></div>
       <div class="panel"><div class="ph"><h2>Top failure causes</h2></div><div class="pb" id="causes"></div></div>
     </div>
   </section>
+
+  <!-- RUNS -->
   <section id="v-runs" hidden>
     <div class="runs">
       <div class="panel">
         <div class="filters">
           <select id="fAgent" aria-label="Agent"></select>
-          <select id="fStatus" aria-label="Status"><option value="">All statuses</option><option value="success">Success</option><option value="failed">Failed</option><option value="blocked">Blocked</option><option value="flagged">Hit a policy</option></select>
-          <input id="fText" placeholder="Search runs" aria-label="Search runs">
+          <select id="fStatus" aria-label="Status"><option value="">All statuses</option><option value="success">Success</option><option value="failed">Failed</option><option value="blocked">Held for approval</option><option value="flagged">Hit a policy</option></select>
+          <input id="fText" placeholder="Search runs, steps or vendors..." aria-label="Search runs">
         </div>
         <div class="rlist" id="rlist" role="listbox" aria-label="Runs"></div>
       </div>
       <div class="panel" id="trace"></div>
     </div>
   </section>
+
+  <!-- APPROVALS -->
   <section id="v-approvals" hidden>
     <div class="grid2" style="margin-top:18px">
-      <div class="panel"><div class="ph"><h2>Waiting for your approval</h2><span class="hint" style="margin:0">Agents pause here until a person decides</span></div><div class="pb"><div class="inbox" id="inbox"></div></div></div>
+      <div class="panel">
+        <div class="ph"><h2>Waiting for your approval</h2><span class="hint" style="margin:0">Agents pause here until a person decides</span></div>
+        <div class="pb"><div class="inbox" id="inbox"></div></div>
+      </div>
       <div class="panel"><div class="ph"><h2>Recent decisions</h2></div><div class="pb tscroll"><table id="decisions"></table></div></div>
     </div>
-    <div class="panel" style="margin-top:18px"><div class="ph"><h2>Audit trail</h2><span class="hint" style="margin:0">Every guardrail check and human decision, newest first</span></div><div class="pb tscroll"><table id="audit"></table></div></div>
+    <div class="panel" style="margin-top:18px">
+      <div class="ph"><h2>Audit trail</h2><span class="hint" style="margin:0">Every guardrail check and human decision, newest first</span></div>
+      <div class="pb tscroll"><table id="audit"></table></div>
+    </div>
   </section>
+
+  <!-- POLICIES -->
   <section id="v-policies" hidden>
-    <div class="panel" style="margin-top:18px"><div class="ph"><h2>Guardrail policies</h2></div><div class="pb tscroll"><table id="policies"></table>
-      <p class="hint">Policies are checked by the SDK before an action runs (<code>lens.check()</code>) and again on ingest, so every decision lands in the audit trail.</p></div></div>
+    <div class="panel" style="margin-top:18px">
+      <div class="ph"><h2>Guardrail policies (policies.yaml)</h2></div>
+      <div class="pb tscroll">
+        <table id="policies"></table>
+        <p class="hint">Policies are checked by the SDK before an action runs (<code>lens.check()</code>) and again on ingest, so every decision lands in the audit trail.</p>
+      </div>
+    </div>
   </section>
 </main>
+
+<!-- MODAL: HOW IT WORKS / GUIDE -->
+<div class="modal-overlay" id="modalTourOverlay">
+  <div class="modal">
+    <div class="m-head">
+      <h3>💡 How Cosignal Works</h3>
+      <button class="m-close" onclick="closeModal('modalTourOverlay')">&times;</button>
+    </div>
+    <div class="m-body">
+      <p style="margin-top:0;color:var(--muted)">Cosignal applies the proven "maker-checker" / dual-control financial principle to autonomous AI agents.</p>
+      <div class="tour-grid">
+        <div class="t-card">
+          <div class="t-tag">1. Guard</div>
+          <h4>Pre-Flight Check</h4>
+          <p>Before executing sensitive actions like payouts, the agent asks Cosignal: <code>run.check("create_payment", amount=...)</code>.</p>
+        </div>
+        <div class="t-card">
+          <div class="t-tag">2. Approve</div>
+          <h4>Maker-Checker Inbox</h4>
+          <p>If payment exceeds $10,000 or payee is new, action pauses. Reviewers get a Slack ping and review in the Approvals Inbox.</p>
+        </div>
+        <div class="t-card">
+          <div class="t-tag">3. Flight Recorder</div>
+          <h4>Replay & Audit Trail</h4>
+          <p>Every prompt, model call, token cost and human decision is preserved in an immutable audit log for compliance.</p>
+        </div>
+      </div>
+      <div style="background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px;margin-top:14px">
+        <h4 style="margin:0 0 6px;font-size:13px">Ready to test it?</h4>
+        <p style="margin:0 0 10px;font-size:12px;color:var(--muted)">Click the button below to simulate an agent attempting a $15,000 payment to see the guardrail trigger live.</p>
+        <button class="btn primary" onclick="closeModal('modalTourOverlay');quickSimulate(15000, 'Litware Labs', true)">Simulate $15,000 Payment Now</button>
+      </div>
+    </div>
+    <div class="m-foot">
+      <button class="btn" onclick="closeModal('modalTourOverlay')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: SDK INTEGRATION -->
+<div class="modal-overlay" id="modalSdkOverlay">
+  <div class="modal">
+    <div class="m-head">
+      <h3>⚡ Integrate in 3 Lines of Python</h3>
+      <button class="m-close" onclick="closeModal('modalSdkOverlay')">&times;</button>
+    </div>
+    <div class="m-body">
+      <p style="margin-top:0;color:var(--muted)">The Cosignal SDK has zero external dependencies and ensures safe agent payouts.</p>
+      
+      <div class="code-wrapper">
+        <button class="copy-btn" onclick="copySnippet('sdkCodeSnippet', this)">Copy Code</button>
+        <pre id="sdkCodeSnippet">from cosignal import Cosignal
+
+lens = Cosignal(agent="invoice-processor")
+
+with lens.run(input="Invoice from Acme Vendor") as run:
+    # 1. Step tracking with token and cost attribution
+    with run.step("llm", "extract", model="gpt-4o") as s:
+        s.tokens(usage.prompt_tokens, usage.completion_tokens)
+
+    # 2. Guardrail check: pauses if > $10,000 or new vendor
+    decision = run.check("create_payment", amount=invoice["amount"], vendor=invoice["vendor"], wait=300)
+
+    if decision.allowed:
+        with run.step("action", "create_payment"):
+            pay_vendor(invoice)
+    else:
+        notify_finance(f"Payment held: {decision.reason}")</pre>
+      </div>
+
+      <h4 style="margin:16px 0 6px;font-size:13px">One-Command Local Run</h4>
+      <div class="code-wrapper">
+        <button class="copy-btn" onclick="copySnippet('cliSnippet', this)">Copy</button>
+        <pre id="cliSnippet"># Launch server, seed data, and open dashboard:
+./start.sh</pre>
+      </div>
+    </div>
+    <div class="m-foot">
+      <button class="btn" onclick="closeModal('modalSdkOverlay')">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: TEST GUARDRAIL -->
+<div class="modal-overlay" id="modalSimOverlay">
+  <div class="modal">
+    <div class="m-head">
+      <h3>▶ Test an Agent Guardrail Action</h3>
+      <button class="m-close" onclick="closeModal('modalSimOverlay')">&times;</button>
+    </div>
+    <div class="m-body">
+      <div class="form-group">
+        <label>Select Agent</label>
+        <select id="simAgent">
+          <option value="invoice-processor">Invoice Processor (Payment guardrails)</option>
+          <option value="support-agent">Customer Support Agent (PII & email guards)</option>
+          <option value="sales-research">Sales Research Agent (CRM updates)</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Payment Amount ($)</label>
+          <input type="number" id="simAmount" value="14200" min="10" step="10">
+        </div>
+        <div class="form-group">
+          <label>Vendor / Recipient</label>
+          <input type="text" id="simVendor" value="Northwind Supplies">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Quick Presets</label>
+        <div class="preset-pills">
+          <span class="pill" onclick="setSimPreset(15000, 'Litware Labs', false)">$15,000 (Exceeds $10k limit)</span>
+          <span class="pill" onclick="setSimPreset(4200, 'Brand New Vendor LLC', true)">New Payee Review</span>
+          <span class="pill" onclick="setSimPreset(7500, 'Contoso Metals', false)">$7,500 (Payment review band)</span>
+          <span class="pill" onclick="setSimPreset(450, 'Standard Supplies', false)">$450 (Safe Auto-Approve)</span>
+        </div>
+      </div>
+    </div>
+    <div class="m-foot">
+      <button class="btn" onclick="closeModal('modalSimOverlay')">Cancel</button>
+      <button class="btn primary" onclick="executeCustomSim()">Run Guardrail Check</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastBox"></div>
+
 <script>
 /* ---------------- data: live API if served by the Cosignal server, else realistic demo data ---------------- */
 const AGENTS=[
@@ -365,7 +598,7 @@ function buildAlerts(){const cur=inRange(DATA.runs,1),base=DATA.runs.filter(r=>r
     const cc=c.reduce((x,r)=>x+r.cost,0)/c.length,cb=b.reduce((x,r)=>x+r.cost,0)/b.length;
     if(cc/cb>1.25)ALERTS.push({sev:'--warn',agent:a.id,status:'',title:`${a.name}: cost per run up ${Math.round((cc/cb-1)*100)}%`,body:`Average ${money(cc)} per run today vs ${money(cb)}. Prompts are sending more tokens to the model.`});});
   const held=inRange(DATA.runs,RANGE).filter(r=>r.status==='blocked');
-  const pend=(DATA.approvals||[]).filter(a=>a.status==='pending');if(pend.length)ALERTS.push({sev:'--orange',agent:'invoice-processor',status:'blocked',tab:'approvals',title:`${pend.length} payments waiting for your approval`,body:`Largest: ${money(Math.max(...held.map(r=>r.steps.find(s=>s.amount)?.amount||0)))} to ${held[0].steps[1]?.output?.match(/"vendor":"([^"]+)/)?.[1]||'a vendor'}. Policy: High-value payment.`});
+  const pend=(DATA.approvals||[]).filter(a=>a.status==='pending');if(pend.length)ALERTS.push({sev:'--orange',agent:'invoice-processor',status:'blocked',tab:'approvals',title:`${pend.length} payments waiting for your approval`,body:`Largest: ${money(Math.max(...held.map(r=>r.steps.find(s=>s.amount)?.amount||0), 0))} to ${held[0]?.steps[1]?.output?.match(/"vendor":"([^"]+)/)?.[1]||'a vendor'}. Policy: High-value payment.`});
   return ALERTS;}
 
 /* ---------------- runs + trace replay ---------------- */
@@ -383,7 +616,7 @@ function selectRun(id){stopReplay();SEL=id;SELSTEP=null;document.querySelectorAl
   const r=DATA.runs.find(x=>x.id===id),a=agentOf(r.agent);const first=r.steps.find(s=>s.status==='error'||s.status==='held')||r.steps.find(s=>s.flags.length);SELSTEP=first?first.i:0;
   $('#trace').innerHTML=`<div class="thead"><span class="title">${esc(a.name)}</span>${badge(r)}<div class="replay"><button class="btn primary" id="play">▶ Replay</button></div>
     <div class="meta" style="width:100%"><span>Run <b>${r.id}</b></span><span>${fmtTime(r.started_at)} UTC</span><span>Duration <b>${ms(r.duration)}</b></span><span>Cost <b>${money(r.cost)}</b></span><span>Tokens <b>${r.tokens.toLocaleString()}</b></span>${r.fail?`<span style="color:var(${r.status==='blocked'?'--warn':'--bad'})">${esc(r.fail)}</span>`:''}</div></div>
-    <div class="io"><div><span>Input</span>${esc(r.input||r.steps[0].output)}</div><div><span>Outcome</span>${esc(r.status==='success'?(r.output||r.steps[r.steps.length-1].output):r.fail)}</div></div>
+    <div class="io"><div><span>Input</span>${esc(r.input||r.steps[0]?.output||'(none)')}</div><div><span>Outcome</span>${esc(r.status==='success'?(r.output||r.steps[r.steps.length-1]?.output):r.fail)}</div></div>
     <div class="axis"><div></div><div><span>0</span><span>${ms(r.duration/2)}</span><span>${ms(r.duration)}</span></div></div>
     <div class="wf" id="wf">${r.steps.map(s=>`<div class="wrow" tabindex="0" data-step="${s.i}" aria-selected="${s.i===SELSTEP}"><div class="wname"><span class="k" style="background:var(--${s.kind})">${s.kind}</span><span class="nm">${esc(s.name)}</span></div>
       <div class="track2"><div class="seg2 ${s.status==='error'?'err':''}" style="left:${100*s.start/r.duration}%;width:${100*s.dur/r.duration}%;background:var(${s.status==='error'?'--bad':s.status==='held'?'--warn':'--'+s.kind})"></div>${s.flags.length?`<div class="fl" style="left:calc(${100*(s.start+s.dur)/r.duration}% + 4px)" title="${esc(s.flags.map(f=>pol(f).name).join(', '))}"></div>`:''}</div></div>`).join('')}
@@ -412,7 +645,12 @@ function renderApprovals(){const ap=DATA.approvals||[],pend=ap.filter(a=>a.statu
   $('#inbox').innerHTML=pend.map(a=>`<div class="apr" data-apr="${a.id}"><div><div class="why">${esc(agentOf(a.agent).name)} wants to run <b>${esc(a.action)}</b> · ${ago(a.created_at)}</div>
       <div class="amt">${fmtAmt(a.payload.amount)}${a.payload.vendor?` <span style="font-size:15px;font-weight:500;color:var(--muted)">to ${esc(a.payload.vendor)}</span>`:''}</div>
       <div class="why">${esc(a.reason||'')}</div>${a.run_id?`<button class="link" data-openrun="${a.run_id}">Replay the run</button>`:''}</div>
-    <div class="acts"><input placeholder="Note (optional)" aria-label="Note"><button class="btn no" data-dec="reject">Reject</button><button class="btn ok" data-dec="approve">Approve</button></div></div>`).join('')||'<div class="empty">Nothing waiting. Every held action has been reviewed.</div>';
+    <div class="acts"><input placeholder="Note (optional)" aria-label="Note"><button class="btn no" data-dec="reject">Reject</button><button class="btn ok" data-dec="approve">Approve</button></div></div>`).join('')||`
+    <div class="empty">
+      <div style="font-size:22px;margin-bottom:6px">🎉</div>
+      <b>All caught up!</b> No pending approval requests.<br>
+      <button class="btn primary" style="margin-top:12px" onclick="quickSimulate(16500, 'Tailspin Parts', true)">+ Simulate New Payment Request</button>
+    </div>`;
   $('#decisions').innerHTML='<thead><tr><th>When</th><th>Agent</th><th>Amount</th><th>Decision</th><th>By</th><th>Note</th></tr></thead><tbody>'+done.slice(0,40).map(a=>`<tr><td>${fmtTime(a.decided_at||a.created_at)}</td><td>${esc(agentOf(a.agent).name)}</td><td>${fmtAmt(a.payload.amount)}</td><td><span class="badge b-${a.status}">${a.status}</span></td><td>${esc(a.decided_by||'')}</td><td style="color:var(--muted)">${esc(a.note||'')}</td></tr>`).join('')+'</tbody>';
   $('#audit').innerHTML='<thead><tr><th>Time</th><th>Event</th><th>Agent</th><th>Action</th><th>Decision</th><th>By</th></tr></thead><tbody>'+(DATA.audit||[]).slice(0,60).map(e=>`<tr><td>${fmtTime(e.ts)}</td><td>${e.kind==='approval'?'Human decision':'Guardrail check'}</td><td>${esc(agentOf(e.agent).name)}</td><td>${esc(e.action)} ${fmtAmt(e.detail?.payload?.amount)}</td><td><span class="badge b-${{approved:'approved',rejected:'rejected',require_approval:'pending',flag:'flag',block:'failed',allow:'success'}[e.decision]||'flag'}">${e.decision==='require_approval'?'held':e.decision}</span></td><td>${esc(e.actor||'')}</td></tr>`).join('')+'</tbody>';
   document.querySelectorAll('[data-openrun]').forEach(b=>b.onclick=()=>{$('#fAgent').value='';$('#fStatus').value='';$('#fText').value='';setTab('runs');selectRun(b.dataset.openrun);});
@@ -423,6 +661,7 @@ async function decide(id,dec,note){const a=DATA.approvals.find(x=>x.id===id);if(
       if(r.ok){Object.assign(a,await r.json());}const au=await fetch('/v1/audit');if(au.ok)DATA.audit=await au.json();}catch(e){}}
   else{const t=Date.now();Object.assign(a,{status:dec==='approve'?'approved':'rejected',decided_at:t,decided_by:'you',note:note||null});
     DATA.audit.unshift({ts:t,kind:'approval',run_id:a.run_id,agent:a.agent,action:a.action,decision:a.status,actor:'you',detail:{payload:a.payload,note}});}
+  showToast(dec==='approve'?'Payment Approved':'Payment Rejected', `${fmtAmt(a.payload.amount)} to ${a.payload.vendor||'vendor'} was ${dec==='approve'?'authorized':'declined'}. Recorded in audit trail.`, dec==='approve'?'ok':'bad');
   renderApprovals();}
 
 /* ---------------- policies ---------------- */
@@ -435,23 +674,174 @@ function renderPolicies(){const rs=inRange(DATA.runs,RANGE);
   document.querySelectorAll('[data-pol]').forEach(el=>el.onclick=()=>{$('#fText').value='';$('#fAgent').value='';$('#fStatus').value='flagged';setTab('runs');
     const r=inRange(DATA.runs,RANGE).find(x=>x.flags.includes(el.dataset.pol));renderRuns(false);if(r)selectRun(r.id);});}
 
-/* ---------------- shell ---------------- */
+/* ---------------- shell + interactive helpers ---------------- */
 function setTab(t){document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));['overview','runs','approvals','policies'].forEach(v=>$('#v-'+v).hidden=v!==t);if(t==='approvals')renderApprovals();
   if(t==='runs')renderRuns(false);if(t==='policies')renderPolicies();if(t!=='runs')stopReplay();try{sessionStorage.setItem('al-tab',t);}catch(e){}}
 function renderAll(){renderOverview();if(!$('#v-runs').hidden)renderRuns(false);if(!$('#v-policies').hidden)renderPolicies();}
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
 document.querySelectorAll('[data-range]').forEach(b=>b.onclick=()=>{RANGE=+b.dataset.range;document.querySelectorAll('[data-range]').forEach(x=>x.setAttribute('aria-pressed',x===b));renderAll();});
 ['fAgent','fStatus'].forEach(id=>$('#'+id).onchange=()=>renderRuns(true));$('#fText').oninput=()=>renderRuns(false);
-matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',()=>renderOverview());
+
+/* Modals */
+function openModal(id){const el=$('#'+id);if(el)el.classList.add('open');}
+function closeModal(id){const el=$('#'+id);if(el)el.classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(el=>{
+  el.onclick=e=>{if(e.target===el)el.classList.remove('open');};
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){document.querySelectorAll('.modal-overlay.open').forEach(el=>el.classList.remove('open'));}
+});
+
+/* Theme toggle */
+function initTheme(){
+  const saved=localStorage.getItem('cosignal-theme');
+  if(saved){document.documentElement.setAttribute('data-theme',saved);}
+  updateThemeIcon();
+}
+function toggleTheme(){
+  const cur=document.documentElement.getAttribute('data-theme');
+  let next='dark';
+  if(cur==='dark'){next='light';}
+  else if(cur==='light'){next='dark';}
+  else{const isDark=matchMedia('(prefers-color-scheme: dark)').matches;next=isDark?'light':'dark';}
+  document.documentElement.setAttribute('data-theme',next);
+  localStorage.setItem('cosignal-theme',next);
+  updateThemeIcon();
+  renderOverview();
+}
+function updateThemeIcon(){
+  const btn=$('#themeToggle');
+  const cur=document.documentElement.getAttribute('data-theme');
+  const isDark=cur==='dark'||(!cur&&matchMedia('(prefers-color-scheme: dark)').matches);
+  if(btn)btn.textContent=isDark?'☀️':'🌙';
+}
+$('#themeToggle').onclick=toggleTheme;
+$('#btnTour').onclick=()=>openModal('modalTourOverlay');
+$('#btnSdk').onclick=()=>openModal('modalSdkOverlay');
+$('#btnSimModal').onclick=()=>openModal('modalSimOverlay');
+
+/* Copy helper */
+function copySnippet(id, btn){
+  const text=$('#'+id).innerText;
+  navigator.clipboard.writeText(text).then(()=>{
+    const old=btn.textContent;btn.textContent='✓ Copied!';
+    setTimeout(()=>btn.textContent=old,1500);
+  });
+}
+
+/* Toasts */
+function showToast(title, msg, type='ok', actionText=null, actionFn=null){
+  const box=$('#toastBox');
+  const t=document.createElement('div');
+  t.className=`toast-item t-${type}`;
+  t.innerHTML=`<div class="toast-body"><div class="toast-title">${esc(title)}</div><div class="toast-msg">${esc(msg)}</div>
+    ${actionText?`<button class="toast-act">${esc(actionText)}</button>`:''}</div>
+    <button class="toast-close" aria-label="Dismiss">&times;</button>`;
+  t.querySelector('.toast-close').onclick=()=>t.remove();
+  if(actionText&&actionFn){t.querySelector('.toast-act').onclick=()=>{actionFn();t.remove();};}
+  box.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transform='translateY(10px)';setTimeout(()=>t.remove(),300);},5000);
+}
+
+/* Simulation handler */
+function setSimPreset(amt, vend, newP){
+  $('#simAmount').value=amt;$('#simVendor').value=vend;
+}
+function executeCustomSim(){
+  closeModal('modalSimOverlay');
+  const amt=parseFloat($('#simAmount').value)||12000;
+  const vend=$('#simVendor').value||'Northwind Supplies';
+  const agent=$('#simAgent').value||'invoice-processor';
+  quickSimulate(amt, vend, amt>10000, agent);
+}
+function quickSimulate(amount, vendor='Acme Logistics', forceHold=false, agentId='invoice-processor'){
+  const now=Date.now();
+  const runId='run_live_'+Math.random().toString(36).substring(2,7);
+  const steps=[
+    {kind:'tool',name:'read_inbox',dur:320,input:'ap@acme.com',output:`Invoice received from ${vendor}`},
+    {kind:'llm',name:'extract_invoice_fields',model:'gpt-4o',dur:1850,tokens_in:7400,tokens_out:240,input:`Extract invoice fields from ${vendor}`,output:`{"amount": ${amount}, "vendor": "${vendor}"}`},
+    {kind:'tool',name:'lookup_vendor',dur:450,input:`SELECT * FROM vendors WHERE name='${vendor}'`,output:`vendor_id=V821, NET30`}
+  ];
+  const requiresApproval=forceHold||amount>10000;
+  const flags=[];
+  if(requiresApproval)flags.push('high-value-payment');
+  else if(amount>5000)flags.push('payment-review');
+
+  steps.push({
+    kind:'action',
+    name:'create_payment',
+    dur:requiresApproval?1:580,
+    amount:amount,
+    input:`create_payment(vendor="${vendor}", amount=${amount})`,
+    output:requiresApproval?'require_approval: High-value payment (above $10,000). Routed to human approval inbox.':'Payment scheduled successfully',
+    status:requiresApproval?'held':'ok',
+    flags:flags
+  });
+
+  const run=finalize({
+    id:runId,
+    agent:agentId,
+    started_at:now,
+    status:requiresApproval?'blocked':'success',
+    fail:requiresApproval?`Awaiting approval: High-value payment ($${amount.toLocaleString()})`:null,
+    steps:steps
+  });
+
+  DATA.runs.unshift(run);
+
+  if(requiresApproval){
+    const aprId='apr_'+Math.random().toString(36).substring(2,7);
+    DATA.approvals.unshift({
+      id:aprId,
+      run_id:runId,
+      agent:agentId,
+      action:'create_payment',
+      payload:{amount:amount,vendor:vendor},
+      policies:['high-value-payment'],
+      reason:`High-value payment: $${amount.toLocaleString()} to ${vendor} requires human sign-off`,
+      status:'pending',
+      created_at:now,
+      decided_at:null,
+      decided_by:null,
+      note:null
+    });
+    DATA.audit.unshift({
+      ts:now,
+      kind:'check',
+      run_id:runId,
+      agent:agentId,
+      action:'create_payment',
+      decision:'require_approval',
+      actor:'cosignal',
+      detail:{payload:{amount,vendor}}
+    });
+
+    showToast('🚨 Action Held for Approval', `$${amount.toLocaleString()} payout to ${vendor} exceeded $10,000 limit. Added to Approvals inbox.`, 'warn', 'Review in Approvals →', ()=>{
+      setTab('approvals');
+    });
+  }else{
+    showToast('✓ Payment Allowed by Guardrail', `$${amount.toLocaleString()} payment to ${vendor} passed policies and executed.`, 'ok', 'View Run Replay →', ()=>{
+      setTab('runs');selectRun(runId);
+    });
+  }
+
+  updateCount();
+  renderAll();
+}
+
 async function load(){
   try{const ctl=new AbortController();setTimeout(()=>ctl.abort(),2500);const res=await fetch('/v1/export',{signal:ctl.signal});
     if(res.ok){const j=await res.json();if(j&&j.runs&&j.runs.length){j.runs.forEach(r=>{r.started_at=typeof r.started_at==='string'?Date.parse(r.started_at):r.started_at;});
       j.runs.forEach(r=>{r.flags=r.flags||[];r.risky=r.risky??r.steps.filter(s=>(s.flags||[]).length).length;});(j.agents||[]).forEach(a=>{if(!AGENTS.find(x=>x.id===a.id))AGENTS.push({id:a.id,name:a.name||a.id,color:['--a1','--a2','--a3','--a4'][AGENTS.length%4],target:a.target||10000});});
       DATA={...j,live:true};}}}catch(e){}
   if(!DATA)DATA=demoData();
-  $('#src').textContent=DATA.live?'Live':'Demo data';$('#src').classList.toggle('live',!!DATA.live);$('#ws').textContent=DATA.workspace||'Workspace';
+  $('#src').textContent=DATA.live?'Live server':'Demo mode';$('#src').classList.toggle('live',!!DATA.live);$('#ws').textContent=DATA.workspace||'Acme Finance';
   $('#fAgent').innerHTML='<option value="">All agents</option>'+AGENTS.map(a=>`<option value="${a.id}">${esc(a.name)}</option>`).join('');
-  updateCount();renderOverview();let t='overview';try{t=sessionStorage.getItem('al-tab')||t;}catch(e){}if(location.hash==='#approvals')t='approvals';setTab(t);}
+  initTheme();
+  updateCount();
+  renderOverview();
+  let t='overview';try{t=sessionStorage.getItem('al-tab')||t;}catch(e){}if(location.hash==='#approvals')t='approvals';setTab(t);
+}
 load();
 </script>
 </body>

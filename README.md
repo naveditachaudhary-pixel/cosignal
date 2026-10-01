@@ -19,8 +19,16 @@ AI agents now pay invoices, issue refunds and move funds. Cosignal sits between 
 
 Most tools for AI agents are built for the engineers debugging them. The people accountable for an agent that pays vendors (finance controllers, AP managers, risk teams) need something different: **limits they can set, a place to approve exceptions, and proof of who approved what.** That is the "maker-checker" / dual-control principle banks already use, applied to AI agents.
 
-## Quick start (5 minutes)
+## Quick start (1-Click or Manual)
 
+### Option 1: 1-Click Launch (Recommended)
+```bash
+git clone https://github.com/naveditachaudhary-pixel/cosignal.git && cd cosignal
+./start.sh
+```
+`./start.sh` automatically configures the Python virtual environment, installs dependencies, launches the server, and opens your browser directly to `http://localhost:8000`.
+
+### Option 2: Manual Start
 ```bash
 git clone https://github.com/naveditachaudhary-pixel/cosignal.git && cd cosignal
 pip install -r requirements.txt
@@ -28,8 +36,6 @@ uvicorn server.app:app --port 8000          # API + dashboard
 python -m examples.simulate_agents          # two weeks of sample agent traffic
 open http://localhost:8000                  # the badge switches to "Live"
 ```
-
-On a Mac without the terminal? Download **Cosignal for Mac** from the [Releases](https://github.com/naveditachaudhary-pixel/cosignal/releases) page.
 
 ## Add it to your agent
 

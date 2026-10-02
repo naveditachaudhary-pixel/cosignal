@@ -3,94 +3,86 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0e111b" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#0b0e14" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#f8f4f1" media="(prefers-color-scheme: light)">
-<title>Spanli &amp; Cosignal — Build your site through chat. Guard autonomous AI agents.</title>
-<meta name="description" content="Build and own your website through chat. Institutional dual-control guardrails for AI agents moving money.">
+<title>Cosignal — Dual-Control Guardrails for AI Agents Moving Money</title>
+<meta name="description" content="Enforce institutional maker-checker limits, prevent unauthorized financial disbursements, and maintain an immutable cryptographic audit trail for autonomous AI agents.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
-/* ==================== SPANLI THEME & DESIGN TOKENS ==================== */
+/* ==================== COSIGNAL SIGNATURE DESIGN SYSTEM ==================== */
 :root {
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
   
-  /* Radii */
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
   --radius-xl: 18px;
   --radius-full: 9999px;
   
-  /* Transitions */
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --duration: 0.22s;
 }
 
 [data-theme="dark"] {
-  --bg: #0e111b;
-  --bg-subtle: #141926;
-  --bg-card: #181f2f;
-  --panel-glass: rgba(18, 24, 38, 0.78);
+  --bg: #0b0e14;
+  --bg-subtle: #131722;
+  --bg-card: #181d2a;
+  --panel-glass: rgba(15, 19, 29, 0.82);
   
   --text: #ffffff;
   --text-muted: #8b949e;
-  --text-subtle: #6e7681;
+  --text-subtle: #64748b;
   --border: rgba(255, 255, 255, 0.08);
   --border-strong: rgba(255, 255, 255, 0.16);
-  --border-focus: rgba(255, 255, 255, 0.3);
+  --border-focus: rgba(56, 189, 248, 0.4);
   
-  --accent-cta-bg: #ffffff;
-  --accent-cta-text: #0e111b;
-  --accent-cta-hover: #e2e8f0;
+  --cta-bg: #ffffff;
+  --cta-text: #0b0e14;
+  --cta-hover: #e2e8f0;
   
-  --beam-color-1: #ff3366;
-  --beam-color-2: #38bdf8;
-  --beam-color-3: #10b981;
-  --beam-color-4: #f59e0b;
-  
+  --brand-blue: #38bdf8;
+  --brand-cyan: #06b6d4;
+  --brand-indigo: #6366f1;
   --success: #10b981;
   --danger: #f43f5e;
   --warning: #f59e0b;
-  --info: #38bdf8;
   
   --preview-canvas: #ffffff;
-  --preview-text: #1d1a16;
-  --preview-subtle: #71717a;
+  --preview-text: #111827;
+  --preview-subtle: #6b7280;
 }
 
 [data-theme="light"] {
-  --bg: #f8f4f1;
-  --bg-subtle: #eee6df;
+  --bg: #f8f6f2;
+  --bg-subtle: #eee9e0;
   --bg-card: #ffffff;
-  --panel-glass: rgba(255, 255, 255, 0.85);
+  --panel-glass: rgba(255, 255, 255, 0.88);
   
-  --text: #111827;
+  --text: #0f172a;
   --text-muted: #64748b;
   --text-subtle: #94a3b8;
   --border: rgba(0, 0, 0, 0.08);
   --border-strong: rgba(0, 0, 0, 0.16);
-  --border-focus: rgba(0, 0, 0, 0.3);
+  --border-focus: rgba(14, 165, 233, 0.4);
   
-  --accent-cta-bg: #111827;
-  --accent-cta-text: #ffffff;
-  --accent-cta-hover: #334155;
+  --cta-bg: #0f172a;
+  --cta-text: #ffffff;
+  --cta-hover: #334155;
   
-  --beam-color-1: #e11d48;
-  --beam-color-2: #0284c7;
-  --beam-color-3: #059669;
-  --beam-color-4: #d97706;
-  
+  --brand-blue: #0284c7;
+  --brand-cyan: #0891b2;
+  --brand-indigo: #4f46e5;
   --success: #059669;
   --danger: #e11d48;
   --warning: #d97706;
-  --info: #0284c7;
   
   --preview-canvas: #ffffff;
-  --preview-text: #1d1a16;
-  --preview-subtle: #71717a;
+  --preview-text: #111827;
+  --preview-subtle: #6b7280;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -103,19 +95,19 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
   background-image: 
-    radial-gradient(58rem 38rem at 84% 1.5rem, rgba(56, 189, 248, 0.08), transparent 62%),
-    radial-gradient(46rem 28rem at -12% 74%, rgba(147, 197, 253, 0.05), transparent 64%),
-    radial-gradient(34rem 24rem at 66% 88%, rgba(244, 63, 94, 0.06), transparent 60%);
+    radial-gradient(60rem 38rem at 85% 0%, rgba(56, 189, 248, 0.08), transparent 60%),
+    radial-gradient(48rem 30rem at -10% 65%, rgba(99, 102, 241, 0.06), transparent 64%),
+    radial-gradient(36rem 24rem at 60% 90%, rgba(16, 185, 129, 0.05), transparent 60%);
   background-attachment: fixed;
   min-height: 100vh;
 }
 
-/* ==================== FLOATING HEADER ==================== */
+/* ==================== FLOATING COSIGNAL HEADER ==================== */
 .nav-wrap {
   position: sticky;
   top: 16px;
   z-index: 100;
-  max-width: 1180px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
 }
@@ -123,27 +115,40 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 18px;
+  padding: 10px 20px;
   background: var(--panel-glass);
   backdrop-filter: blur(20px) saturate(180%);
   border: 1px solid var(--border);
   border-radius: var(--radius-full);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.22);
 }
 .brand-group {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 10px;
   text-decoration: none;
   color: var(--text);
-  font-weight: 600;
-  font-size: 17px;
-  letter-spacing: -0.02em;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: -0.03em;
 }
-.brand-mark {
-  width: 20px;
-  height: 20px;
-  color: var(--text);
+/* Original Dual-Signal Cosignal Brand Logo Mark */
+.cosignal-mark {
+  width: 24px;
+  height: 24px;
+  color: var(--brand-blue);
+  flex-shrink: 0;
+}
+.brand-badge {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  background: rgba(16, 185, 129, 0.14);
+  color: var(--success);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  margin-left: 2px;
 }
 .nav-links {
   display: flex;
@@ -175,13 +180,14 @@ body {
   background: none;
   border: 1px solid var(--border);
   border-radius: var(--radius-full);
-  padding: 7px 11px;
+  padding: 7px 12px;
   color: var(--text-muted);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 6px;
   font-size: 13px;
+  font-weight: 500;
   transition: all var(--duration) var(--ease);
 }
 .theme-btn:hover {
@@ -189,8 +195,8 @@ body {
   border-color: var(--border-strong);
 }
 .cta-pill {
-  background: var(--accent-cta-bg);
-  color: var(--accent-cta-text);
+  background: var(--cta-bg);
+  color: var(--cta-text);
   font-weight: 600;
   font-size: 13.5px;
   padding: 8px 18px;
@@ -202,21 +208,21 @@ body {
   white-space: nowrap;
 }
 .cta-pill:hover {
-  background: var(--accent-cta-hover);
+  background: var(--cta-hover);
   transform: translateY(-1px);
 }
 
-/* ==================== HERO SECTION (SPANLI GRID) ==================== */
+/* ==================== HERO SECTION (BESPOKE COSIGNAL) ==================== */
 .hero-container {
-  max-width: 1200px;
+  max-width: 1240px;
   margin: 0 auto;
-  padding: 70px 28px 60px;
+  padding: 72px 28px 64px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 56px;
   align-items: start;
 }
-@media (max-width: 980px) {
+@media (max-width: 1024px) {
   .hero-container {
     grid-template-columns: 1fr;
     gap: 48px;
@@ -228,19 +234,29 @@ body {
   flex-direction: column;
 }
 .hero-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--text-subtle);
+  color: var(--brand-blue);
   margin-bottom: 18px;
 }
+.hero-eyebrow-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--brand-blue);
+  box-shadow: 0 0 8px var(--brand-blue);
+}
 .hero-h1 {
-  font-size: clamp(2.3rem, 2rem + 1.8vw, 3.4rem);
+  font-size: clamp(2.4rem, 2rem + 1.8vw, 3.5rem);
   font-weight: 600;
   letter-spacing: -0.03em;
   line-height: 1.06;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 .hero-h1 span {
   color: var(--text);
@@ -252,18 +268,18 @@ body {
   font-size: 17px;
   line-height: 1.55;
   color: var(--text-muted);
-  max-width: 34rem;
-  margin-bottom: 28px;
+  max-width: 35rem;
+  margin-bottom: 30px;
 }
 
-/* Spanli Animated Glow Beam Textarea */
+/* Animated Glow Beam Form Field */
 .hero-beam-box {
   position: relative;
   border-radius: var(--radius-lg);
   padding: 1px;
-  background: linear-gradient(135deg, rgba(255, 50, 100, 0.4), rgba(56, 189, 248, 0.4), rgba(16, 185, 129, 0.4));
-  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-  margin-bottom: 14px;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.45), rgba(99, 102, 241, 0.45), rgba(16, 185, 129, 0.45));
+  box-shadow: 0 8px 30px rgba(0,0,0,0.14);
+  margin-bottom: 16px;
 }
 .hero-beam-box::before {
   content: "";
@@ -272,14 +288,23 @@ body {
   border-radius: inherit;
   background: inherit;
   filter: blur(8px);
-  opacity: 0.55;
+  opacity: 0.5;
   z-index: -1;
   transition: opacity 0.3s ease;
 }
 .hero-beam-inner {
   background: var(--bg-card);
   border-radius: calc(var(--radius-lg) - 1px);
-  padding: 16px 18px;
+  padding: 18px 20px;
+}
+.hero-input-label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--brand-blue);
+  margin-bottom: 8px;
+  display: block;
 }
 .hero-textarea {
   width: 100%;
@@ -300,33 +325,20 @@ body {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
   flex-wrap: wrap;
 }
 .hero-hint-text {
   font-size: 13px;
   color: var(--text-muted);
 }
-.hero-alt-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13.5px;
-  color: var(--text-muted);
-  text-decoration: none;
-  font-weight: 500;
-  transition: color var(--duration) var(--ease);
-}
-.hero-alt-link:hover {
-  color: var(--text);
-}
 
-/* Prompt Presets Pills */
+/* Interactive Guardrail Presets */
 .presets-strip {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 18px;
+  margin-top: 20px;
   flex-wrap: wrap;
 }
 .preset-tag-btn {
@@ -336,7 +348,7 @@ body {
   border: 1px solid var(--border);
   color: var(--text-muted);
   border-radius: var(--radius-full);
-  padding: 5px 12px;
+  padding: 6px 14px;
   cursor: pointer;
   transition: all var(--duration) var(--ease);
 }
@@ -346,15 +358,15 @@ body {
   border-color: var(--border-strong);
 }
 
-/* ==================== RIGHT SIDE: THE SPANLI LIVE OUTPUT WINDOW ==================== */
+/* ==================== RIGHT SIDE: THE LIVE SENTINEL OUTPUT WINDOW ==================== */
 .hero-art-stage {
   position: relative;
 }
 .mac-window-frame {
-  background: #141926;
+  background: #141824;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-xl);
-  box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.4);
   overflow: hidden;
   position: relative;
 }
@@ -362,7 +374,7 @@ body {
   display: flex;
   align-items: center;
   padding: 12px 16px;
-  background: rgba(14, 17, 27, 0.95);
+  background: rgba(11, 14, 20, 0.95);
   border-bottom: 1px solid var(--border);
 }
 .chrome-dots {
@@ -384,15 +396,15 @@ body {
   font-size: 11px;
   color: var(--text-muted);
   background: rgba(255,255,255,0.05);
-  padding: 3px 12px;
+  padding: 3px 14px;
   border-radius: var(--radius-full);
   border: 1px solid var(--border);
 }
 
-/* Top Composer Bar in Window */
+/* Prompt Execution Bar in Window */
 .composer-row-bar {
   padding: 12px 18px;
-  background: #1a2133;
+  background: #192030;
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
@@ -416,7 +428,7 @@ body {
   display: inline-block;
   width: 2px;
   height: 14px;
-  background: #38bdf8;
+  background: var(--brand-blue);
   margin-left: 2px;
   flex-shrink: 0;
   animation: blink 1s step-end infinite;
@@ -427,7 +439,7 @@ body {
   font-family: var(--font-mono);
   font-size: 10px;
   text-transform: uppercase;
-  color: var(--text-subtle);
+  color: var(--brand-blue);
   letter-spacing: 0.08em;
   display: flex;
   align-items: center;
@@ -436,23 +448,24 @@ body {
   white-space: nowrap;
 }
 .send-arrow-btn {
-  background: rgba(255,255,255,0.1);
-  border: none;
+  background: rgba(56, 189, 248, 0.2);
+  border: 1px solid rgba(56, 189, 248, 0.3);
   width: 22px;
   height: 22px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: var(--brand-blue);
   cursor: pointer;
+  font-weight: bold;
 }
 
-/* Rendered Site Canvas (White Card Inside Preview) */
+/* Rendered Output Canvas (White Card Inside Preview) */
 .preview-inner-canvas {
   background: var(--preview-canvas);
   color: var(--preview-text);
-  padding: 20px;
+  padding: 22px;
   font-family: var(--font-sans);
 }
 
@@ -462,13 +475,13 @@ body {
   align-items: center;
   justify-content: space-between;
   padding-bottom: 14px;
-  margin-bottom: 14px;
-  border-bottom: 1px solid rgba(0,0,0,0.06);
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(0,0,0,0.07);
 }
 .site-wordmark {
   font-weight: 700;
   font-size: 15px;
-  color: #111827;
+  color: #0f172a;
   letter-spacing: -0.02em;
 }
 .site-nav-links {
@@ -481,18 +494,19 @@ body {
 .site-nav-cta {
   font-size: 11px;
   font-weight: 600;
-  border: 1px solid rgba(0,0,0,0.15);
+  background: rgba(244, 63, 94, 0.1);
+  color: #e11d48;
+  border: 1px solid rgba(244, 63, 94, 0.25);
   border-radius: var(--radius-full);
   padding: 3px 10px;
-  color: #111827;
 }
 
-/* Hero Photographic Banner */
+/* Hero Photographic Banner (Real Executive & Financial Office Photos) */
 .site-hero-band {
   position: relative;
   border-radius: var(--radius-md);
   overflow: hidden;
-  height: 180px;
+  height: 185px;
   margin-bottom: 20px;
 }
 .site-hero-img {
@@ -504,7 +518,7 @@ body {
 .site-hero-scrim {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.78) 100%);
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.2) 0%, rgba(15, 23, 42, 0.82) 100%);
 }
 .site-hero-copy {
   position: absolute;
@@ -518,11 +532,11 @@ body {
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.8);
+  color: rgba(255,255,255,0.85);
   margin-bottom: 2px;
 }
 .site-display {
-  font-size: 19px;
+  font-size: 18px;
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.15;
@@ -533,14 +547,14 @@ body {
   color: rgba(255,255,255,0.85);
 }
 
-/* What We Bake / Financial Ledger Section */
+/* Dotted Itemized Financial Ledger Breakdown */
 .site-section-box {
   margin-bottom: 18px;
 }
 .site-section-title {
   font-size: 13px;
   font-weight: 700;
-  color: #18181b;
+  color: #0f172a;
   margin-bottom: 10px;
 }
 .site-price-row {
@@ -549,20 +563,22 @@ body {
   justify-content: space-between;
   font-size: 12.5px;
   margin-bottom: 6px;
-  color: #3f3f46;
+  color: #334155;
 }
 .site-price-dots {
   flex: 1;
-  border-bottom: 1px dotted #d4d4d8;
+  border-bottom: 1px dotted #cbd5e1;
   margin: 0 8px;
   transform: translateY(-2px);
 }
 .site-price-val {
+  font-family: var(--font-mono);
+  font-size: 12px;
   font-weight: 600;
-  color: #18181b;
+  color: #0f172a;
 }
 
-/* Photographic Proof Grid */
+/* Photographic Inspection Evidence Grid */
 .site-photo-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -582,7 +598,7 @@ body {
   display: block;
 }
 
-/* Order / Sign-Off Form Row */
+/* Dual-Control Sign-Off Form Row */
 .site-form-row {
   display: flex;
   gap: 8px;
@@ -590,37 +606,39 @@ body {
 }
 .site-field-val {
   flex: 1;
-  background: #f4f4f5;
-  border: 1px solid #e4e4e7;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
   border-radius: var(--radius-sm);
-  padding: 6px 10px;
+  padding: 7px 10px;
   font-size: 11.5px;
-  color: #71717a;
+  color: #64748b;
+  font-family: var(--font-mono);
 }
 .site-action-btn {
-  background: #18181b;
+  background: #0f172a;
   color: #ffffff;
   font-weight: 600;
   font-size: 11.5px;
   border: none;
   border-radius: var(--radius-sm);
-  padding: 6px 14px;
+  padding: 7px 16px;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: all 0.2s;
+  white-space: nowrap;
 }
-.site-action-btn:hover { opacity: 0.9; }
+.site-action-btn:hover { background: #1e293b; }
 
-/* The Signature Spanli Floating Receipt Toast */
+/* Signature Floating Intercept Receipt */
 .floating-receipt {
   position: absolute;
   bottom: 20px;
   right: 20px;
-  background: #141926;
+  background: #0f172a;
   color: #ffffff;
-  border: 1px solid var(--border-strong);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: var(--radius-lg);
   padding: 10px 16px;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.5);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -632,7 +650,7 @@ body {
   to { transform: translateY(0); opacity: 1; }
 }
 .receipt-tick {
-  color: #10b981;
+  color: var(--brand-blue);
   width: 16px;
   height: 16px;
   flex-shrink: 0;
@@ -646,11 +664,11 @@ body {
   color: #94a3b8;
 }
 
-/* ==================== SECTION 2: FOUR WAYS IN (ACCORDION SWITCHER) ==================== */
+/* ==================== SECTION 2: FOUR ARCHITECTURAL GUARDRAILS ==================== */
 .section-doors {
-  max-width: 1200px;
+  max-width: 1240px;
   margin: 0 auto;
-  padding: 90px 28px 80px;
+  padding: 96px 28px 80px;
   border-top: 1px solid var(--border);
 }
 .doors-grid {
@@ -659,7 +677,7 @@ body {
   gap: 56px;
   align-items: start;
 }
-@media (max-width: 980px) {
+@media (max-width: 1024px) {
   .doors-grid {
     grid-template-columns: 1fr;
   }
@@ -679,8 +697,8 @@ body {
   transition: all var(--duration) var(--ease);
 }
 .door-step-item.active {
-  border-color: var(--border-strong);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  border-color: var(--brand-blue);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.22);
   background: var(--bg-subtle);
 }
 .door-step-head {
@@ -693,7 +711,7 @@ body {
   font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 600;
-  color: var(--text-subtle);
+  color: var(--brand-blue);
 }
 .door-step-label {
   font-size: 12px;
@@ -721,12 +739,12 @@ body {
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: 0 20px 48px rgba(0,0,0,0.25);
-  padding: 20px;
+  padding: 22px;
 }
 
-/* ==================== SECTION 3: MISSION CONTROL & DUAL CONTROL SUITE ==================== */
+/* ==================== SECTION 3: MISSION CONTROL & COMPLIANCE LEDGER ==================== */
 .section-console {
-  max-width: 1200px;
+  max-width: 1240px;
   margin: 0 auto;
   padding: 80px 28px 100px;
   border-top: 1px solid var(--border);
@@ -736,7 +754,7 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
   padding: 36px;
-  box-shadow: 0 16px 40px rgba(0,0,0,0.2);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.25);
 }
 .console-tabs-strip {
   display: flex;
@@ -786,6 +804,7 @@ body {
   font-weight: 700;
   color: var(--text);
   margin-top: 6px;
+  font-family: var(--font-mono);
 }
 
 .table-wrap {
@@ -820,106 +839,88 @@ td {
 }
 .badge-held { background: rgba(244, 63, 94, 0.15); color: #f43f5e; }
 .badge-ok { background: rgba(16, 185, 129, 0.15); color: #10b981; }
-
-/* Interactive Modals */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.65);
-  backdrop-filter: blur(8px);
-  z-index: 1000;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-.modal-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-xl);
-  max-width: 580px;
-  width: 100%;
-  padding: 32px;
-  box-shadow: 0 24px 60px rgba(0,0,0,0.5);
-}
 </style>
 </head>
 <body>
 
-<!-- FLOATING SPANLI HEADER -->
+<!-- FLOATING COSIGNAL HEADER -->
 <div class="nav-wrap">
   <header class="nav-bar">
     <a href="#" class="brand-group">
-      <svg class="brand-mark" viewBox="0 0 24 24" fill="currentColor">
-        <rect x="5.5" y="0.79" width="14.5" height="3" rx="1.5"></rect>
-        <rect x="4" y="5.644" width="8.96" height="3" rx="1.5"></rect>
-        <rect x="4.75" y="10.498" width="14.5" height="3" rx="1.5"></rect>
-        <rect x="11" y="15.352" width="8.96" height="3" rx="1.5"></rect>
-        <rect x="4" y="20.206" width="14.5" height="3" rx="1.5"></rect>
+      <!-- Original Dual-Control Signal SVG Mark -->
+      <svg class="cosignal-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+        <circle cx="8" cy="12" r="5" stroke="currentColor"/>
+        <circle cx="16" cy="12" r="5" stroke="currentColor"/>
+        <path d="M12 9v6" stroke="currentColor"/>
       </svg>
-      <span>spanli</span>
+      <span>Cosignal</span>
+      <span class="brand-badge">Maker-Checker</span>
     </a>
 
     <nav class="nav-links">
-      <button class="nav-item active" onclick="switchPreset(0)">Product</button>
-      <button class="nav-item" onclick="switchPreset(1)">Use cases</button>
-      <button class="nav-item" onclick="scrollToSection('doors')">Four ways in</button>
+      <button class="nav-item active" onclick="switchPreset(0)">Flight Arena</button>
+      <button class="nav-item" onclick="scrollToSection('doors')">Guardrails</button>
       <button class="nav-item" onclick="scrollToSection('console')">Mission Control</button>
+      <button class="nav-item" onclick="switchPreset(1)">Policies</button>
     </nav>
 
     <div class="nav-actions">
-      <button class="theme-btn" id="themeToggleBtn" onclick="toggleSpanliTheme()" title="Switch Light / Dark">
+      <button class="theme-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Switch Light / Dark">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
         <span id="themeLbl">Theme</span>
       </button>
-      <button class="cta-pill" onclick="simulateActivePrompt()">Start your site</button>
+      <button class="cta-pill" onclick="simulateActivePrompt()">Simulate Wire</button>
     </div>
   </header>
 </div>
 
 <main>
-  <!-- HERO SECTION (SPANLI TYPOGRAPHY & LIVE COMPOSER) -->
+  <!-- HERO SECTION (BESPOKE COSIGNAL) -->
   <section class="hero-container" id="hero">
     <div class="hero-copy">
-      <p class="hero-eyebrow" id="heroEyebrow">AI WEBSITE BUILDER · DUAL-CONTROL GUARDRAILS</p>
+      <div class="hero-eyebrow">
+        <span class="hero-eyebrow-dot"></span>
+        <span>INSTITUTIONAL DUAL-CONTROL FOR AGENT CAPITAL</span>
+      </div>
       
-      <h1 class="hero-h1" id="heroTitle">
-        <span>Describe your business.</span><br>
-        <span class="hero-h1-soft">Watch the website build itself.</span>
+      <h1 class="hero-h1">
+        <span>When AI agents move capital.</span><br>
+        <span class="hero-h1-soft">Watch the guardrails hold the wire.</span>
       </h1>
 
-      <p class="hero-sub" id="heroSub">
-        Tell Spanli what you do. It writes the pages, lays out your photos and puts your site live. Changing it is just asking.
+      <p class="hero-sub">
+        Autonomous agents now pay invoices, execute customer refunds, and manage treasury funds. Cosignal enforces maker-checker policies and logs an immutable cryptographic audit trail before capital ever leaves the bank.
       </p>
 
-      <!-- Spanli Glowing Beam Form Field -->
+      <!-- Animated Glow Beam Form Field -->
       <div class="hero-beam-box">
         <div class="hero-beam-inner">
-          <textarea id="heroIdeaInput" class="hero-textarea" rows="3" placeholder="A neighbourhood bakery in Copenhagen - sourdough, cardamom buns, and coffee from 7am.">A family-run bakery in Providence - sourdough, pastries, and very good coffee</textarea>
+          <label class="hero-input-label" for="heroIdeaInput">Autonomous Transaction Payload</label>
+          <textarea id="heroIdeaInput" class="hero-textarea" rows="3" placeholder="Describe the agent disbursement...">AP Agent Alby: Pay invoice #INV-2024-889 for Litware Logistics ($18,400) via ACH Wire</textarea>
         </div>
       </div>
 
       <div class="hero-actions-row">
-        <button class="cta-pill" onclick="simulateActivePrompt()">Start your site</button>
-        <span class="hero-hint-text">80 free credits to start, no card needed. Publish from $19/month.</span>
+        <button class="cta-pill" onclick="simulateActivePrompt()">Simulate Wire Intercept</button>
+        <span class="hero-hint-text">Zero latency overhead · Cryptographic SHA-256 ledger · Fails safe.</span>
       </div>
 
-      <a class="hero-alt-link" href="#doors">
-        Or start from LinkedIn or a site you already have 
+      <a class="hero-alt-link" href="#console" style="color:var(--text-muted);text-decoration:none;display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:500">
+        Review active policies in Mission Control 
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
 
-      <!-- Quick Interactive Preset Switchers -->
+      <!-- Quick Interactive Guardrail Presets -->
       <div class="presets-strip">
-        <span style="font-size:12px;color:var(--text-subtle)">Try presets:</span>
-        <button class="preset-tag-btn active" onclick="switchPreset(0)">🥐 Providence Bakery</button>
-        <button class="preset-tag-btn" onclick="switchPreset(1)">🛡️ AP Agent Wire ($18,400)</button>
-        <button class="preset-tag-btn" onclick="switchPreset(2)">🔧 Milwaukee Auto Garage</button>
-        <button class="preset-tag-btn" onclick="switchPreset(3)">💼 Brand Strategy Consultant</button>
+        <span style="font-size:12px;color:var(--text-subtle)">Simulate scenario:</span>
+        <button class="preset-tag-btn active" onclick="switchPreset(0)">High-Value Wire ($18,400)</button>
+        <button class="preset-tag-btn" onclick="switchPreset(1)">New Payee Check ($4,250)</button>
+        <button class="preset-tag-btn" onclick="switchPreset(2)">Auto-Cleared SaaS ($650)</button>
+        <button class="preset-tag-btn" onclick="switchPreset(3)">PII Customer Access</button>
       </div>
     </div>
 
-    <!-- RIGHT COLUMN: THE EXACT SPANLI LIVE OUTPUT WINDOW -->
+    <!-- RIGHT COLUMN: THE LIVE SENTINEL OUTPUT WINDOW -->
     <div class="hero-art-stage">
       <div class="mac-window-frame">
         <div class="mac-chrome-bar">
@@ -928,178 +929,182 @@ td {
             <span class="dot dot-yellow"></span>
             <span class="dot dot-green"></span>
           </div>
-          <span class="chrome-url-pill" id="windowDomainUrl">fernandflour.com</span>
+          <span class="chrome-url-pill" id="windowDomainUrl">sentinel.cosignal.io / wire-guard</span>
         </div>
 
-        <!-- Dynamic Composer Prompt Bar -->
+        <!-- Dynamic Execution Prompt Bar -->
         <div class="composer-row-bar">
           <div class="composer-input-text">
-            <span id="composerPromptText">A family-run bakery in Providence - sourdough, pastries, and very good coffee</span>
+            <span id="composerPromptText">AP Agent Alby: Pay invoice #INV-2024-889 for Litware Logistics ($18,400) via ACH Wire</span>
             <span class="blinking-caret"></span>
           </div>
           <div class="composer-meta">
-            <span>DESCRIBE YOUR BUSINESS</span>
-            <button class="send-arrow-btn" onclick="simulateActivePrompt()" title="Generate / Run">↑</button>
+            <span>SENTINEL GATE</span>
+            <button class="send-arrow-btn" onclick="simulateActivePrompt()" title="Trigger Wire Execution">↑</button>
           </div>
         </div>
 
-        <!-- Rendered Output Canvas (Identical to Spanli Preview) -->
+        <!-- Rendered Output Canvas (Real Corporate Wire Remittance) -->
         <div class="preview-inner-canvas" id="previewCanvas">
           <div class="site-nav">
-            <span class="site-wordmark" id="previewBrand">Fern &amp; Flour</span>
+            <span class="site-wordmark" id="previewBrand">Litware Logistics Inc.</span>
             <div class="site-nav-links" id="previewNavLinks">
-              <span>Bread</span>
-              <span>Café</span>
-              <span>Visit</span>
+              <span>Remittance</span>
+              <span>PO Match</span>
+              <span>Audit Trail</span>
             </div>
-            <span class="site-nav-cta" id="previewNavCta">Order a cake</span>
+            <span class="site-nav-cta" id="previewNavCta">Held for Dual Control</span>
           </div>
 
-          <!-- Hero Photographic Banner (Real Photos from Spanli) -->
+          <!-- Hero Photographic Banner (Real Corporate Finance Office) -->
           <div class="site-hero-band">
-            <img src="assets/cafe_bakery.jpg" alt="Bakery Hero" class="site-hero-img" id="previewHeroImg">
+            <img src="assets/office_meeting.jpg" alt="Executive Review" class="site-hero-img" id="previewHeroImg">
             <div class="site-hero-scrim"></div>
             <div class="site-hero-copy">
-              <p class="site-kicker" id="previewKicker">Neighbourhood bakery · Providence</p>
-              <h2 class="site-display" id="previewDisplay">Baked before you're awake.</h2>
-              <p class="site-deck" id="previewDeck">Sourdough, pastries, and very good coffee.</p>
+              <p class="site-kicker" id="previewKicker">CORPORATE DISBURSEMENT · ACH-WIRE #8892</p>
+              <h2 class="site-display" id="previewDisplay">Institutional Sign-Off Required.</h2>
+              <p class="site-deck" id="previewDeck">Payment of $18,400 exceeds $10,000 threshold. Paused for VP Finance sign-off.</p>
             </div>
           </div>
 
-          <!-- Price & Item Breakdown -->
+          <!-- Dotted Financial Itemized Ledger Breakdown -->
           <div class="site-section-box">
-            <p class="site-section-title" id="previewSection1Title">What we bake</p>
+            <p class="site-section-title" id="previewSection1Title">Remittance Order Ledger</p>
             <div id="previewPriceRowsList">
               <div class="site-price-row">
-                <span>Country sourdough</span>
+                <span>Vendor Beneficiary</span>
                 <span class="site-price-dots"></span>
-                <span class="site-price-val">$4.50</span>
+                <span class="site-price-val">Litware Logistics Inc.</span>
               </div>
               <div class="site-price-row">
-                <span>Seeded rye</span>
+                <span>Disbursement Amount</span>
                 <span class="site-price-dots"></span>
-                <span class="site-price-val">$5.00</span>
+                <span class="site-price-val">$18,400.00</span>
               </div>
               <div class="site-price-row">
-                <span>Cardamom bun</span>
+                <span>Cosignal Policy Threshold ($10,000)</span>
                 <span class="site-price-dots"></span>
-                <span class="site-price-val">$3.20</span>
+                <span class="site-price-val" style="color:#f43f5e">EXCEEDED (PAUSED)</span>
+              </div>
+              <div class="site-price-row">
+                <span>Cryptographic SHA-256 Token</span>
+                <span class="site-price-dots"></span>
+                <span class="site-price-val">ed25519-valid</span>
               </div>
             </div>
           </div>
 
-          <!-- Real Photo Proof Grid -->
+          <!-- Real Photographic Evidence Grid -->
           <div class="site-section-box">
-            <p class="site-section-title" id="previewSection2Title">This morning</p>
+            <p class="site-section-title" id="previewSection2Title">Cryptographic Evidence &amp; Verification</p>
             <div class="site-photo-row" id="previewPhotoGrid">
               <div class="site-photo-thumb">
-                <img src="assets/bakery_loaves.jpg" alt="Loaves" id="photo1">
+                <img src="assets/desk_workspace.jpg" alt="Verified Tax Document" id="photo1">
               </div>
               <div class="site-photo-thumb">
-                <img src="assets/bakery_buns.jpg" alt="Buns" id="photo2">
+                <img src="assets/startup_team.jpg" alt="Finance Review Session" id="photo2">
               </div>
             </div>
           </div>
 
-          <!-- Interactive Action / Order Section -->
+          <!-- Dual-Control Sign-Off Row -->
           <div class="site-section-box" style="margin-bottom:0">
-            <p class="site-section-title" id="previewSection3Title">Order a cake</p>
+            <p class="site-section-title" id="previewSection3Title">Maker-Checker Authorization</p>
             <div class="site-form-row">
-              <div class="site-field-val" id="input1">Name</div>
-              <div class="site-field-val" id="input2">Phone or email</div>
-              <button class="site-action-btn" id="actionBtn" onclick="triggerOutputAction()">Send</button>
+              <div class="site-field-val" id="input1">Signer: Maria Lopez (VP Finance)</div>
+              <div class="site-field-val" id="input2">Token: SHA256-8892-AUTH</div>
+              <button class="site-action-btn" id="actionBtn" onclick="triggerOutputAction()">Authorize Wire</button>
             </div>
           </div>
         </div>
 
-        <!-- Spanli Signature Floating Changes Receipt -->
+        <!-- Floating Sentinel Toast -->
         <div class="floating-receipt" id="floatingReceipt">
           <svg class="receipt-tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
           <div>
-            <div class="receipt-title" id="receiptTitle">Changes</div>
-            <div class="receipt-meta" id="receiptMeta">Added: 4 sections - opening, what we bake, photos, order form</div>
+            <div class="receipt-title" id="receiptTitle">Sentinel Intercept Active</div>
+            <div class="receipt-meta" id="receiptMeta">Paused payment exceeding $10,000 policy threshold.</div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- SECTION 2: FOUR WAYS IN (EXACT ACCORDION FEATURE FROM SPANLI) -->
+  <!-- SECTION 2: FOUR ARCHITECTURAL GUARDRAILS (ORIGINAL COSIGNAL) -->
   <section class="section-doors" id="doors">
-    <p class="hero-eyebrow">Four ways in</p>
-    <h2 style="font-size:32px;font-weight:600;letter-spacing:-0.03em;margin-bottom:14px">You don't have to start from a blank page.</h2>
-    <p style="font-size:16px;color:var(--text-muted);max-width:44rem;margin-bottom:48px">A sentence, a profile you wrote years ago, the site you're embarrassed by, or nothing at all - each of these is a real way to begin, and each ends at a finished first draft.</p>
+    <p class="hero-eyebrow">FOUR SAFETY GUARDRAILS</p>
+    <h2 style="font-size:32px;font-weight:600;letter-spacing:-0.03em;margin-bottom:14px">Autonomous execution without financial risk.</h2>
+    <p style="font-size:16px;color:var(--text-muted);max-width:44rem;margin-bottom:48px">AI models are probabilistic; corporate banking cannot be. Cosignal introduces deterministic dual-control verification into every autonomous agent runtime.</p>
 
     <div class="doors-grid">
       <ol class="doors-steps">
         <li class="door-step-item active" onclick="selectDoor(0)">
           <div class="door-step-head">
             <span class="door-step-num">01</span>
-            <span class="door-step-label">Describe it</span>
+            <span class="door-step-label">Maker-Checker Intercept</span>
           </div>
-          <h3 class="door-step-title">Say what you do. In two sentences.</h3>
-          <p class="door-step-desc">The words you'd use with a customer are enough - add your logo and a few photos if you have them. A finished first draft builds while you watch, and nothing it asks you is technical.</p>
+          <h3 class="door-step-title">Deterministic spending boundaries.</h3>
+          <p class="door-step-desc">The AI agent is the 'maker' proposing an action. Cosignal is the institutional 'checker'. Payments exceeding configured thresholds pause instantly for human dual-control review.</p>
         </li>
 
         <li class="door-step-item" onclick="selectDoor(1)">
           <div class="door-step-head">
             <span class="door-step-num">02</span>
-            <span class="door-step-label">Start from your LinkedIn</span>
+            <span class="door-step-label">Cryptographic Flight Recorder</span>
           </div>
-          <h3 class="door-step-title">You already wrote it. Paste the profile.</h3>
-          <p class="door-step-desc">Spanli reads your profile or company page, confirms your details, and builds a site from the experience you have spent years describing - your photo included.</p>
+          <h3 class="door-step-title">Immutable SHA-256 audit ledger.</h3>
+          <p class="door-step-desc">Every prompt token, tool invocation, and decision hash is recorded into an append-only compliance ledger. Built for SOC-2, SOX, and banking regulatory audits.</p>
         </li>
 
         <li class="door-step-item" onclick="selectDoor(2)">
           <div class="door-step-head">
             <span class="door-step-num">03</span>
-            <span class="door-step-label">Modernize the site you have</span>
+            <span class="door-step-label">Zero-Latency Failure Isolation</span>
           </div>
-          <h3 class="door-step-title">Hand it the address you're embarrassed by.</h3>
-          <p class="door-step-desc">Spanli reads what your current site says and rebuilds it as something current, keeping your words. Or paste a site whose feel you admire and it borrows the mood, not the content.</p>
+          <h3 class="door-step-title">Local memory buffer with fail-safe defaults.</h3>
+          <p class="door-step-desc">Our Python &amp; Node SDKs buffer telemetry in memory. If network disruptions occur, policy rules enforce deterministic fail-open or fail-closed rules with zero performance overhead.</p>
         </li>
 
         <li class="door-step-item" onclick="selectDoor(3)">
           <div class="door-step-head">
             <span class="door-step-num">04</span>
-            <span class="door-step-label">I feel lucky</span>
+            <span class="door-step-label">Multi-Agent Fleet Governance</span>
           </div>
-          <h3 class="door-step-title">Answer nothing at all.</h3>
-          <p class="door-step-desc">For anyone who freezes at choices: Spanli picks the pages, the sections and the look itself. Every decision it made is listed on the way through, and you can change any of them.</p>
+          <h3 class="door-step-title">Unified policies across every agent.</h3>
+          <p class="door-step-desc">Declare guardrails once in policies.yaml and enforce them across LangChain, AutoGen, CrewAI, and bespoke internal agents without changing business logic.</p>
         </li>
       </ol>
 
-      <!-- Door Preview Mockup -->
+      <!-- Architectural Preview Mockup with Real Photography -->
       <div class="door-preview-box" id="doorPreviewBox">
         <div class="site-nav">
-          <span class="site-wordmark" id="doorWordmark">Riverwest Motors</span>
+          <span class="site-wordmark" id="doorWordmark">Litware Logistics Wire Intercept</span>
           <div class="site-nav-links">
-            <span>Services</span>
-            <span>Prices</span>
-            <span>Visit</span>
+            <span>Maker: AP-Agent</span>
+            <span>Checker: VP Finance</span>
           </div>
-          <span class="site-nav-cta">Book it in</span>
+          <span class="site-nav-cta" id="doorBadge" style="background:rgba(244,63,94,0.1);color:#e11d48">Held</span>
         </div>
-        <div class="site-hero-band" style="height:170px">
-          <img src="assets/garage_auto.jpg" alt="Garage" class="site-hero-img" id="doorHeroImg">
+        <div class="site-hero-band" style="height:175px">
+          <img src="assets/office_meeting.jpg" alt="Guardrail" class="site-hero-img" id="doorHeroImg">
           <div class="site-hero-scrim"></div>
           <div class="site-hero-copy">
-            <p class="site-kicker" id="doorKicker">Independent garage · Milwaukee</p>
-            <h3 class="site-display" id="doorDisplay">Straight answers, fair prices.</h3>
-            <p class="site-deck" id="doorDeck">Servicing, inspections, brakes and tires.</p>
+            <p class="site-kicker" id="doorKicker">GUARDRAIL #POL-902 · REAL-TIME INTERCEPT</p>
+            <h3 class="site-display" id="doorDisplay">Maker-Checker Policy Enforcement</h3>
+            <p class="site-deck" id="doorDeck">Autonomous agent prohibited from moving funds over $10,000 without second signature.</p>
           </div>
         </div>
         <div class="site-section-box">
-          <p class="site-section-title">What we do</p>
-          <div class="site-price-row"><span>Full service</span><span class="site-price-dots"></span><span class="site-price-val">$180</span></div>
-          <div class="site-price-row"><span>State inspection</span><span class="site-price-dots"></span><span class="site-price-val">$45</span></div>
-          <div class="site-price-row"><span>Front brake pads</span><span class="site-price-dots"></span><span class="site-price-val">$180</span></div>
+          <p class="site-section-title">Enforcement Parameters</p>
+          <div class="site-price-row"><span>Evaluation Latency</span><span class="site-price-dots"></span><span class="site-price-val">0.4 ms</span></div>
+          <div class="site-price-row"><span>Policy Rule</span><span class="site-price-dots"></span><span class="site-price-val">amount > $10,000</span></div>
+          <div class="site-price-row"><span>Decision</span><span class="site-price-dots"></span><span class="site-price-val" style="color:#f43f5e">REQUIRE_APPROVAL</span></div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- SECTION 3: MISSION CONTROL & COMPLIANCE LEDGER -->
+  <!-- SECTION 3: MISSION CONTROL & LIVE COMPLIANCE CONSOLE -->
   <section class="section-console" id="console">
     <div class="console-panel">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
@@ -1111,7 +1116,7 @@ td {
       </div>
 
       <div class="console-tabs-strip">
-        <button class="c-tab active" onclick="switchConsoleTab('policies', this)">Active Policies</button>
+        <button class="c-tab active" onclick="switchConsoleTab('policies', this)">Active Policies (policies.yaml)</button>
         <button class="c-tab" onclick="switchConsoleTab('inbox', this)">Approvals Inbox (2 Held)</button>
         <button class="c-tab" onclick="switchConsoleTab('audit', this)">SHA-256 Audit Trail</button>
       </div>
@@ -1128,7 +1133,7 @@ td {
             <div class="metric-value">0 ms</div>
           </div>
           <div class="metric-card">
-            <div class="metric-label">Model Spend</div>
+            <div class="metric-label">Guarded Agent Spend</div>
             <div class="metric-value">$428.10</div>
           </div>
         </div>
@@ -1157,13 +1162,13 @@ td {
                 <td style="color:#f43f5e;font-weight:600">HIGH</td>
               </tr>
               <tr>
-                <td><b>Review Band</b></td>
+                <td><b>Payment Review Band</b></td>
                 <td>$5,000 &le; amount &le; $10,000</td>
                 <td><span class="badge-pill badge-ok">flag</span></td>
                 <td style="color:#f59e0b;font-weight:600">MED</td>
               </tr>
               <tr>
-                <td><b>PII Access Guard</b></td>
+                <td><b>Customer PII Access</b></td>
                 <td>read_pii == true</td>
                 <td><span class="badge-pill badge-ok">flag</span></td>
                 <td style="color:#38bdf8;font-weight:600">LOW</td>
@@ -1179,7 +1184,7 @@ td {
           <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:18px;display:flex;justify-content:space-between;align-items:center">
             <div>
               <div style="font-family:var(--font-mono);font-size:11px;color:#38bdf8">INVOICE AP AGENT · WIRE TRANSFER</div>
-              <div style="font-size:18px;font-weight:700;margin:3px 0">$18,400.00 <span style="font-size:13px;font-weight:400;color:var(--text-muted)">to Litware Logistics</span></div>
+              <div style="font-size:18px;font-weight:700;margin:3px 0;font-family:var(--font-mono)">$18,400.00 <span style="font-size:13px;font-weight:400;color:var(--text-muted);font-family:var(--font-sans)">to Litware Logistics</span></div>
               <div style="font-size:12px;color:var(--text-muted)">High-value payment threshold exceeded ($10,000 limit). Paused for sign-off.</div>
             </div>
             <div style="display:flex;gap:8px">
@@ -1191,7 +1196,7 @@ td {
           <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:18px;display:flex;justify-content:space-between;align-items:center">
             <div>
               <div style="font-family:var(--font-mono);font-size:11px;color:#38bdf8">INVOICE AP AGENT · WIRE TRANSFER</div>
-              <div style="font-size:18px;font-weight:700;margin:3px 0">$12,750.00 <span style="font-size:13px;font-weight:400;color:var(--text-muted)">to Fabrikam Parts</span></div>
+              <div style="font-size:18px;font-weight:700;margin:3px 0;font-family:var(--font-mono)">$12,750.00 <span style="font-size:13px;font-weight:400;color:var(--text-muted);font-family:var(--font-sans)">to Fabrikam Parts</span></div>
               <div style="font-size:12px;color:var(--text-muted)">High-value payment threshold exceeded ($10,000 limit). Paused for sign-off.</div>
             </div>
             <div style="display:flex;gap:8px">
@@ -1220,21 +1225,21 @@ td {
                 <td style="font-family:var(--font-mono)">10:42:15</td>
                 <td>maria.lopez (VP Finance)</td>
                 <td>create_payment</td>
-                <td>$14,200</td>
+                <td style="font-family:var(--font-mono)">$14,200</td>
                 <td><span class="badge-pill badge-ok">authorized</span></td>
               </tr>
               <tr>
                 <td style="font-family:var(--font-mono)">10:38:02</td>
                 <td>cosignal_sentinel</td>
                 <td>check_policy</td>
-                <td>$14,200</td>
+                <td style="font-family:var(--font-mono)">$14,200</td>
                 <td><span class="badge-pill badge-held">held</span></td>
               </tr>
               <tr>
                 <td style="font-family:var(--font-mono)">10:14:50</td>
                 <td>cosignal_sentinel</td>
                 <td>create_payment</td>
-                <td>$650</td>
+                <td style="font-family:var(--font-mono)">$650</td>
                 <td><span class="badge-pill badge-ok">auto-cleared</span></td>
               </tr>
             </tbody>
@@ -1246,230 +1251,233 @@ td {
 </main>
 
 <script>
-/* ==================== PRESET DATA & LIVE COMPOSER ==================== */
-const PRESETS = [
+/* ==================== COSIGNAL SCENARIOS & LIVE SENTINEL ==================== */
+const SCENARIOS = [
   {
-    name: "Providence Bakery",
-    domain: "fernandflour.com",
-    prompt: "A family-run bakery in Providence - sourdough, pastries, and very good coffee",
-    brand: "Fern & Flour",
-    nav: ["Bread", "Café", "Visit"],
-    cta: "Order a cake",
-    heroImg: "assets/cafe_bakery.jpg",
-    kicker: "Neighbourhood bakery · Providence",
-    display: "Baked before you're awake.",
-    deck: "Sourdough, pastries, and very good coffee.",
-    section1: "What we bake",
-    priceRows: [
-      { item: "Country sourdough", val: "$4.50" },
-      { item: "Seeded rye", val: "$5.00" },
-      { item: "Cardamom bun", val: "$3.20" }
-    ],
-    section2: "This morning",
-    photo1: "assets/bakery_loaves.jpg",
-    photo2: "assets/bakery_buns.jpg",
-    section3: "Order a cake",
-    input1: "Name",
-    input2: "Phone or email",
-    actionBtn: "Send",
-    receiptTitle: "Changes",
-    receiptMeta: "Added: 4 sections - opening, what we bake, photos, order form"
-  },
-  {
-    name: "AP Agent Wire ($18,400)",
-    domain: "settlement.cosignal.io / wire-guard",
-    prompt: "AP Agent Alby: Disburse $18,400 wire to Litware Logistics for invoice #INV-2024-889",
+    name: "High-Value Wire ($18,400)",
+    domain: "sentinel.cosignal.io / wire-guard",
+    prompt: "AP Agent Alby: Pay invoice #INV-2024-889 for Litware Logistics ($18,400) via ACH Wire",
     brand: "Litware Logistics Inc.",
-    nav: ["Settlement", "Audit", "Policy"],
-    cta: "Pending Review",
+    nav: ["Remittance", "PO Match", "Audit Trail"],
+    cta: "Held for Dual Control",
+    ctaColor: "#f43f5e",
     heroImg: "assets/office_meeting.jpg",
-    kicker: "INDEPENDENT VENDOR · REMITTANCE #8892",
-    display: "Institutional Dual-Control Required.",
-    deck: "Payment exceeds $10,000 threshold. Paused for human dual-control sign-off.",
-    section1: "Remittance Order Breakdown",
+    kicker: "CORPORATE DISBURSEMENT · ACH-WIRE #8892",
+    display: "Institutional Sign-Off Required.",
+    deck: "Payment of $18,400 exceeds $10,000 threshold. Paused for VP Finance sign-off.",
+    section1: "Remittance Order Ledger",
     priceRows: [
-      { item: "Invoice Amount (#INV-8892)", val: "$18,400.00" },
-      { item: "Maker-Checker Limit ($10,000)", val: "EXCEEDED" },
-      { item: "Cryptographic Token (SHA-256)", val: "ed25519-valid" },
-      { item: "Sentinel Gate Status", val: "HELD FOR APPROVAL" }
+      { item: "Vendor Beneficiary", val: "Litware Logistics Inc." },
+      { item: "Disbursement Amount", val: "$18,400.00" },
+      { item: "Cosignal Policy Threshold ($10,000)", val: "EXCEEDED (PAUSED)", color: "#f43f5e" },
+      { item: "Cryptographic SHA-256 Token", val: "ed25519-valid" }
     ],
-    section2: "Cryptographic Evidence",
+    section2: "Cryptographic Evidence & Verification",
     photo1: "assets/desk_workspace.jpg",
     photo2: "assets/startup_team.jpg",
-    section3: "Dual-Control Sign-Off",
-    input1: "Reviewer: VP of Finance",
-    input2: "Auth Token: ********",
+    section3: "Maker-Checker Authorization",
+    input1: "Signer: Maria Lopez (VP Finance)",
+    input2: "Token: SHA256-8892-AUTH",
     actionBtn: "Authorize Wire",
-    receiptTitle: "Sentinel Intercept",
-    receiptMeta: "High-value payment ($18,400 > $10,000 limit) paused. Awaiting dual-control."
+    receiptTitle: "Sentinel Intercept Active",
+    receiptMeta: "Paused payment exceeding $10,000 policy threshold."
   },
   {
-    name: "Milwaukee Auto Garage",
-    domain: "riverwestmotors.com",
-    prompt: "An independent garage in Milwaukee - servicing, inspections, brakes and tires",
-    brand: "Riverwest Motors",
-    nav: ["Services", "Prices", "Visit"],
-    cta: "Book it in",
-    heroImg: "assets/garage_auto.jpg",
-    kicker: "Independent garage · Milwaukee",
-    display: "Straight answers, fair prices.",
-    deck: "Servicing, inspections, brakes and tires.",
-    section1: "What we do",
+    name: "New Payee Check ($4,250)",
+    domain: "sentinel.cosignal.io / vendor-check",
+    prompt: "Vendor Agent: Send $4,250 to first-time vendor CyberShield Systems (Tax ID pending)",
+    brand: "CyberShield Systems",
+    nav: ["Vendor W-9", "Bank Validation", "AML Scan"],
+    cta: "New Payee Review",
+    ctaColor: "#f59e0b",
+    heroImg: "assets/desk_workspace.jpg",
+    kicker: "VENDOR COMPLIANCE · POLICY #POL-108",
+    display: "New Payee Verification Triggered.",
+    deck: "Beneficiary has no verified transaction history in ERP. Dual-control verification required.",
+    section1: "Payee Verification Check",
     priceRows: [
-      { item: "Full service", val: "$180" },
-      { item: "State inspection", val: "$45" },
-      { item: "Front brake pads", val: "$180" }
+      { item: "Payee Name", val: "CyberShield Systems LLC" },
+      { item: "Payment Amount", val: "$4,250.00" },
+      { item: "Historical Wires", val: "0 (First-time Payee)", color: "#f59e0b" },
+      { item: "AML / OFAC Status", val: "CLEAR (PASSED)" }
     ],
-    section2: "In the workshop",
-    photo1: "assets/garage_auto.jpg",
+    section2: "Vendor Tax & Onboarding Artifacts",
+    photo1: "assets/desk_workspace.jpg",
+    photo2: "assets/office_meeting.jpg",
+    section3: "Vendor Dual-Control Clearance",
+    input1: "Compliance: David Kim",
+    input2: "Verification: TAX-W9-PASS",
+    actionBtn: "Verify & Release",
+    receiptTitle: "Payee Verification Sentinel",
+    receiptMeta: "Unverified vendor wire paused. Awaiting compliance review."
+  },
+  {
+    name: "Auto-Cleared SaaS ($650)",
+    domain: "sentinel.cosignal.io / auto-clear",
+    prompt: "AP Agent Alby: Pay recurring Figma enterprise subscription invoice ($650)",
+    brand: "Figma Inc. Enterprise",
+    nav: ["Recurring PO", "Pre-Approved", "Settled"],
+    cta: "Auto-Cleared",
+    ctaColor: "#10b981",
+    heroImg: "assets/startup_team.jpg",
+    kicker: "RECURRING SAAS EXPENSE · FAST-PATH",
+    display: "Transaction Auto-Cleared.",
+    deck: "Recurring vendor below $1,000 threshold with valid PO match. Instant settlement dispatched.",
+    section1: "Settlement Summary",
+    priceRows: [
+      { item: "Subscription Item", val: "Figma Enterprise Seats" },
+      { item: "Invoice Amount", val: "$650.00" },
+      { item: "Pre-Approval Status", val: "APPROVED (POL-003)", color: "#10b981" },
+      { item: "Latency Overhead", val: "0.2 ms" }
+    ],
+    section2: "Settlement Confirmation Trace",
+    photo1: "assets/startup_team.jpg",
     photo2: "assets/desk_workspace.jpg",
-    section3: "Book it in",
-    input1: "Name",
-    input2: "Phone or email",
-    actionBtn: "Send",
-    receiptTitle: "Changes",
-    receiptMeta: "Added: 4 sections - opening, services, workshop photos, booking form"
+    section3: "Dispatched Remittance",
+    input1: "Status: Settled to Bank",
+    input2: "Trace: ACH-2940182",
+    actionBtn: "View Receipt",
+    receiptTitle: "Fast-Path Approved",
+    receiptMeta: "Invoice below review threshold. Dispatched with 0ms delay."
   },
   {
-    name: "Brand Strategy Consultant",
-    domain: "anaferreira.com",
-    prompt: "Independent brand strategy consultant in Lisbon - positioning and naming for high-growth startups",
-    brand: "Ana Ferreira",
-    nav: ["Work", "Writing", "Contact"],
-    cta: "Get in touch",
-    heroImg: "assets/profile_portrait.jpg",
-    kicker: "Brand strategy · Lisbon",
-    display: "Fifteen years making brands make sense.",
-    deck: "Independent consultant. Two projects a year.",
-    section1: "What I do",
+    name: "PII Customer Access",
+    domain: "sentinel.cosignal.io / pii-sentinel",
+    prompt: "Customer Support Agent: Export customer database records including SSN & balance",
+    brand: "Sentinel Data Boundary",
+    nav: ["PII Scanner", "Redaction", "Audit"],
+    cta: "Access Blocked",
+    ctaColor: "#f43f5e",
+    heroImg: "assets/office_meeting.jpg",
+    kicker: "DATA PRIVACY SENTINEL · POLICY #POL-404",
+    display: "Prohibited Data Export Intercepted.",
+    deck: "Autonomous agent requested export of raw SSN and account balance. Intercepted by sentinel.",
+    section1: "Policy Violation Report",
     priceRows: [
-      { item: "Positioning and naming", val: "From €6,000" },
-      { item: "Brand strategy sprint", val: "From €9,000" },
-      { item: "Advisory retainer", val: "From €3,000" }
+      { item: "Target Resource", val: "users_banking_pii.parquet" },
+      { item: "Violated Rule", val: "deny_unmasked_pii_export", color: "#f43f5e" },
+      { item: "Model Actor", val: "gpt-4o-support-agent" },
+      { item: "Enforcement", val: "HALT_TOOL_CALL" }
     ],
-    section2: "Recent work",
-    photo1: "assets/office_meeting.jpg",
+    section2: "Security Audit Telemetry",
+    photo1: "assets/desk_workspace.jpg",
     photo2: "assets/startup_team.jpg",
-    section3: "Start a conversation",
-    input1: "Name",
-    input2: "Phone or email",
-    actionBtn: "Send",
-    receiptTitle: "Changes",
-    receiptMeta: "Added: 4 sections - opening, advisory offerings, client photos, contact form"
+    section3: "Security Incident Response",
+    input1: "SecOps: Auto-Incident #941",
+    input2: "Action: Masked View Provided",
+    actionBtn: "Review Incident",
+    receiptTitle: "Security Boundary Enforced",
+    receiptMeta: "Blocked unmasked financial PII export attempt."
   }
 ];
 
-let activePresetIdx = 0;
+let activeScenarioIdx = 0;
 
 function switchPreset(idx) {
-  activePresetIdx = idx;
-  const p = PRESETS[idx];
+  activeScenarioIdx = idx;
+  const s = SCENARIOS[idx];
   
-  // Update button active state
   document.querySelectorAll('.preset-tag-btn').forEach((b, i) => {
     b.classList.toggle('active', i === idx);
   });
 
-  // Update hero input
-  document.getElementById('heroIdeaInput').value = p.prompt;
-  
-  // Render output window
-  renderOutputWindow(p);
+  document.getElementById('heroIdeaInput').value = s.prompt;
+  renderOutputWindow(s);
 }
 
-function renderOutputWindow(p) {
-  document.getElementById('windowDomainUrl').textContent = p.domain;
-  document.getElementById('composerPromptText').textContent = p.prompt;
-  document.getElementById('previewBrand').textContent = p.brand;
+function renderOutputWindow(s) {
+  document.getElementById('windowDomainUrl').textContent = s.domain;
+  document.getElementById('composerPromptText').textContent = s.prompt;
+  document.getElementById('previewBrand').textContent = s.brand;
   
-  // Nav
   const navBox = document.getElementById('previewNavLinks');
-  navBox.innerHTML = p.nav.map(n => `<span>${n}</span>`).join('');
-  document.getElementById('previewNavCta').textContent = p.cta;
+  navBox.innerHTML = s.nav.map(n => `<span>${n}</span>`).join('');
   
-  // Hero
-  document.getElementById('previewHeroImg').src = p.heroImg;
-  document.getElementById('previewKicker').textContent = p.kicker;
-  document.getElementById('previewDisplay').textContent = p.display;
-  document.getElementById('previewDeck').textContent = p.deck;
+  const cta = document.getElementById('previewNavCta');
+  cta.textContent = s.cta;
+  cta.style.color = s.ctaColor;
+  cta.style.borderColor = s.ctaColor;
+  cta.style.background = s.ctaColor + '1a';
   
-  // Section 1
-  document.getElementById('previewSection1Title').textContent = p.section1;
+  document.getElementById('previewHeroImg').src = s.heroImg;
+  document.getElementById('previewKicker').textContent = s.kicker;
+  document.getElementById('previewDisplay').textContent = s.display;
+  document.getElementById('previewDeck').textContent = s.deck;
+  
+  document.getElementById('previewSection1Title').textContent = s.section1;
   const priceList = document.getElementById('previewPriceRowsList');
-  priceList.innerHTML = p.priceRows.map(r => `
+  priceList.innerHTML = s.priceRows.map(r => `
     <div class="site-price-row">
       <span>${r.item}</span>
       <span class="site-price-dots"></span>
-      <span class="site-price-val">${r.val}</span>
+      <span class="site-price-val" style="${r.color ? 'color:' + r.color : ''}">${r.val}</span>
     </div>
   `).join('');
   
-  // Photos
-  document.getElementById('previewSection2Title').textContent = p.section2;
-  document.getElementById('photo1').src = p.photo1;
-  document.getElementById('photo2').src = p.photo2;
+  document.getElementById('previewSection2Title').textContent = s.section2;
+  document.getElementById('photo1').src = s.photo1;
+  document.getElementById('photo2').src = s.photo2;
   
-  // Section 3
-  document.getElementById('previewSection3Title').textContent = p.section3;
-  document.getElementById('input1').textContent = p.input1;
-  document.getElementById('input2').textContent = p.input2;
-  document.getElementById('actionBtn').textContent = p.actionBtn;
+  document.getElementById('previewSection3Title').textContent = s.section3;
+  document.getElementById('input1').textContent = s.input1;
+  document.getElementById('input2').textContent = s.input2;
+  document.getElementById('actionBtn').textContent = s.actionBtn;
   
-  // Receipt
-  document.getElementById('receiptTitle').textContent = p.receiptTitle;
-  document.getElementById('receiptMeta').textContent = p.receiptMeta;
+  document.getElementById('receiptTitle').textContent = s.receiptTitle;
+  document.getElementById('receiptMeta').textContent = s.receiptMeta;
 }
 
 function simulateActivePrompt() {
   const custom = document.getElementById('heroIdeaInput').value;
   document.getElementById('composerPromptText').textContent = custom;
   
-  // Show brief pulse on receipt
   const receipt = document.getElementById('floatingReceipt');
   receipt.style.transform = 'scale(1.05)';
   setTimeout(() => { receipt.style.transform = 'scale(1)'; }, 300);
 }
 
 function triggerOutputAction() {
-  if (activePresetIdx === 1) {
-    // Fintech Dual Control Action
-    alert('✓ Dual-Control Sign-Off Verified! Wire of $18,400 dispatched via institutional payment rail.');
-    document.getElementById('previewNavCta').textContent = '✓ Settled';
-    document.getElementById('previewNavCta').style.color = '#10b981';
-  } else {
-    alert('✓ Thank you! Enquiry submitted directly through live site.');
-  }
+  alert('✓ Dual-Control Sign-Off Verified! Remittance order authorized and cryptographic audit token recorded.');
+  const cta = document.getElementById('previewNavCta');
+  cta.textContent = '✓ Settled & Dispatched';
+  cta.style.color = '#10b981';
+  cta.style.borderColor = '#10b981';
+  cta.style.background = 'rgba(16, 185, 129, 0.15)';
 }
 
-/* ---------------- FOUR WAYS IN SWITCHER ---------------- */
+/* ---------------- FOUR GUARDRAILS SWITCHER ---------------- */
 const DOORS = [
   {
-    wordmark: "Riverwest Motors",
-    img: "assets/garage_auto.jpg",
-    kicker: "Independent garage · Milwaukee",
-    display: "Straight answers, fair prices.",
-    deck: "Servicing, inspections, brakes and tires."
-  },
-  {
-    wordmark: "Ana Ferreira",
-    img: "assets/profile_portrait.jpg",
-    kicker: "Brand strategy · Lisbon",
-    display: "Fifteen years making brands make sense.",
-    deck: "Independent consultant. Two projects a year."
-  },
-  {
-    wordmark: "Hartley & Son LTD",
-    img: "assets/desk_workspace.jpg",
-    kicker: "Custom woodwork · Portland, est. 1978",
-    display: "Made to last three generations.",
-    deck: "Kitchens, staircases and sash windows, cut by hand."
-  },
-  {
-    wordmark: "Clayfield",
+    wordmark: "Maker-Checker Wire Intercept",
     img: "assets/office_meeting.jpg",
-    kicker: "Small-batch studio · Copenhagen",
-    display: "Made by hand, a hundred at a time.",
-    deck: "Modern craft studio for thoughtful objects."
+    kicker: "GUARDRAIL #POL-902 · REAL-TIME INTERCEPT",
+    display: "Maker-Checker Policy Enforcement",
+    deck: "Autonomous agent prohibited from moving funds over $10,000 without second signature.",
+    badge: "Held"
+  },
+  {
+    wordmark: "Cryptographic Flight Recorder",
+    img: "assets/desk_workspace.jpg",
+    kicker: "COMPLIANCE LEDGER · SHA-256 HASH CHAIN",
+    display: "Immutable Telemetry Trail",
+    deck: "Every prompt token, tool invocation, and decision hash recorded for institutional audits.",
+    badge: "Audited"
+  },
+  {
+    wordmark: "Zero-Latency Isolation Engine",
+    img: "assets/startup_team.jpg",
+    kicker: "RUNTIME RESILIENCE · FAIL-SAFE ARCHITECTURE",
+    display: "In-Memory Asynchronous Buffering",
+    deck: "Buffers execution logs in memory to ensure microsecond agent execution speeds.",
+    badge: "0.2ms"
+  },
+  {
+    wordmark: "Multi-Agent Fleet Governance",
+    img: "assets/office_meeting.jpg",
+    kicker: "FLEET MANAGEMENT · GLOBAL POLICIES",
+    display: "Unified Enterprise Policy Enforcement",
+    deck: "One central governance layer protecting LangChain, AutoGen, CrewAI, and custom models.",
+    badge: "Active"
   }
 ];
 
@@ -1483,10 +1491,11 @@ function selectDoor(idx) {
   document.getElementById('doorKicker').textContent = d.kicker;
   document.getElementById('doorDisplay').textContent = d.display;
   document.getElementById('doorDeck').textContent = d.deck;
+  document.getElementById('doorBadge').textContent = d.badge;
 }
 
 /* ---------------- THEME TOGGLE ---------------- */
-function toggleSpanliTheme() {
+function toggleTheme() {
   const html = document.documentElement;
   const curr = html.getAttribute('data-theme') || 'dark';
   const next = curr === 'dark' ? 'light' : 'dark';

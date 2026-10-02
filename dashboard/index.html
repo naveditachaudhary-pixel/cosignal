@@ -10,70 +10,65 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
-/* ==================== AESTHETIC PALETTE (EUGENIA GRAB & EPIC INSPIRATION) ==================== */
+/* ==================== AESTHETIC PALETTE (WARM LINEN, TERRACOTTA & ANTIQUE GOLD) ==================== */
 :root, :root[data-theme="linen"] {
-  /* Warm Linen / Organic Paper Base (Exact Eugenia Grab #f5eee6 palette) */
   --bg: #f5eee6;
-  --bg-gradient: radial-gradient(ellipse at 50% 0%, #fcf8f3 0%, #f5eee6 65%, #ede4d8 100%);
-  --bg-secondary: #ece3d6;
-  --panel: #fbf8f4;
+  --bg-gradient: radial-gradient(ellipse at 50% 0%, #fdfbf7 0%, #f5eee6 65%, #ede2d3 100%);
+  --bg-secondary: #ebdcd0;
+  --panel: #fcf9f5;
   --panel-elevated: #ffffff;
-  --panel-glass: rgba(248, 243, 236, 0.82);
-  --border: rgba(45, 38, 30, 0.08);
-  --border-focus: rgba(194, 94, 46, 0.45);
-  --border-strong: rgba(45, 38, 30, 0.16);
+  --panel-glass: rgba(248, 242, 234, 0.85);
+  --border: rgba(55, 42, 30, 0.09);
+  --border-focus: rgba(194, 94, 46, 0.5);
+  --border-strong: rgba(55, 42, 30, 0.18);
   
-  --fg: #1c1a17;
-  --fg-muted: #6b6357;
-  --fg-faint: #9c9384;
+  --fg: #1d1a16;
+  --fg-muted: #6e6456;
+  --fg-faint: #9e9382;
   
-  /* Artisanal Luxury Accents */
   --primary: #c25e2e;          /* Terracotta / Burnt Sienna */
-  --primary-glow: rgba(194, 94, 46, 0.22);
+  --primary-glow: rgba(194, 94, 46, 0.25);
   --gold: #b38b38;             /* Antique Sand Gold */
-  --gold-glow: rgba(179, 139, 56, 0.2);
   --emerald: #286e4a;          /* Botanical Sage */
-  --rose: #b53838;             /* Vintage Crimson */
-  --amber: #c27d14;            /* Warm Honey Amber */
-  --cyan: #266b85;             /* Deep Maritime Slate */
-  --violet: #6b4c9a;           /* Wisteria Velvet */
+  --rose: #b53838;             /* Vintage Carmine */
+  --amber: #c27d14;            /* Honey Amber */
+  --cyan: #266b85;             /* Maritime Slate */
 
   --serif: 'Cormorant Garamond', Georgia, serif;
   --sans: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
   --mono: 'JetBrains Mono', monospace;
   
   --radius-lg: 24px;
-  --radius-md: 14px;
+  --radius-md: 16px;
   --radius-sm: 8px;
-  --shadow-soft: 0 12px 36px -8px rgba(45, 38, 30, 0.08), 0 2px 8px rgba(45, 38, 30, 0.04);
-  --shadow-hover: 0 20px 48px -10px rgba(194, 94, 46, 0.16);
+  --shadow-soft: 0 16px 40px -10px rgba(55, 42, 30, 0.08), 0 2px 8px rgba(55, 42, 30, 0.04);
+  --shadow-hover: 0 24px 50px -10px rgba(194, 94, 46, 0.18);
 }
 
 :root[data-theme="noir"] {
-  /* Epic Agency Luxury Dark (Obsidian & Antique Gold) */
-  --bg: #100f0d;
-  --bg-gradient: radial-gradient(ellipse at 50% 0%, #1a1815 0%, #100f0d 75%);
-  --bg-secondary: #171512;
-  --panel: #1b1916;
-  --panel-elevated: #221f1b;
-  --panel-glass: rgba(22, 20, 18, 0.85);
-  --border: rgba(255, 255, 255, 0.08);
-  --border-focus: rgba(212, 175, 55, 0.45);
-  --border-strong: rgba(255, 255, 255, 0.16);
+  --bg: #12100d;
+  --bg-gradient: radial-gradient(ellipse at 50% 0%, #1e1b17 0%, #12100d 75%);
+  --bg-secondary: #1a1714;
+  --panel: #1e1b17;
+  --panel-elevated: #26221d;
+  --panel-glass: rgba(24, 21, 18, 0.88);
+  --border: rgba(255, 255, 255, 0.09);
+  --border-focus: rgba(212, 175, 55, 0.5);
+  --border-strong: rgba(255, 255, 255, 0.18);
   
-  --fg: #f4efe8;
-  --fg-muted: #9c9488;
-  --fg-faint: #5e574d;
+  --fg: #f5f0e6;
+  --fg-muted: #9e9485;
+  --fg-faint: #635b4f;
   
-  --primary: #d4af37;          /* Antique Imperial Gold */
-  --primary-glow: rgba(212, 175, 55, 0.3);
+  --primary: #d4af37;
+  --primary-glow: rgba(212, 175, 55, 0.35);
   --gold: #d4af37;
   --emerald: #34d399;
   --rose: #fb7185;
   --amber: #fbbf24;
   --cyan: #38bdf8;
-  --shadow-soft: 0 16px 40px -10px rgba(0,0,0,0.5);
-  --shadow-hover: 0 24px 60px -10px rgba(212, 175, 55, 0.2);
+  --shadow-soft: 0 18px 44px -10px rgba(0,0,0,0.5);
+  --shadow-hover: 0 26px 64px -10px rgba(212, 175, 55, 0.22);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -91,18 +86,18 @@ body {
   transition: background-color .4s ease, color .4s ease;
 }
 
-/* Organic Paper Texture */
-.paper-texture {
+/* Organic Paper Canvas */
+.paper-pattern {
   position: fixed;
   inset: 0;
-  background-image: radial-gradient(rgba(45, 38, 30, 0.02) 1px, transparent 1px);
-  background-size: 24px 24px;
+  background-image: radial-gradient(rgba(55, 42, 30, 0.025) 1px, transparent 1px);
+  background-size: 26px 26px;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
-/* Kinetic Botanical & Particle Canvas */
+/* Kinetic Dust/Particle Canvas */
 #motionCanvas {
   position: fixed;
   inset: 0;
@@ -110,7 +105,7 @@ body {
   height: 100vh;
   pointer-events: none;
   z-index: 1;
-  opacity: 0.8;
+  opacity: 0.75;
 }
 
 /* Interactive Cursor */
@@ -130,7 +125,7 @@ body {
   width: 36px;
   height: 36px;
   border: 1px solid var(--primary);
-  opacity: 0.5;
+  opacity: 0.55;
   border-radius: 50%;
   pointer-events: none;
   z-index: 9998;
@@ -138,33 +133,37 @@ body {
   transition: transform .12s cubic-bezier(0.1, 1, 0.1, 1), border-color .2s;
 }
 
-/* Rotating Seal Emblem (Eugenia Grab & Epic Agency hallmark) */
+/* Rotating Seal Emblem (Custom Wax Stamp) */
 .rotating-seal {
   position: fixed;
   bottom: 28px;
   right: 28px;
-  width: 104px;
-  height: 104px;
+  width: 106px;
+  height: 106px;
   z-index: 40;
   cursor: pointer;
   pointer-events: auto;
   transition: transform .35s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .rotating-seal:hover {
-  transform: scale(1.1) rotate(12deg);
+  transform: scale(1.1) rotate(14deg);
 }
 .rotating-seal svg {
   animation: spinSlow 22s linear infinite;
   color: var(--primary);
 }
-.seal-center-glyph {
+.seal-center-img {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
-  color: var(--primary);
+}
+.seal-center-img img {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px var(--primary-glow);
 }
 @keyframes spinSlow {
   from { transform: rotate(0deg); }
@@ -211,14 +210,14 @@ header {
 }
 .brand-name-text {
   font-family: var(--serif);
-  font-size: 23px;
+  font-size: 24px;
   font-weight: 600;
   letter-spacing: -0.01em;
 }
 .status-pill-warm {
   font-family: var(--mono);
   font-size: 11px;
-  padding: 3px 10px;
+  padding: 4px 12px;
   border-radius: 999px;
   background: rgba(40, 110, 74, 0.08);
   border: 1px solid rgba(40, 110, 74, 0.2);
@@ -245,7 +244,7 @@ header {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(45, 38, 30, 0.03);
+  background: rgba(55, 42, 30, 0.04);
   padding: 4px 6px;
   border-radius: 999px;
   border: 1px solid var(--border);
@@ -291,12 +290,21 @@ header {
   transition: all .25s ease;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+}
+.btn-aesthetic svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 .btn-aesthetic:hover {
   border-color: var(--border-focus);
   transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(45, 38, 30, 0.06);
+  box-shadow: 0 4px 16px rgba(55, 42, 30, 0.06);
 }
 .btn-aesthetic.primary {
   background: var(--primary);
@@ -313,16 +321,16 @@ header {
 main {
   position: relative;
   z-index: 10;
-  padding-top: 88px;
+  padding-top: 92px;
 }
 
-/* SECTION 1: EDITORIAL HERO */
+/* SECTION 1: HERO WITH FUN 3D AGENT ILLUSTRATION */
 .hero-stage {
-  min-height: 86vh;
+  min-height: 88vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 80px 48px 48px;
+  padding: 60px 48px 48px;
   max-width: 1320px;
   margin: 0 auto;
 }
@@ -352,28 +360,34 @@ main {
 }
 .hero-headline {
   font-family: var(--serif);
-  font-size: clamp(46px, 7.5vw, 98px);
+  font-size: clamp(44px, 7vw, 92px);
   font-weight: 300;
   line-height: 1.02;
   letter-spacing: -0.025em;
-  margin-bottom: 32px;
+  margin-bottom: 36px;
 }
 .hero-headline em {
   font-style: italic;
   font-weight: 500;
   color: var(--primary);
 }
-.hero-narrative-grid {
+
+/* Hero Showcase Grid with 3D Character */
+.hero-showcase-grid {
   display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  gap: 56px;
-  align-items: flex-end;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+.hero-left-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
 }
 .hero-manifesto-text {
   font-size: 19px;
   line-height: 1.65;
   color: var(--fg-muted);
-  max-width: 620px;
 }
 .hero-kpis-strip {
   display: flex;
@@ -385,7 +399,7 @@ main {
 }
 .strip-stat-val {
   font-family: var(--mono);
-  font-size: 30px;
+  font-size: 32px;
   font-weight: 600;
   color: var(--fg);
 }
@@ -396,7 +410,55 @@ main {
   letter-spacing: 0.06em;
 }
 
-/* SECTION 2: DUAL-CONTROL FLIGHT ARENA (THE INTERACTIVE MASTERPIECE) */
+/* 3D Agent Hero Card */
+.hero-agent-card {
+  position: relative;
+  background: var(--panel-glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+  transition: transform .4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.hero-agent-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+}
+.hero-agent-img {
+  width: 100%;
+  height: auto;
+  border-radius: calc(var(--radius-lg) - 6px);
+  display: block;
+  object-fit: cover;
+}
+.hero-agent-badge {
+  position: absolute;
+  bottom: 28px;
+  left: 28px;
+  right: 28px;
+  backdrop-filter: blur(16px);
+  background: var(--panel-glass);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.agent-badge-name {
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 600;
+}
+.agent-badge-status {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--emerald);
+  font-weight: 600;
+}
+
+/* SECTION 2: DUAL-CONTROL FLIGHT ARENA */
 .section-arena {
   padding: 80px 48px;
   max-width: 1320px;
@@ -429,11 +491,11 @@ main {
 }
 .arena-split-grid {
   display: grid;
-  grid-template-columns: 390px 1fr;
+  grid-template-columns: 380px 1fr;
   gap: 40px;
 }
 @media (max-width: 1024px) {
-  .hero-narrative-grid, .arena-split-grid { grid-template-columns: 1fr; }
+  .hero-showcase-grid, .arena-split-grid { grid-template-columns: 1fr; }
 }
 
 /* Controls Cockpit */
@@ -545,7 +607,7 @@ main {
   box-shadow: 0 8px 32px var(--primary-glow);
 }
 
-/* Pipeline Canvas & Arena Flow */
+/* Arena Pipeline Stage with 3D Image Nodes */
 .arena-canvas-stage {
   background: var(--bg-secondary);
   border: 1px solid var(--border);
@@ -562,12 +624,12 @@ main {
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
   position: relative;
-  margin: 36px 0 24px;
+  margin: 30px 0 24px;
 }
 .pipeline-nodes-row::before {
   content: "";
   position: absolute;
-  top: 30px;
+  top: 36px;
   left: 12%;
   right: 12%;
   height: 1px;
@@ -577,18 +639,18 @@ main {
 .node-cell {
   background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 18px;
   padding: 18px 12px;
   text-align: center;
   position: relative;
   z-index: 1;
-  transition: all .3s cubic-bezier(0.2, 0.8, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(45, 38, 30, 0.03);
+  transition: all .35s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 4px 14px rgba(55, 42, 30, 0.04);
 }
 .node-cell.active {
   border-color: var(--primary);
   box-shadow: 0 0 24px var(--primary-glow);
-  transform: translateY(-4px);
+  transform: translateY(-6px);
 }
 .node-cell.passed {
   border-color: var(--emerald);
@@ -599,9 +661,27 @@ main {
   box-shadow: 0 0 28px rgba(181, 56, 56, 0.35);
   animation: pulseHalt 1s infinite alternate;
 }
-.cell-glyph {
-  font-size: 22px;
-  margin-bottom: 8px;
+.cell-thumb-wrap {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 10px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform .2s ease;
+}
+.node-cell:hover .cell-thumb-wrap {
+  transform: scale(1.08);
+}
+.cell-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 .cell-title {
   font-family: var(--mono);
@@ -611,7 +691,7 @@ main {
   color: var(--fg-muted);
 }
 .cell-subtitle {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   margin-top: 4px;
 }
@@ -677,16 +757,16 @@ main {
   padding: 16px 20px;
   font-family: var(--mono);
   font-size: 12px;
-  max-height: 150px;
+  max-height: 140px;
   overflow-y: auto;
   line-height: 1.6;
-  color: #e5dfd5;
+  color: #dfd8cb;
 }
 :root[data-theme="noir"] .console-stream-box {
   background: #080706;
 }
 
-/* SECTION 3: EDITORIAL MANIFESTO (EUGENIA GRAB SIGNATURE) */
+/* SECTION 3: EDITORIAL MANIFESTO */
 .section-manifesto {
   padding: 110px 48px;
   max-width: 1080px;
@@ -885,14 +965,14 @@ footer a:hover {
 </head>
 <body>
 
-<div class="paper-texture" aria-hidden="true"></div>
+<div class="paper-pattern" aria-hidden="true"></div>
 <canvas id="motionCanvas" aria-hidden="true"></canvas>
 
 <!-- Interactive Cursor -->
 <div class="cursor-dot" id="cursorDot"></div>
 <div class="cursor-ring" id="cursorRing"></div>
 
-<!-- Rotating Seal Emblem -->
+<!-- Rotating Seal Emblem (Custom Wax Stamp) -->
 <div class="rotating-seal" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="Cosignal Maker-Checker Protocol">
   <svg viewBox="0 0 104 104" width="104" height="104">
     <path id="sealPath" d="M 52, 52 m -39, 0 a 39,39 0 1,1 78,0 a 39,39 0 1,1 -78,0" fill="transparent" />
@@ -900,7 +980,9 @@ footer a:hover {
       <textPath href="#sealPath">COSIGNAL • MAKER-CHECKER • SENTINEL •</textPath>
     </text>
   </svg>
-  <div class="seal-center-glyph">🛡️</div>
+  <div class="seal-center-img">
+    <img src="assets/guard_shield.jpg" alt="Cosignal Seal">
+  </div>
 </div>
 
 <!-- Header -->
@@ -908,7 +990,7 @@ footer a:hover {
   <a href="#" class="header-brand">
     <div class="brand-wax-seal">C</div>
     <span class="brand-name-text">Cosignal</span>
-    <span class="status-pill-warm">Dual Control Sentinel Active</span>
+    <span class="status-pill-warm">Dual Control Active</span>
   </a>
 
   <nav class="header-nav">
@@ -920,9 +1002,13 @@ footer a:hover {
 
   <div class="header-right">
     <button class="btn-aesthetic" id="themeToggleBtn" onclick="toggleThemePalette()" title="Switch Warm Linen / Noir Theme">
-      <span id="themeIco">🌓</span> <span id="themeLbl">Noir</span>
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      <span id="themeLbl">Noir</span>
     </button>
-    <button class="btn-aesthetic" onclick="openWarmModal('sdkModal')">⚡ SDK</button>
+    <button class="btn-aesthetic" onclick="openWarmModal('sdkModal')">
+      <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      SDK
+    </button>
     <button class="btn-aesthetic primary" onclick="jumpSection('arena')">Simulate Payout</button>
   </div>
 </header>
@@ -940,25 +1026,39 @@ footer a:hover {
       When autonomous agents move capital, <em>who signs the wire?</em>
     </h1>
 
-    <div class="hero-narrative-grid">
-      <p class="hero-manifesto-text">
-        AI agents now pay vendor invoices, execute refunds, and disburse corporate liquidity. Cosignal enforces institutional maker-checker limits and produces an immutable, flight-recorder audit trail before money ever leaves the account.
-      </p>
+    <div class="hero-showcase-grid">
+      <div class="hero-left-copy">
+        <p class="hero-manifesto-text">
+          AI agents now pay vendor invoices, execute refunds, and disburse corporate liquidity. Cosignal enforces institutional maker-checker limits and produces an immutable, flight-recorder audit trail before money ever leaves the account.
+        </p>
 
-      <div class="hero-kpis-strip">
-        <div class="strip-stat">
-          <div class="strip-stat-val">$14.2M</div>
-          <div class="strip-stat-lbl">Payouts Guarded</div>
+        <div class="hero-kpis-strip">
+          <div class="strip-stat">
+            <div class="strip-stat-val">$14.2M</div>
+            <div class="strip-stat-lbl">Payouts Guarded</div>
+          </div>
+          <div class="strip-stat">
+            <div class="strip-stat-val">0 ms</div>
+            <div class="strip-stat-lbl">Latency Overhead</div>
+          </div>
         </div>
-        <div class="strip-stat">
-          <div class="strip-stat-val">0 ms</div>
-          <div class="strip-stat-lbl">SDK Latency Impact</div>
+      </div>
+
+      <!-- Fun 3D Agent Character Card -->
+      <div class="hero-agent-card">
+        <img src="assets/hero_agent.jpg" alt="Autonomous AI Agent Reviewing Invoices" class="hero-agent-img">
+        <div class="hero-agent-badge">
+          <div>
+            <div class="agent-badge-name">Alby &amp; Co. AP Agent</div>
+            <div style="font-size:12px;color:var(--fg-muted)">Moving $12,450 to verified vendors</div>
+          </div>
+          <div class="agent-badge-status">● Approved</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ARENA: INTERACTIVE FLIGHT SIMULATOR -->
+  <!-- ARENA: INTERACTIVE FLIGHT ARENA -->
   <section class="section-arena" id="arena">
     <div class="arena-enclosure">
       <div class="arena-top-row">
@@ -981,7 +1081,7 @@ footer a:hover {
             <select class="select-aesthetic" id="simAgentSelect">
               <option value="invoice-processor">Invoice AP Agent (Disburses Capital)</option>
               <option value="support-agent">Customer Refund Agent (Direct Settlement)</option>
-              <option value="sales-lead">Sales Researcher (Customer Data & CRM)</option>
+              <option value="sales-lead">Sales Researcher (Customer Data &amp; CRM)</option>
             </select>
           </div>
 
@@ -1004,11 +1104,12 @@ footer a:hover {
           </div>
 
           <button class="btn-dispatch" onclick="launchSimulation()">
-            <span>⚡</span> Execute Agent Wire
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            Execute Agent Wire
           </button>
         </div>
 
-        <!-- Pipeline Canvas & Visual Feedback -->
+        <!-- Pipeline Canvas & Visual Feedback with 3D Assets -->
         <div class="arena-canvas-stage">
           <div style="display:flex;justify-content:space-between;align-items:center">
             <span style="font-family:var(--mono);font-size:11px;text-transform:uppercase;color:var(--fg-muted)">Live Trajectory Pipeline</span>
@@ -1017,22 +1118,30 @@ footer a:hover {
 
           <div class="pipeline-nodes-row">
             <div class="node-cell" id="node1">
-              <div class="cell-glyph">📥</div>
+              <div class="cell-thumb-wrap">
+                <img src="assets/task_doc.jpg" alt="Invoice PDF" class="cell-thumb-img">
+              </div>
               <div class="cell-title">1. Task</div>
               <div class="cell-subtitle">Invoice PDF</div>
             </div>
             <div class="node-cell" id="node2">
-              <div class="cell-glyph">🧠</div>
+              <div class="cell-thumb-wrap">
+                <img src="assets/neural_brain.jpg" alt="gpt-4o" class="cell-thumb-img">
+              </div>
               <div class="cell-title">2. Model</div>
               <div class="cell-subtitle">gpt-4o</div>
             </div>
             <div class="node-cell" id="node3">
-              <div class="cell-glyph">🛡️</div>
+              <div class="cell-thumb-wrap">
+                <img src="assets/guard_shield.jpg" alt="Cosignal" class="cell-thumb-img">
+              </div>
               <div class="cell-title">3. Cosignal</div>
               <div class="cell-subtitle">Policy Check</div>
             </div>
             <div class="node-cell" id="node4">
-              <div class="cell-glyph">🏦</div>
+              <div class="cell-thumb-wrap">
+                <img src="assets/gold_vault.jpg" alt="Settlement" class="cell-thumb-img">
+              </div>
               <div class="cell-title">4. Settlement</div>
               <div class="cell-subtitle" id="settlementCellStatus">Pending</div>
             </div>
@@ -1041,7 +1150,7 @@ footer a:hover {
           <!-- Intercept Modal Banner -->
           <div class="intercept-modal-banner" id="interceptBanner" style="display:none">
             <div class="intercept-desc-box">
-              <h4>⚠️ Transaction Intercepted by Policy Sentinel</h4>
+              <h4><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-3px;margin-right:6px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Transaction Intercepted by Policy Sentinel</h4>
               <p id="interceptReasonText">Payment exceeds $10,000 threshold. Paused for human dual-control sign-off.</p>
             </div>
             <div class="intercept-actions-row">
@@ -1059,7 +1168,7 @@ footer a:hover {
     </div>
   </section>
 
-  <!-- SECTION 3: MANIFESTO & PHILOSOPHY (EUGENIA GRAB SIGNATURE) -->
+  <!-- SECTION 3: EDITORIAL MANIFESTO -->
   <section class="section-manifesto" id="manifesto">
     <div class="manifesto-quote-mark">“</div>
     <blockquote class="manifesto-quote-text">
@@ -1248,7 +1357,7 @@ with lens.run(input="Pay Vendor Invoice") as run:
 </div>
 
 <script>
-/* ---------------- THEME PALETTE CONTROLLER (WARM LINEN VS NOIR) ---------------- */
+/* ---------------- THEME PALETTE CONTROLLER ---------------- */
 function toggleThemePalette() {
   const root = document.documentElement;
   const current = root.getAttribute('data-theme') || 'linen';
@@ -1256,9 +1365,6 @@ function toggleThemePalette() {
   root.setAttribute('data-theme', next);
   
   document.getElementById('themeLbl').textContent = next === 'linen' ? 'Noir' : 'Linen';
-  document.getElementById('themeIco').textContent = next === 'linen' ? '🌓' : '☀️';
-  
-  // Re-seed canvas colors
   initCanvasParticles();
 }
 
@@ -1447,7 +1553,7 @@ function launchSimulation() {
             ? `High-value payment policy triggered ($${amt.toLocaleString()} > $10,000 threshold)`
             : `New payee verification policy triggered for unverified vendor (${vendor})`;
           
-          appendStreamLog(`🚨 INTERCEPT: ${reason}`, 'color:var(--rose);font-weight:600');
+          appendStreamLog(`[INTERCEPT] ${reason}`, 'color:var(--rose);font-weight:600');
           badge.textContent = 'INTERCEPTED';
           badge.style.color = 'var(--rose)';
 
@@ -1483,7 +1589,7 @@ function resolveSimDecision(authorized) {
   } else {
     n4.className = 'node-cell halted';
     document.getElementById('settlementCellStatus').textContent = 'Blocked';
-    appendStreamLog(`❌ Reviewer rejected transaction. Payout blocked.`, 'color:var(--rose)');
+    appendStreamLog(`✕ Reviewer rejected transaction. Payout blocked.`, 'color:var(--rose)');
     badge.textContent = 'REJECTED';
     badge.style.color = 'var(--rose)';
   }

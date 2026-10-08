@@ -1,10 +1,12 @@
 # Cosignal
 
-**Human approval and an audit trail for AI agents that move money.**
+**Open-source human-in-the-loop approval, policy enforcement, and audit trails for AI agents that execute payments and financial actions.**
 
 [![tests](https://github.com/naveditachaudhary-pixel/cosignal/actions/workflows/tests.yml/badge.svg)](https://github.com/naveditachaudhary-pixel/cosignal/actions/workflows/tests.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-orange.svg)](LICENSE)
 **[▶ Try the live demo](https://naveditachaudhary-pixel.github.io/cosignal/)** · no sign-up, sample data
+
+![Cosignal Dual-Control Approval Demo](docs/demo.gif)
 
 AI agents now pay invoices, issue refunds and move funds. Cosignal sits between your agent and the money:
 

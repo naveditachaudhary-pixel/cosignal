@@ -116,17 +116,48 @@ Set `COSIGNAL_KEYS=key1,key2` to require an `X-Cosignal-Key` header.
 
 ## Architecture
 
+Cosignal acts as an inline dual-control proxy between autonomous AI agent execution loops and financial/external side-effect actions:
+
 ```mermaid
-flowchart LR
-  A[Your agent + SDK] -- check() before paying --> C[Rules engine<br/>policies.yaml]
-  C -- needs approval --> I[Approvals inbox + Slack]
-  I -- approve / reject --> A
-  A -- runs & steps --> B[API · FastAPI]
-  B --> D[(SQLite → Postgres)]
-  C --> L[Audit trail]
-  I --> L
-  D --> E[Dashboard]
+flowchart TB
+    subgraph AgentRuntime["🤖 Agent Runtime"]
+        Agent["Your AI Agent\n(OpenAI / LangChain / Custom)"]
+        SDK["Cosignal Python SDK\n(Zero Dependencies)"]
+        Agent <--> SDK
+    end
+
+    subgraph CosignalEngine["🛡️ Cosignal Core (FastAPI)"]
+        API["REST API\n/v1/check & /v1/runs"]
+        Engine["YAML Rules Engine\n(policies.yaml)"]
+        API <--> Engine
+    end
+
+    subgraph Approvals["💬 Human Review Channels"]
+        Slack["Slack Webhooks\n(#finance-approvals)"]
+        Inbox["Cosignal Web Inbox\n(Approve / Reject UI)"]
+    end
+
+    subgraph Storage["📜 Audit & Persistence Layer"]
+        DB[("Database\n(SQLite / Postgres)")]
+        AuditLog["Append-Only Audit Log\n(Cryptographic Trail)"]
+    end
+
+    SDK -- "1. POST /v1/check (Action, Amount, Vendor)" --> API
+    Engine -- "2. Risk Limit Exceeded" --> Approvals
+    Approvals -- "3. Approve / Reject Decision" --> API
+    API -- "4. Resume Lock (allowed=true/false)" --> SDK
+    SDK -. "Async Run Steps (Non-Blocking)" .-> API
+    Engine --> DB
+    Approvals --> AuditLog
+    DB --> Dashboard["📊 Real-Time Observability Dashboard"]
 ```
+
+### Key Architectural Invariants
+
+- 🔒 **Synchronous Dual-Control Lock**: When an action triggers a policy (e.g. payment > $10,000 or new vendor payee), the SDK pauses agent tool execution until a human reviewer acts in Slack or the Web Inbox.
+- 🛡️ **Fail-Safe Reliability**: The Python SDK operates with a non-blocking background buffer for trace events. If the Cosignal server is unreachable, checks can fail-open or fail-closed based on your compliance policy (`Cosignal(fail_closed=True)`).
+- 📜 **Immutable Audit Trail**: Every policy check, model input/output token count, risk score, and human decision is recorded to an append-only audit log for financial compliance and SOC2/ISO auditability.
+- ⚙️ **Hot-Reloadable Governance**: Policy rules live in [`policies.yaml`](policies.yaml) outside application code, reloaded dynamically via `POST /v1/policies/reload` with zero downtime.
 
 ## Roadmap
 

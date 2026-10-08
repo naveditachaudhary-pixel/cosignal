@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-orange.svg)](LICENSE)
 **[▶ Try the live demo](https://naveditachaudhary-pixel.github.io/cosignal/)** · no sign-up, sample data
 
-![Cosignal Dual-Control Approval Demo](docs/demo.gif)
+![Cosignal Dual-Control Approval Demo](docs/demo.gif?v=2)
 
 AI agents now pay invoices, issue refunds and move funds. Cosignal sits between your agent and the money:
 

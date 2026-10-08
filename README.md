@@ -21,7 +21,7 @@ AI agents now pay invoices, issue refunds and move funds. Cosignal sits between 
 
 Most tools for AI agents are built for the engineers debugging them. The people accountable for an agent that pays vendors (finance controllers, AP managers, risk teams) need something different: **limits they can set, a place to approve exceptions, and proof of who approved what.** That is the "maker-checker" / dual-control principle banks already use, applied to AI agents.
 
-## Quick start (1-Click or Manual)
+## Quick start (1-Click, Docker, or Manual)
 
 ### Option 1: 1-Click Launch (Recommended)
 ```bash
@@ -30,7 +30,14 @@ git clone https://github.com/naveditachaudhary-pixel/cosignal.git && cd cosignal
 ```
 `./start.sh` automatically configures the Python virtual environment, installs dependencies, launches the server, and opens your browser directly to `http://localhost:8000`.
 
-### Option 2: Manual Start
+### Option 2: Docker Compose
+```bash
+git clone https://github.com/naveditachaudhary-pixel/cosignal.git && cd cosignal
+docker compose up -d
+```
+Access the dashboard and API at `http://localhost:8000`.
+
+### Option 3: Manual Start
 ```bash
 git clone https://github.com/naveditachaudhary-pixel/cosignal.git && cd cosignal
 pip install -r requirements.txt
@@ -132,8 +139,8 @@ flowchart LR
 
 - [x] Recording, replay, reliability scores, alerts
 - [x] Rules file, approvals inbox, Slack/webhook notifications, audit trail
+- [x] One-command Docker setup (`docker-compose.yml`)
 - [ ] Integrations: OpenAI Agents SDK, LangChain / LangGraph
-- [ ] `pip install` package and one-command Docker setup
 - [ ] Redact card numbers and personal data in the SDK before sending
 - [ ] Hosted version with sign-in and Postgres
 

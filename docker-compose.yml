@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  cosignal:
+    build: .
+    container_name: cosignal-server
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./policies.yaml:/app/policies.yaml:ro
+      - cosignal-data:/app/data
+    environment:
+      - COSIGNAL_DB_URL=sqlite:////app/data/cosignal.db
+    restart: unless-stopped
+
+volumes:
+  cosignal-data:

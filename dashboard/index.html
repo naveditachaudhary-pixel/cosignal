@@ -643,7 +643,7 @@ body {
 .site-action-btn:hover { background: #1e293b; }
 
 /* Signature Floating Intercept Receipt */
-.floating-receipt {
+.floating-receipt { pointer-events: none;
   position: absolute;
   bottom: 20px;
   right: 20px;
@@ -1203,7 +1203,7 @@ td {
             </div>
             <div style="display:flex;gap:8px">
               <button style="background:transparent;border:1px solid var(--border);color:var(--text);padding:6px 14px;border-radius:var(--radius-sm);cursor:pointer" onclick="this.closest('div').parentElement.remove()">Reject</button>
-              <button style="background:#10b981;border:none;color:#fff;font-weight:600;padding:6px 14px;border-radius:var(--radius-sm);cursor:pointer" onclick="this.closest('div').parentElement.remove();alert('✓ Dual-control sign-off approved! Wire dispatched.')">Authorize</button>
+              <button style="background:#10b981;border:none;color:#fff;font-weight:600;padding:6px 14px;border-radius:var(--radius-sm);cursor:pointer" onclick="this.closest('div').parentElement.remove();toast('✓ Dual-control sign-off approved. Wire dispatched.', true)">Authorize</button>
             </div>
           </div>
 
@@ -1215,7 +1215,7 @@ td {
             </div>
             <div style="display:flex;gap:8px">
               <button style="background:transparent;border:1px solid var(--border);color:var(--text);padding:6px 14px;border-radius:var(--radius-sm);cursor:pointer" onclick="this.closest('div').parentElement.remove()">Reject</button>
-              <button style="background:#10b981;border:none;color:#fff;font-weight:600;padding:6px 14px;border-radius:var(--radius-sm);cursor:pointer" onclick="this.closest('div').parentElement.remove();alert('✓ Dual-control sign-off approved! Wire dispatched.')">Authorize</button>
+              <button style="background:#10b981;border:none;color:#fff;font-weight:600;padding:6px 14px;border-radius:var(--radius-sm);cursor:pointer" onclick="this.closest('div').parentElement.remove();toast('✓ Dual-control sign-off approved. Wire dispatched.', true)">Authorize</button>
             </div>
           </div>
         </div>
@@ -1397,6 +1397,7 @@ function switchPreset(idx) {
 
   document.getElementById('heroIdeaInput').value = s.prompt;
   renderOutputWindow(s);
+  const b = document.getElementById('actionBtn'); b.disabled = false; b.style.opacity = ''; b.textContent = s.actionBtn;
 }
 
 function renderOutputWindow(s) {
@@ -1441,22 +1442,91 @@ function renderOutputWindow(s) {
   document.getElementById('receiptMeta').textContent = s.receiptMeta;
 }
 
+/* ---------------- SIMULATION: agent submits, policy checks, wire is held or cleared ---------------- */
+let simTimers = [];
+function setCta(text, color) {
+  const cta = document.getElementById('previewNavCta');
+  cta.textContent = text;
+  cta.style.color = color; cta.style.borderColor = color; cta.style.background = color + '1a';
+}
+function setReceipt(title, meta) {
+  document.getElementById('receiptTitle').textContent = title;
+  document.getElementById('receiptMeta').textContent = meta;
+  const r = document.getElementById('floatingReceipt');
+  r.style.transition = 'transform .25s ease';
+  r.style.transform = 'scale(1.06)';
+  setTimeout(() => { r.style.transform = 'scale(1)'; }, 260);
+}
+function toast(msg, ok) {
+  let t = document.getElementById('cosigToast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'cosigToast';
+    t.setAttribute('role', 'status');
+    t.style.cssText = 'position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);opacity:0;z-index:9999;padding:12px 18px;border-radius:12px;font:500 14px/1.4 Inter,system-ui,sans-serif;color:#fff;box-shadow:0 18px 40px -16px rgba(0,0,0,.5);transition:opacity .25s ease,transform .25s ease;max-width:90vw;text-align:center';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.background = ok ? '#047857' : '#b91c1c';
+  requestAnimationFrame(() => { t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)'; });
+  clearTimeout(t._h); t._h = setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(20px)'; }, 3200);
+}
 function simulateActivePrompt() {
-  const custom = document.getElementById('heroIdeaInput').value;
-  document.getElementById('composerPromptText').textContent = custom;
-  
-  const receipt = document.getElementById('floatingReceipt');
-  receipt.style.transform = 'scale(1.05)';
-  setTimeout(() => { receipt.style.transform = 'scale(1)'; }, 300);
+  simTimers.forEach(clearTimeout); simTimers = [];
+  const s = SCENARIOS[activeScenarioIdx];
+  const text = document.getElementById('heroIdeaInput').value.trim() || s.prompt;
+  document.getElementById('composerPromptText').textContent = text;
+  const btn = document.getElementById('actionBtn');
+  btn.disabled = false; btn.style.opacity = ''; btn.textContent = s.actionBtn;
+
+  // Decide the outcome. Unedited presets use their own scenario; edited text is checked against the $10,000 rule.
+  const edited = text !== s.prompt;
+  const m = text.replace(/,/g, '').match(/\$\s*(\d+(?:\.\d+)?)/);
+  const amount = m ? parseFloat(m[1]) : null;
+  const newPayee = /new (payee|vendor)|first payment/i.test(text);
+  const pii = /pii|ssn|customer data|export/i.test(text);
+  let held;
+  if (!edited) held = !/clear|approved|settled/i.test(s.cta);
+  else held = pii || newPayee || (amount !== null && amount >= 10000);
+
+  const win = document.getElementById('previewCanvas');
+  if (win) win.closest('.preview-window, .browser-window, section, div').scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+  setCta('Agent submitting…', '#64748b');
+  setReceipt('Agent request received', 'Intercepted before execution by the Cosignal gate.');
+  simTimers.push(setTimeout(() => {
+    setCta('Checking policy POL-902…', '#d97706');
+    setReceipt('Evaluating guardrails', 'Amount threshold · payee history · data sensitivity.');
+  }, 900));
+  simTimers.push(setTimeout(() => {
+    if (!edited) {
+      renderOutputWindow(s);
+    } else {
+      const amt = amount !== null ? '$' + amount.toLocaleString('en-US') : 'This action';
+      const reason = pii ? 'touches customer PII' : newPayee ? 'goes to a new payee' : 'exceeds the $10,000 threshold';
+      document.getElementById('previewDeck').textContent = held
+        ? `${amt} ${reason}. Paused for VP Finance sign-off.`
+        : `${amt} is under the $10,000 threshold. Cleared automatically and logged.`;
+      document.getElementById('previewDisplay').textContent = held ? 'Institutional Sign-Off Required.' : 'Cleared Within Policy.';
+      setReceipt(held ? 'Sentinel Intercept Active' : 'Auto-Cleared Within Policy',
+                 held ? `Held: ${reason}.` : 'No human review needed. Audit entry sealed.');
+    }
+    if (held) setCta('Held for Dual Control', '#e11d48');
+    else { setCta('✓ Auto-Cleared', '#10b981'); btn.textContent = 'View Audit Entry'; }
+    toast(held ? 'Intercepted: the agent is paused until a human signs off.' : 'Within policy: the agent proceeded and the action was logged.', !held);
+  }, 1900));
 }
 
 function triggerOutputAction() {
-  alert('✓ Dual-Control Sign-Off Verified! Remittance order authorized and cryptographic audit token recorded.');
-  const cta = document.getElementById('previewNavCta');
-  cta.textContent = '✓ Settled & Dispatched';
-  cta.style.color = '#10b981';
-  cta.style.borderColor = '#10b981';
-  cta.style.background = 'rgba(16, 185, 129, 0.15)';
+  simTimers.forEach(clearTimeout); simTimers = [];
+  const btn = document.getElementById('actionBtn');
+  if (btn.disabled) return;
+  const token = 'SHA256-' + Math.random().toString(16).slice(2, 10).toUpperCase();
+  setCta('✓ Signed & Released', '#10b981');
+  setReceipt('Dual-Control Sign-Off Verified', `Signed by Maria Lopez (VP Finance) · audit token ${token} recorded.`);
+  document.getElementById('input2').textContent = 'Token: ' + token;
+  btn.textContent = '✓ Authorized'; btn.disabled = true; btn.style.opacity = '.7';
+  toast('✓ Sign-off verified. The order is released and the audit token is recorded.', true);
 }
 
 /* ---------------- FOUR GUARDRAILS SWITCHER ---------------- */
